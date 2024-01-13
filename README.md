@@ -36,3 +36,9 @@ Make sure to deploy the output of `remix build`
 
 - `build/`
 - `public/build/`
+
+## Developing
+
+To create new components, use [shadcn/ui](https://ui.shadcn.com/)
+
+`pnpm ui:add <<component_name>>`
