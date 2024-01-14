@@ -1,68 +1,77 @@
 import {Authenticator} from 'remix-auth'
 import {sessionStorage} from './session.server'
 import {type SessionUser} from './user.schema'
-import {DiscordStrategy} from 'remix-auth-discord'
-import invariant from 'tiny-invariant'
+import {discordStrategy} from './auth-discord.server'
+import {redirect} from '@remix-run/node'
 
-invariant(
-	process.env.DISCORD_CLIENT_ID,
-	'DISCORD_CLIENT_ID should be set',
-)
-invariant(
-	process.env.DISCORD_CLIENT_SECRET,
-	'DISCORD_CLIENT_SECRET should be set',
-)
-invariant(process.env.HOST_URL, 'HOST_URL should be set')
+function createAuthenticator() {
+	// do not expose authenticator directly. It should always
+	// be protected by a layer of abstraction
+	const authenticator = new Authenticator<SessionUser>(
+		sessionStorage,
+	)
 
-// do not export this, use functions below
-const authenticator = new Authenticator<SessionUser>(
-	sessionStorage,
-)
+	authenticator.use(discordStrategy)
 
-authenticator.use(
-	new DiscordStrategy(
-		{
-			clientID: process.env.DISCORD_CLIENT_ID,
-			clientSecret: process.env.DISCORD_CLIENT_SECRET,
-			callbackURL: `${process.env.HOST_URL}/auth/discord/callback`,
-			scope: ['identify', 'email'],
-		},
-		async ({
-			accessToken,
-			refreshToken,
-			profile,
-		}): Promise<SessionUser> => {
-			return {
-				provider: 'discord',
-				accessToken,
-				refreshToken,
-				id: profile.id,
-				name: profile.displayName,
-				email: profile.__json.email,
-				profileImage: `https://cdn.discordapp.com/avatars/${profile.id}/${profile.__json.avatar}`,
-			}
-		},
-	),
-)
+	/** Call this to check if the user is authenticated.
+	 * It will return a Promise with the user object or null,
+	 * you can use this to check if the user is logged-in or not.
+	 * */
+	function getUser(request: Request) {
+		return authenticator.isAuthenticated(request)
+	}
+	async function authenticateDiscord(request: Request) {
+		return authenticator.authenticate('discord', request)
+	}
 
-export function isAuthenticated(request: Request) {
-	return authenticator.isAuthenticated(request)
+	/** @returns Response to redirect to destination, in case of success or failure */
+	async function callbackDiscord(
+		request: Request,
+		redirectTo = '/home',
+	) {
+		const params = new URLSearchParams()
+		params.set('error', 'true')
+		return authenticator.authenticate('discord', request, {
+			successRedirect: redirectTo,
+			failureRedirect: `/login?${params}`,
+		})
+	}
+
+	async function logout(request: Request) {
+		await authenticator.logout(request, {redirectTo: '/'})
+	}
+
+	return {
+		getUser,
+		authenticateDiscord,
+		callbackDiscord,
+		logout,
+	}
 }
-export async function authenticateDiscord(
+
+export const {
+	getUser,
+	authenticateDiscord,
+	callbackDiscord,
+	logout,
+} = createAuthenticator()
+
+export async function assertAuthenticated(
 	request: Request,
 ) {
-	return authenticator.authenticate('discord', request)
+	const user = await getUser(request)
+	if (!user) {
+		const params = new URLSearchParams()
+		params.set('redirectTo', new URL(request.url).pathname)
+		throw redirect(`/login?${params}`)
+	}
+	return user
 }
-
-export async function callbackDiscord(request: Request) {
-	const params = new URLSearchParams()
-	params.set('error', 'true')
-	return authenticator.authenticate('discord', request, {
-		successRedirect: '/home',
-		failureRedirect: `/login?${params}`,
-	})
-}
-
-export async function logout(request: Request) {
-	return authenticator.logout(request, {redirectTo: '/'})
+export async function assertNotAuthenticated(
+	request: Request,
+) {
+	const user = await getUser(request)
+	if (user) {
+		throw redirect('/home')
+	}
 }

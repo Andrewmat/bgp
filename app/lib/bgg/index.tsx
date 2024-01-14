@@ -34,7 +34,7 @@ export type BggBoardgame = {
 	}[]
 }
 
-export async function searchGameId(
+export async function getGameId(
 	gameId: string,
 ): Promise<BggBoardgame> {
 	const result = (await fetchBgg(
@@ -45,56 +45,20 @@ export async function searchGameId(
 		}
 	}
 
-	function adapt(game: BggSchemaBoardgame): BggBoardgame {
-		return {
-			id: game._objectid,
-			name: Array.isArray(game.name)
-				? game.name.find((p) => p._primary === 'true')?.[
-						'#text'
-					] ?? game.name[0]['#text']
-				: game.name['#text'],
-			description: game.description,
-			minPlayers: game.minplayers,
-			maxPlayers: game.maxplayers,
-			yearPublished: game.yearpublished,
-			playingTime: game.playingtime,
-			minPlayTime: game.minplaytime,
-			maxPlayTime: game.maxplaytime,
-			age: game.age,
-			image: game.image,
-			thumbnail: game.thumbnail,
-			numPlayerSuggestion: (() => {
-				const poll = game.poll.find(
-					(p) => p._name === 'suggested_numplayers',
-				) as Extract<
-					(typeof game.poll)[number],
-					{_name: 'suggested_numplayers'}
-				>
-				if (!poll) return []
-				return adaptNumPlayerPollResults(poll.results)
-			})(),
+	return adaptBoardGame(result.boardgames.boardgame)
+}
+
+export async function getGamesListId(gameIds: string[]) {
+	const result = (await fetchBgg(
+		`/boardgame/${gameIds.join(',')}`,
+	)) as {
+		boardgames: {
+			boardgame: BggSchemaBoardgame[]
 		}
 	}
-	function adaptNumPlayerPollResults(
-		results: BggSchemaPollResultNumPlayers[],
-	) {
-		return results
-			.filter((result) => Boolean(result._numplayers))
-			.map(
-				({result: results, _numplayers: numPlayers}) => ({
-					numPlayers: numPlayers,
-					best: results.find((r) => r._value === 'Best')
-						?._numvotes,
-					recommended: results.find(
-						(r) => r._value === 'Recommended',
-					)?._numvotes,
-					notRecommended: results.find(
-						(r) => r._value === 'Not Recommended',
-					)?._numvotes,
-				}),
-			)
-	}
-	return adapt(result.boardgames.boardgame)
+	return result.boardgames.boardgame.map((boardgame) =>
+		adaptBoardGame(boardgame),
+	)
 }
 
 export type BggSearchResult = {
@@ -159,4 +123,54 @@ async function fetchBgg(
 	const xml = await response.text()
 	const parsed = xmlParser.parse(xml) as unknown
 	return parsed
+}
+
+function adaptBoardGame(
+	game: BggSchemaBoardgame,
+): BggBoardgame {
+	return {
+		id: game._objectid,
+		name: Array.isArray(game.name)
+			? game.name.find((p) => p._primary === 'true')?.[
+					'#text'
+				] ?? game.name[0]['#text']
+			: game.name['#text'],
+		description: game.description,
+		minPlayers: game.minplayers,
+		maxPlayers: game.maxplayers,
+		yearPublished: game.yearpublished,
+		playingTime: game.playingtime,
+		minPlayTime: game.minplaytime,
+		maxPlayTime: game.maxplaytime,
+		age: game.age,
+		image: game.image,
+		thumbnail: game.thumbnail,
+		numPlayerSuggestion: (() => {
+			const poll = game.poll.find(
+				(p) => p._name === 'suggested_numplayers',
+			) as Extract<
+				(typeof game.poll)[number],
+				{_name: 'suggested_numplayers'}
+			>
+			if (!poll) return []
+			return adaptNumPlayerPollResults(poll.results)
+		})(),
+	}
+}
+function adaptNumPlayerPollResults(
+	results: BggSchemaPollResultNumPlayers[],
+) {
+	return results
+		.filter((result) => Boolean(result._numplayers))
+		.map(({result: results, _numplayers: numPlayers}) => ({
+			numPlayers: numPlayers,
+			best: results.find((r) => r._value === 'Best')
+				?._numvotes,
+			recommended: results.find(
+				(r) => r._value === 'Recommended',
+			)?._numvotes,
+			notRecommended: results.find(
+				(r) => r._value === 'Not Recommended',
+			)?._numvotes,
+		}))
 }

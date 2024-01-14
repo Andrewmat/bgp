@@ -4,7 +4,7 @@ import {
 	redirect,
 } from '@remix-run/node'
 import {upsertScore} from '~/lib/db/score.server'
-import {isAuthenticated} from '~/lib/login/auth.server'
+import {getUser} from '~/lib/login/auth.server'
 
 export async function loader() {
 	return redirect('/home')
@@ -19,7 +19,7 @@ export async function action({
 	const score = evaluationForm.get('score')
 	const gameId = params.gameId
 
-	const user = await isAuthenticated(request)
+	const user = await getUser(request)
 	if (!user || typeof user.email !== 'string') {
 		throw new Response('Unauthorized', {
 			status: 401,

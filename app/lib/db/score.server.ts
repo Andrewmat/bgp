@@ -32,6 +32,12 @@ export function getScore({
 				userEmail,
 			},
 		},
+		select: {
+			userEmail: true,
+			gameId: true,
+			value: true,
+			updatedAt: true,
+		},
 	})
 }
 
@@ -42,5 +48,11 @@ export function getScores({
 }) {
 	return db.score.findMany({
 		where: {userEmail},
+		select: {
+			gameId: true,
+			value: true,
+			updatedAt: true,
+		},
+		orderBy: {updatedAt: 'desc'},
 	})
 }

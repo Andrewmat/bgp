@@ -1,12 +1,12 @@
 import {LoaderFunctionArgs, redirect} from '@remix-run/node'
 import {Link} from '@remix-run/react'
 import {Button} from '~/components/ui/button'
-import {isAuthenticated} from '~/lib/login/auth.server'
+import {getUser} from '~/lib/login/auth.server'
 
 export async function loader({
 	request,
 }: LoaderFunctionArgs) {
-	const user = await isAuthenticated(request)
+	const user = await getUser(request)
 	if (user) {
 		return redirect('/home')
 	}
