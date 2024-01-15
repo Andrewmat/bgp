@@ -4,14 +4,24 @@ import {
 	useFetcher,
 	useLoaderData,
 } from '@remix-run/react'
-import {ExternalLink, Star} from 'lucide-react'
-import {useState} from 'react'
+import {
+	Dice1Icon,
+	Dice2Icon,
+	Dice3Icon,
+	Dice4Icon,
+	Dice5Icon,
+	Dice6Icon,
+	ExternalLink,
+	X,
+} from 'lucide-react'
+import {cloneElement, useState} from 'react'
 import invariant from 'tiny-invariant'
 import {
 	Avatar,
 	AvatarFallback,
 	AvatarImage,
 } from '~/components/ui/avatar'
+import {Button} from '~/components/ui/button'
 import {
 	Card,
 	CardContent,
@@ -26,6 +36,12 @@ import {
 	TableHeader,
 	TableRow,
 } from '~/components/ui/table'
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from '~/components/ui/tooltip'
 import {BggBoardgame, getGameId} from '~/lib/bgg'
 import {getScore} from '~/lib/db/score.server'
 import {getUser} from '~/lib/login/auth.server'
@@ -84,16 +100,21 @@ export default function GameDetailsPage() {
 					<div className='grid gap-2 md:grid-cols-4 lg:grid-cols-6'>
 						<div>
 							<p>
-								{game.minPlayers} - {game.maxPlayers}{' '}
+								{game.minPlayers === game.maxPlayers
+									? game.minPlayers
+									: `${game.minPlayers} - ${game.maxPlayers}`}{' '}
 								players
 							</p>
 							<p>
-								{game.minPlayTime} - {game.maxPlayTime} min
+								{game.minPlayTime === game.maxPlayTime
+									? game.minPlayTime
+									: `${game.minPlayTime} - ${game.maxPlayTime}`}{' '}
+								min
 							</p>
 						</div>
 						<div className='md:col-span-3 lg:col-span-5'>
 							<Card>
-								<PlayerNumber game={game as BggBoardgame} />
+								<PlayersTable game={game as BggBoardgame} />
 							</Card>
 						</div>
 					</div>
@@ -103,7 +124,7 @@ export default function GameDetailsPage() {
 	)
 }
 
-function PlayerNumber({game}: {game: BggBoardgame}) {
+function PlayersTable({game}: {game: BggBoardgame}) {
 	return (
 		<Table>
 			<TableHeader className='bg-accent'>
@@ -181,26 +202,60 @@ function EvaluationForm({
 			: optimistic ?? selected
 	return (
 		<div className='flex'>
-			{Array.from({length: 5}).map((_, i) => (
+			{[
+				// eslint-disable-next-line react/jsx-key
+				<Dice1Icon />,
+				// eslint-disable-next-line react/jsx-key
+				<Dice2Icon />,
+				// eslint-disable-next-line react/jsx-key
+				<Dice3Icon />,
+				// eslint-disable-next-line react/jsx-key
+				<Dice4Icon />,
+				// eslint-disable-next-line react/jsx-key
+				<Dice5Icon />,
+				// eslint-disable-next-line react/jsx-key
+				<Dice6Icon />,
+			].map((element, i) => (
 				<fetcher.Form
-					key={i}
+					key={`dice${i}`}
 					method='POST'
 					action={`/game/${gameId}/evaluate`}
 				>
 					<input type='hidden' name='score' value={i + 1} />
 					<button className='appearance-none' type='submit'>
-						<Star
-							size={30}
-							className={cn(
+						{cloneElement(element, {
+							size: 30,
+							className: cn(
 								'pl-0 pr-2',
 								i < highlighted && 'fill-green-500',
-							)}
-							onMouseOver={() => setHover(i + 1)}
-							onMouseOut={() => setHover(undefined)}
-						/>
+							),
+							onMouseOver: () => setHover(i + 1),
+							onMouseOut: () => setHover(undefined),
+						})}
 					</button>
 				</fetcher.Form>
 			))}
+			<fetcher.Form
+				method='POST'
+				action={`/game/${gameId}/evaluate`}
+			>
+				<input type='hidden' name='method' value='delete' />
+				<TooltipProvider>
+					<Tooltip>
+						<TooltipTrigger>
+							<button
+								className='appearance-none'
+								type='submit'
+							>
+								<X size={30} className='stroke-primary' />
+							</button>
+						</TooltipTrigger>
+						<TooltipContent>
+							<p>Remove score</p>
+						</TooltipContent>
+					</Tooltip>
+				</TooltipProvider>
+			</fetcher.Form>
 		</div>
 	)
 }

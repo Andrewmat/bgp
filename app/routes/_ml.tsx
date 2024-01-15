@@ -6,19 +6,17 @@ import {
 	json,
 	useLoaderData,
 } from '@remix-run/react'
+import {SearchBar} from '~/components/SearchBar'
 import SLink from '~/components/ui/SLink'
 import {
 	Avatar,
 	AvatarFallback,
 	AvatarImage,
 } from '~/components/ui/avatar'
-import {Button} from '~/components/ui/button'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
 import {getUser} from '~/lib/login/auth.server'
@@ -54,7 +52,9 @@ export default function MainLayout() {
 						height='30'
 					/>
 				</Link>
-				<div className='flex-grow' />
+				<div className='flex-grow'>
+					<SearchBar />
+				</div>
 				<nav className='flex gap-2 items-center'>
 					<SLink to='/home'>Home</SLink>
 					{user ? (
@@ -104,29 +104,3 @@ export default function MainLayout() {
 		</>
 	)
 }
-
-/*
-
-{user ? (
-					<div>
-						<Link to='/me'>
-							<Avatar>
-								<AvatarImage src={user.profileImage} />
-								<AvatarFallback>
-									{user.name.slice(0, 2)}
-								</AvatarFallback>
-							</Avatar>
-							<h2>{user.name}</h2>
-						</Link>
-						<Form method='POST' action='/logout'>
-							<Button variant='link'>Logout</Button>
-						</Form>
-					</div>
-				) : (
-					<Button asChild>
-						<Link to='/login'>Login</Link>
-					</Button>
-				)}
-			</header>
-
-*/

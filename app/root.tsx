@@ -9,6 +9,7 @@ import {
 	ScrollRestoration,
 } from '@remix-run/react'
 import globals from './globals.css'
+import {Toaster} from '~/components/ui/sonner'
 
 export const links: LinksFunction = () => [
 	{rel: 'stylesheet', href: globals},
@@ -47,6 +48,7 @@ export default function App() {
 				<ScrollRestoration />
 				<Scripts />
 				<LiveReload />
+				<Toaster />
 			</body>
 		</html>
 	)

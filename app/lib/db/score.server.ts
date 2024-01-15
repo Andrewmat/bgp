@@ -18,6 +18,23 @@ export function upsertScore({
 	})
 }
 
+export function deleteScore({
+	userEmail,
+	gameId,
+}: {
+	userEmail: string
+	gameId: string
+}) {
+	return db.score.delete({
+		where: {
+			userEmail_gameId: {
+				userEmail,
+				gameId,
+			},
+		},
+	})
+}
+
 export function getScore({
 	userEmail,
 	gameId,

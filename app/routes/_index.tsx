@@ -4,7 +4,7 @@ import {
 	redirect,
 } from '@remix-run/node'
 import {Link} from '@remix-run/react'
-import {SearchForm} from '~/components/SearchForm'
+import {SearchBar} from '~/components/SearchBar'
 import SLink from '~/components/ui/SLink'
 import {getUser} from '~/lib/login/auth.server'
 
@@ -49,7 +49,7 @@ export default function IndexPage() {
 					/>
 				</Link>
 				<div className='flex-grow'>
-					<SearchForm hideExact />
+					<SearchBar hideExact />
 				</div>
 				<nav>
 					<SLink to='/home'>Home</SLink>
