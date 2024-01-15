@@ -16,34 +16,3 @@ export const sessionStorage = createCookieSessionStorage({
 		secure: process.env.NODE_ENV === 'production',
 	},
 })
-
-function getSession(request: Request) {
-	return sessionStorage.getSession(
-		request.headers.get('Cookie'),
-	)
-}
-
-export async function consumeFromSession(
-	request: Request,
-	key: string,
-) {
-	const session = await getSession(request)
-	const value = session.get(key)
-	console.log('consumeFromSession', key, value)
-	// session.unset(key)
-	return value
-}
-
-export async function setToSession(
-	request: Request,
-	key: string,
-	value: unknown,
-) {
-	console.log('setToSession', key, value)
-	const session = await getSession(request)
-	session.set(key, value)
-	return {
-		'Set-Cookie':
-			await sessionStorage.commitSession(session),
-	}
-}

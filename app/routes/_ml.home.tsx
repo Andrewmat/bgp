@@ -2,22 +2,10 @@ import type {
 	LoaderFunctionArgs,
 	MetaFunction,
 } from '@remix-run/node'
-import {
-	Form,
-	Link,
-	json,
-	useLoaderData,
-} from '@remix-run/react'
-import {Button} from '~/components/ui/button'
-import {Input} from '~/components/ui/input'
-import {ExternalLink, Search} from 'lucide-react'
+import {Link, json, useLoaderData} from '@remix-run/react'
+import {ExternalLink} from 'lucide-react'
 import {BggSearchResult, searchGames} from '~/lib/bgg'
-import {useId} from 'react'
-import {Avatar, AvatarImage} from '~/components/ui/avatar'
-import {getUser} from '~/lib/login/auth.server'
-import {AvatarFallback} from '@radix-ui/react-avatar'
-import {Label} from '~/components/ui/label'
-import {Checkbox} from '~/components/ui/checkbox'
+import {SearchForm} from '~/components/SearchForm'
 
 export const meta: MetaFunction = () => {
 	return [
@@ -33,7 +21,7 @@ export async function loader({
 	request,
 }: LoaderFunctionArgs) {
 	const searchParams = new URL(request.url).searchParams
-	const term = searchParams.get('q')
+	const term = searchParams.get('q') ?? undefined
 	let results: BggSearchResult[] | null = null
 	if (typeof term === 'string') {
 		const exact = searchParams.get('exact')
@@ -83,42 +71,5 @@ export default function IndexPage() {
 				)}
 			</main>
 		</>
-	)
-}
-
-function SearchForm({
-	defaultTerm,
-}: {
-	defaultTerm: string | null
-}) {
-	const id = useId()
-	return (
-		<Form method='GET'>
-			<label htmlFor={`search-${id}`} className='sr-only'>
-				Search
-			</label>
-			<div className='flex'>
-				<Input
-					name='q'
-					type='search'
-					id={`search-${id}`}
-					placeholder='Wingspan, 7 Wonders, Uno, etc'
-					defaultValue={defaultTerm ?? undefined}
-					className='rounded-r-none'
-				/>
-				<Button type='submit' className='rounded-l-none'>
-					<span className='sr-only'>Submit Search</span>
-					<Search />
-				</Button>
-				<div className='flex ml-2 items-center gap-2'>
-					<Checkbox
-						id={`exact-${id}`}
-						name='exact'
-						value='true'
-					/>
-					<Label htmlFor={`exact-${id}`}>Exact</Label>
-				</div>
-			</div>
-		</Form>
 	)
 }
