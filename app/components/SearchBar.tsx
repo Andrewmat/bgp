@@ -16,28 +16,29 @@ export function SearchBar() {
 				Search
 			</label>
 			<div className='flex'>
-				<Input
-					name='q'
-					type='search'
-					id={`search-${id}`}
-					placeholder='Wingspan, 7 Wonders, Uno, etc'
-					defaultValue={term ?? undefined}
-					className='rounded-r-none'
-					minLength={3}
-				/>
+				<div className='relative flex-grow'>
+					<Input
+						name='q'
+						type='search'
+						id={`search-${id}`}
+						placeholder='Wingspan, 7 Wonders, Uno, etc'
+						defaultValue={term ?? undefined}
+						className='rounded-r-none pr-[80px]'
+						minLength={3}
+					/>
+					<div className='absolute h-full top-0 right-2 flex items-center gap-2'>
+						<Checkbox
+							id={`exact-${id}`}
+							name='exact'
+							value='true'
+						/>
+						<Label htmlFor={`exact-${id}`}>Exata</Label>
+					</div>
+				</div>
 				<Button type='submit' className='rounded-l-none'>
-					<span className='sr-only'>Submit Search</span>
+					<span className='sr-only'>Pesquisar</span>
 					<Search />
 				</Button>
-
-				<div className='flex ml-3 items-center gap-2'>
-					<Checkbox
-						id={`exact-${id}`}
-						name='exact'
-						value='true'
-					/>
-					<Label htmlFor={`exact-${id}`}>Exata</Label>
-				</div>
 			</div>
 		</Form>
 	)
