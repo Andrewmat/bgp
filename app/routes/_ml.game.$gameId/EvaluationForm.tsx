@@ -37,20 +37,7 @@ export function EvaluationForm({
 	return (
 		<div className='flex'>
 			<TooltipProvider>
-				{[
-					// eslint-disable-next-line react/jsx-key
-					<Dice1Icon />,
-					// eslint-disable-next-line react/jsx-key
-					<Dice2Icon />,
-					// eslint-disable-next-line react/jsx-key
-					<Dice3Icon />,
-					// eslint-disable-next-line react/jsx-key
-					<Dice4Icon />,
-					// eslint-disable-next-line react/jsx-key
-					<Dice5Icon />,
-					// eslint-disable-next-line react/jsx-key
-					<Dice6Icon />,
-				].map((element, i) => (
+				{dices.map((element, i) => (
 					<fetcher.Form
 						key={`dice${i}`}
 						method='POST'
@@ -62,20 +49,15 @@ export function EvaluationForm({
 							value={i + 1}
 						/>
 						<SimpleTooltip tooltip={<p>Nota {i + 1}</p>}>
-							<button
-								className='appearance-none'
-								type='submit'
-							>
-								{cloneElement(element, {
-									size: 30,
-									className: cn(
-										'pl-0 pr-2',
-										i < highlighted && 'fill-green-500',
-									),
-									onMouseOver: () => setHover(i + 1),
-									onMouseOut: () => setHover(undefined),
-								})}
-							</button>
+							{cloneElement(element, {
+								size: 30,
+								className: cn(
+									'pl-0 pr-2',
+									i < highlighted && 'fill-green-500',
+								),
+								onMouseOver: () => setHover(i + 1),
+								onMouseOut: () => setHover(undefined),
+							})}
 						</SimpleTooltip>
 					</fetcher.Form>
 				))}
@@ -89,18 +71,24 @@ export function EvaluationForm({
 						value='delete'
 					/>
 					<SimpleTooltip tooltip={<p>Deletar nota</p>}>
-						<button
-							className='appearance-none'
-							type='submit'
-						>
-							<X size={30} className='stroke-primary' />
-						</button>
+						<X size={30} className='stroke-primary' />
 					</SimpleTooltip>
 				</fetcher.Form>
 			</TooltipProvider>
 		</div>
 	)
 }
+
+const dices = [
+	/* eslint-disable react/jsx-key */
+	<Dice1Icon />,
+	<Dice2Icon />,
+	<Dice3Icon />,
+	<Dice4Icon />,
+	<Dice5Icon />,
+	<Dice6Icon />,
+	/* eslint-enable react/jsx-key */
+] as const
 
 function SimpleTooltip({
 	tooltip,

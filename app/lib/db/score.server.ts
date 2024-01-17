@@ -1,56 +1,39 @@
 import {db} from './singleton.server'
 
-export function upsertScore({
-	userEmail,
+export async function upsertScore({
+	userId,
 	gameId,
 	value,
 }: {
-	userEmail: string
+	userId: string
 	gameId: string
 	value: number
 }) {
 	return db.score.upsert({
-		where: {
-			userEmail_gameId: {gameId, userEmail},
-		},
+		where: {userId_gameId: {userId, gameId}},
+		create: {userId, gameId, value},
 		update: {value},
-		create: {userEmail, gameId, value},
 	})
 }
 
-export function deleteScore({
-	userEmail,
-	gameId,
-}: {
-	userEmail: string
-	gameId: string
-}) {
-	return db.score.delete({
-		where: {
-			userEmail_gameId: {
-				userEmail,
-				gameId,
-			},
-		},
+export function deleteScore({id}: {id: string}) {
+	return db.score.deleteMany({
+		where: {id},
 	})
 }
 
-export function getScore({
-	userEmail,
+export function getScoreByUserGame({
+	userId,
 	gameId,
 }: {
-	userEmail: string
+	userId: string
 	gameId: string
 }) {
-	return db.score.findUnique({
-		where: {
-			userEmail_gameId: {
-				gameId,
-				userEmail,
-			},
-		},
+	return db.score.findFirst({
+		where: {userId, gameId},
 		select: {
-			userEmail: true,
+			id: true,
+			userId: true,
 			gameId: true,
 			value: true,
 			updatedAt: true,
@@ -58,13 +41,13 @@ export function getScore({
 	})
 }
 
-export function getScores({
-	userEmail,
+export function getScoresByUser({
+	userId,
 }: {
-	userEmail: string
+	userId: string
 }) {
 	return db.score.findMany({
-		where: {userEmail},
+		where: {userId},
 		select: {
 			gameId: true,
 			value: true,

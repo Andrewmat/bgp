@@ -13,7 +13,7 @@ import {
 	CardTitle,
 } from '~/components/ui/card'
 import {BggBoardgame, getGameId} from '~/lib/bgg'
-import {getScore} from '~/lib/db/score.server'
+import {getScoreByUserGame} from '~/lib/db/score.server'
 import {withUser} from '~/lib/remix/wrapUser'
 import {EvaluationForm} from './EvaluationForm'
 import {PlayersTable} from './PlayerSuggestionTable'
@@ -25,12 +25,14 @@ export const loader = withUser(async ({params, user}) => {
 		'Could not read gameId',
 	)
 	const game = await getGameId(gameId)
-	let score: Awaited<ReturnType<typeof getScore>> = null
+	let score: Awaited<
+		ReturnType<typeof getScoreByUserGame>
+	> = null
 
-	if (user?.email) {
-		score = await getScore({
+	if (user?.id) {
+		score = await getScoreByUserGame({
 			gameId,
-			userEmail: user.email,
+			userId: user.id,
 		})
 	}
 	return {game, score: score?.value}

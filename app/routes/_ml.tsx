@@ -19,12 +19,12 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
-import {getUser} from '~/lib/login/auth.server'
+import {getSessionUser} from '~/lib/login/auth.server'
 
 export async function loader({
 	request,
 }: LoaderFunctionArgs) {
-	const user = await getUser(request)
+	const user = await getSessionUser(request)
 	return json({user})
 }
 

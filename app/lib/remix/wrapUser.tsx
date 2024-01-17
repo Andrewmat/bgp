@@ -1,6 +1,6 @@
 import {LoaderFunctionArgs, json} from '@remix-run/node'
 import {SessionUser} from '../login/user.schema'
-import {getUser} from '../login/auth.server'
+import {getSessionUser} from '../login/auth.server'
 
 type UserArg = {user: SessionUser | null}
 type LoaderFunctionWithUserArgs = LoaderFunctionArgs &
@@ -16,7 +16,7 @@ export function withUser<
 	return async function loaderWrapper(
 		args: LoaderFunctionArgs,
 	) {
-		const user = await getUser(args.request)
+		const user = await getSessionUser(args.request)
 		const data = await loader({...args, user})
 		return json({...data, user})
 	}

@@ -6,7 +6,7 @@ import {
 import {Link} from '@remix-run/react'
 import {SearchBar} from '~/components/SearchBar'
 import SLink from '~/components/ui/SLink'
-import {getUser} from '~/lib/login/auth.server'
+import {getSessionUser} from '~/lib/login/auth.server'
 
 export const links: LinksFunction = () => [
 	{
@@ -18,7 +18,7 @@ export const links: LinksFunction = () => [
 export async function loader({
 	request,
 }: LoaderFunctionArgs) {
-	const user = await getUser(request)
+	const user = await getSessionUser(request)
 	if (user) {
 		return redirect('/home')
 	}
@@ -49,7 +49,7 @@ export default function IndexPage() {
 					/>
 				</Link>
 				<div className='flex-grow'>
-					<SearchBar hideExact />
+					<SearchBar />
 				</div>
 				<nav>
 					<SLink to='/home'>Home</SLink>

@@ -17,7 +17,7 @@ function createAuthenticator() {
 	 * It will return a Promise with the user object or null,
 	 * you can use this to check if the user is logged-in or not.
 	 * */
-	function getUser(request: Request) {
+	function getSessionUser(request: Request) {
 		return authenticator.isAuthenticated(request)
 	}
 	async function authenticateDiscord(request: Request) {
@@ -29,11 +29,15 @@ function createAuthenticator() {
 		request: Request,
 		redirectTo = '/home',
 	) {
-		const params = new URLSearchParams()
-		params.set('error', 'true')
+		const paramInput = new URL(request.url).searchParams
+		const paramOutput = new URLSearchParams()
+		paramOutput.set(
+			'error',
+			paramInput.get('errorMessage') || 'true',
+		)
 		return authenticator.authenticate('discord', request, {
 			successRedirect: redirectTo,
-			failureRedirect: `/login?${params}`,
+			failureRedirect: `/login?${paramOutput}`,
 		})
 	}
 
@@ -42,7 +46,7 @@ function createAuthenticator() {
 	}
 
 	return {
-		getUser,
+		getSessionUser: getSessionUser,
 		authenticateDiscord,
 		callbackDiscord,
 		logout,
@@ -50,7 +54,7 @@ function createAuthenticator() {
 }
 
 export const {
-	getUser,
+	getSessionUser,
 	authenticateDiscord,
 	callbackDiscord,
 	logout,
@@ -59,7 +63,7 @@ export const {
 export async function assertAuthenticated(
 	request: Request,
 ) {
-	const user = await getUser(request)
+	const user = await getSessionUser(request)
 	if (!user) {
 		const params = new URLSearchParams()
 		params.set('redirectTo', new URL(request.url).pathname)
@@ -70,7 +74,7 @@ export async function assertAuthenticated(
 export async function assertNotAuthenticated(
 	request: Request,
 ) {
-	const user = await getUser(request)
+	const user = await getSessionUser(request)
 	if (user) {
 		throw redirect('/home')
 	}
