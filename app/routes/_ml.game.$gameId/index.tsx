@@ -15,7 +15,7 @@ import {
 import {BggBoardgame, getGameId} from '~/lib/bgg'
 import {getScoreByUserGame} from '~/lib/db/score.server'
 import {withUser} from '~/lib/remix/wrapUser'
-import {EvaluationForm} from './EvaluationForm'
+import {EvaluationForm} from '~/components/EvaluationForm'
 import {PlayersTable} from './PlayerSuggestionTable'
 
 export const loader = withUser(async ({params, user}) => {
@@ -41,61 +41,80 @@ export const loader = withUser(async ({params, user}) => {
 export default function GameDetailsPage() {
 	const {game, score, user} = useLoaderData<typeof loader>()
 	return (
-		<div className='container mt-12'>
-			<Card>
-				<CardHeader className='flex flex-row justify-between'>
-					<div className='flex gap-2'>
-						<Avatar>
-							<AvatarImage src={game.image} />
-							<AvatarFallback>
-								{game.name.slice(0, 2)}
-							</AvatarFallback>
-						</Avatar>
-						<CardTitle>{game.name}</CardTitle>
-						<Link
-							to={`https://boardgamegeek.com/boardgame/${game.id}`}
-							target='_blank'
-							onClick={(e) => e.stopPropagation()}
-							rel='noreferrer'
-							className='mt-2'
-						>
-							<ExternalLink
-								className='stroke-muted-foreground'
-								size='0.8rem'
-							/>
-						</Link>
-					</div>
+		<Card>
+			<CardHeader className='flex flex-row justify-between'>
+				<div className='flex gap-2'>
+					<Avatar>
+						<AvatarImage src={game.image} />
+						<AvatarFallback>
+							{game.name.slice(0, 2)}
+						</AvatarFallback>
+					</Avatar>
+					<CardTitle>{game.name}</CardTitle>
+					<Link
+						to={`https://boardgamegeek.com/boardgame/${game.id}`}
+						target='_blank'
+						onClick={(e) => e.stopPropagation()}
+						rel='noreferrer'
+						className='mt-2'
+					>
+						<ExternalLink
+							className='stroke-muted-foreground'
+							size='0.8rem'
+						/>
+					</Link>
+				</div>
+				<div className='w-[200px] md:w-[300px]'>
 					{user && (
 						<EvaluationForm
 							gameId={game.id}
 							score={score}
+							className='flex-row-reverse'
 						/>
 					)}
-				</CardHeader>
-				<CardContent>
-					<div className='grid gap-2 md:grid-cols-4 lg:grid-cols-6'>
-						<div>
-							<p>
-								{game.minPlayers === game.maxPlayers
-									? game.minPlayers
-									: `${game.minPlayers} - ${game.maxPlayers}`}{' '}
-								players
-							</p>
-							<p>
-								{game.minPlayTime === game.maxPlayTime
-									? game.minPlayTime
-									: `${game.minPlayTime} - ${game.maxPlayTime}`}{' '}
-								min
-							</p>
-						</div>
-						<div className='md:col-span-3 lg:col-span-5'>
-							<Card>
-								<PlayersTable game={game as BggBoardgame} />
-							</Card>
-						</div>
+				</div>
+			</CardHeader>
+			<CardContent>
+				<div className='grid gap-2 md:grid-cols-4 lg:grid-cols-6'>
+					<div>
+						<RangeInfo
+							min={game.minPlayers}
+							max={game.maxPlayers}
+							appendix={
+								game.maxPlayers > 1
+									? 'jogadores'
+									: 'jogador'
+							}
+						/>
+						<RangeInfo
+							min={game.minPlayTime}
+							max={game.maxPlayTime}
+							appendix='min'
+						/>
 					</div>
-				</CardContent>
-			</Card>
-		</div>
+					<div className='md:col-span-3 lg:col-span-5'>
+						<Card>
+							<PlayersTable game={game as BggBoardgame} />
+						</Card>
+					</div>
+				</div>
+			</CardContent>
+		</Card>
+	)
+}
+
+function RangeInfo({
+	min,
+	max,
+	appendix,
+}: {
+	min: number
+	max: number
+	appendix: string
+}) {
+	return (
+		<p>
+			{min === max ? min : `${min} - ${max}`} {appendix}
+		</p>
 	)
 }

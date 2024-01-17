@@ -2,7 +2,6 @@ const defaultTheme = require('tailwindcss/defaultTheme')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-	darkMode: ['class'],
 	content: [
 		'./pages/**/*.{ts,tsx}',
 		'./components/**/*.{ts,tsx}',
@@ -50,6 +49,10 @@ module.exports = {
 				accent: {
 					DEFAULT: 'hsl(var(--accent))',
 					foreground: 'hsl(var(--accent-foreground))',
+				},
+				mutedaccent: {
+					DEFAULT: 'hsl(var(--muted-accent))',
+					foreground: 'hsl(var(--muted-accent-foreground))',
 				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',

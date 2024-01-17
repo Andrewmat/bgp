@@ -51,13 +51,18 @@ export async function upsertDiscordUser({
 
 export async function updateUsername({
 	username,
+	name,
 	id,
 }: {
 	username: string
+	name: string
 	id: string
 }) {
 	return db.user.update({
-		data: {username},
+		data: {
+			username,
+			name,
+		},
 		where: {id},
 	})
 }

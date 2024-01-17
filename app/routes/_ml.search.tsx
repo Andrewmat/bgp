@@ -14,6 +14,8 @@ import noResultsImage from '~/assets/undraw_empty.svg'
 import emptyStateImage from '~/assets/undraw_searching.svg'
 import {Alert} from '~/components/ui/alert'
 import {Button} from '~/components/ui/button'
+import {Card, CardContent} from '~/components/ui/card'
+import {cn} from '~/lib/utils'
 
 export const meta: MetaFunction = () => {
 	return [
@@ -65,7 +67,7 @@ export async function loader({
 	})
 }
 
-export default function IndexPage() {
+export default function SearchPage() {
 	const {results, term, errorMessage} =
 		useLoaderData<typeof loader>()
 
@@ -75,7 +77,7 @@ export default function IndexPage() {
 	)
 
 	return (
-		<>
+		<div className='w-full flex-grow flex items-center gap-6 justify-center'>
 			{errorMessage && !shouldHideAlert && (
 				<Alert
 					variant='destructive'
@@ -97,29 +99,36 @@ export default function IndexPage() {
 			{results ? (
 				<>
 					{results.length > 0 ? (
-						<ul className='grid grid-cols-3 gap-2 mt-6'>
+						<ul className='grid grid-cols-3 gap-2'>
 							{results.map((game) => (
-								<li key={game.id}>
-									<div className='flex flex-col gap-2 border-accent hover:bg-accent p-2 rounded-md'>
-										<Link
-											to={`/game/${game.id}`}
-											className='hover:underline focus:underline'
-										>
+								<li key={game.id} className='relative'>
+									<Link
+										to={`/game/${game.id}`}
+										className={cn(
+											'[&>*]:hover:bg-accent',
+											'[&>*]:hover:text-accent-foreground',
+											'[&>*]:focus-visible:bg-accent',
+											'[&>*]:focus-visible:text-accent-foreground',
+										)}
+									>
+										<Card className='p-5 h-full'>
+											{/* <div className='flex flex-col gap-2 border-accent hover:bg-accent p-2 rounded-md'> */}
 											{game.name} (
 											<em>
 												<small>{game.yearPublished}</small>
 											</em>
 											)
-										</Link>
-										<Link
-											to={`https://boardgamegeek.com/boardgame/${game.id}`}
-											target='_blank'
-											rel='noreferrer'
-											onClick={(e) => e.stopPropagation()}
-										>
-											<ExternalLink size='1em' />
-										</Link>
-									</div>
+										</Card>
+									</Link>
+									<Link
+										to={`https://boardgamegeek.com/boardgame/${game.id}`}
+										target='_blank'
+										rel='noreferrer'
+										onClick={(e) => e.stopPropagation()}
+										className='absolute right-2 top-2'
+									>
+										<ExternalLink size='0.8rem' />
+									</Link>
 								</li>
 							))}
 						</ul>
@@ -142,7 +151,7 @@ export default function IndexPage() {
 					text='Procure jogos no BGP!'
 				/>
 			)}
-		</>
+		</div>
 	)
 }
 
@@ -154,7 +163,7 @@ function DrawingWrapper({
 	text: React.ReactNode
 }) {
 	return (
-		<div className='w-full h-[450px] mt-6 flex flex-col items-center gap-6 justify-center'>
+		<div className='w-full flex-grow mt-6 flex flex-col items-center gap-6 justify-center'>
 			<img className='h-[200px]' src={drawing} alt='' />
 
 			<p className='w-[150px] font-bold text-large text-center text-pretty'>

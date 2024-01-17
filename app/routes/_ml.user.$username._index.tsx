@@ -1,9 +1,16 @@
 import {LoaderFunctionArgs, json} from '@remix-run/node'
 import {useLoaderData} from '@remix-run/react'
 import invariant from 'tiny-invariant'
+import {
+	Card,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from '~/components/ui/card'
 import {getGameId} from '~/lib/bgg'
 import {getScoresByUser} from '~/lib/db/score.server'
 import {getUserByUsername} from '~/lib/db/user.server'
+import {EvaluationForm} from '~/components/EvaluationForm'
 
 export async function loader({
 	params,
@@ -41,14 +48,23 @@ export default function UserScores() {
 	const {scores} = useLoaderData<typeof loader>()
 	return (
 		<div>
-			<ul>
+			<div className='grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-4'>
 				{scores.map((s) => (
-					<li key={s.game.id}>
-						<strong>{s.game.name}:</strong>
-						<em>{s.score}</em>
+					<li key={s.game.id} className='list-none'>
+						<Card>
+							<CardHeader>
+								<CardTitle>{s.game.name}</CardTitle>
+							</CardHeader>
+							<CardFooter>
+								<EvaluationForm
+									gameId={s.game.id}
+									score={s.score}
+								/>
+							</CardFooter>
+						</Card>
 					</li>
 				))}
-			</ul>
+			</div>
 		</div>
 	)
 }

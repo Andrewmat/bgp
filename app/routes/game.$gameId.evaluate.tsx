@@ -29,14 +29,11 @@ export async function action({
 
 	switch (evaluationForm.get('method')) {
 		case 'delete': {
-			await methodDelete({userId: user.id, gameId})
-			return null
+			return methodDelete({userId: user.id, gameId})
 		}
 		default: {
 			const score = evaluationForm.get('score')
-			return json(
-				await methodPost({userId: user.id, gameId, score}),
-			)
+			return methodPost({userId: user.id, gameId, score})
 		}
 	}
 }
@@ -70,12 +67,12 @@ async function methodPost({
 		)
 	}
 
-	const newScore = await upsertScore({
+	await upsertScore({
 		userId: userId,
 		gameId: gameId,
 		value: Number(score),
 	})
-	return newScore
+	return redirect(`/game/${gameId}`)
 }
 
 async function methodDelete({
@@ -106,4 +103,6 @@ async function methodDelete({
 	}
 
 	await deleteScore({id: score.id})
+
+	return redirect(`/game/${gameId}`)
 }

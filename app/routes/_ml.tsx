@@ -43,17 +43,6 @@ export default function MainLayout() {
 						height='30'
 					/>
 				</Link>
-				<Link
-					to='http://boardgamegeek.com/'
-					rel='noreferrer'
-				>
-					<img
-						src='/powered-by-bgg.png'
-						alt='Powered by BGG'
-						width='100'
-						height='30'
-					/>
-				</Link>
 				<div className='flex-grow'>
 					<SearchBar />
 				</div>
@@ -72,24 +61,38 @@ export default function MainLayout() {
 				</nav>
 			</header>
 
-			<main className='container my-4 flex-grow'>
+			<main className='container my-4 flex-grow flex flex-col'>
 				<Outlet />
 			</main>
 
-			<footer className='w-full bg-secondary text-secondary-foreground text-center min-h-8'>
-				Made with ❤️ by{' '}
+			<footer className='w-full flex justify-center items-center gap-10 p-5 bg-secondary text-secondary-foreground border-t-2 border-t-border'>
+				<div>
+					Made with ❤️ by{' '}
+					<Link
+						to='https://boardgamegeek.com/user/andrewmat'
+						target='_blank'
+						rel='noreferrer'
+						className={cn(
+							buttonVariants({
+								variant: 'link',
+							}),
+							'inline p-0',
+						)}
+					>
+						@andrewmat
+					</Link>
+				</div>
 				<Link
-					to='https://boardgamegeek.com/user/andrewmat'
-					target='_blank'
+					to='http://boardgamegeek.com/'
 					rel='noreferrer'
-					className={cn(
-						buttonVariants({
-							variant: 'link',
-						}),
-						'inline p-0',
-					)}
 				>
-					@andrewmat
+					<img
+						src='/powered-by-bgg.png'
+						alt='Powered by BGG'
+						width='150'
+						height='45'
+						className='dark:drop-shadow-lg'
+					/>
 				</Link>
 			</footer>
 		</div>
@@ -116,16 +119,18 @@ function DropdownMenuHeader({
 			</DropdownMenuTrigger>
 			<DropdownMenuContent>
 				<DropdownMenuItem>
-					<Link to='/me'>Profile</Link>
+					<Link to='/me'>Meu perfil</Link>
 				</DropdownMenuItem>
-				<DropdownMenuItem>Settings</DropdownMenuItem>
+				<DropdownMenuItem>
+					<Link to='/config'>Configurações</Link>
+				</DropdownMenuItem>
 				<DropdownMenuItem>
 					<Form method='POST' action='/logout'>
 						<button
 							type='submit'
 							className='appearance-none'
 						>
-							Logout
+							Sair
 						</button>
 					</Form>
 				</DropdownMenuItem>
