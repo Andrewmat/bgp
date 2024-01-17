@@ -13,6 +13,7 @@ import {
 	AvatarFallback,
 	AvatarImage,
 } from '~/components/ui/avatar'
+import {buttonVariants} from '~/components/ui/button'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -20,6 +21,7 @@ import {
 	DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
 import {getSessionUser} from '~/lib/login/auth.server'
+import {cn} from '~/lib/utils'
 
 export async function loader({
 	request,
@@ -31,7 +33,7 @@ export async function loader({
 export default function MainLayout() {
 	const {user} = useLoaderData<typeof loader>()
 	return (
-		<>
+		<div className='flex flex-col min-h-full'>
 			<header className='flex items-center p-4 gap-3'>
 				<Link to='/'>
 					<img
@@ -58,37 +60,10 @@ export default function MainLayout() {
 				<nav className='flex gap-2 items-center'>
 					<SLink to='/home'>Home</SLink>
 					{user ? (
-						<DropdownMenu>
-							<DropdownMenuTrigger className='inline-flex items-center gap-2'>
-								<Avatar>
-									<AvatarImage src={user.profileImage} />
-									<AvatarFallback>
-										{user.name.slice(0, 2).toUpperCase()}
-									</AvatarFallback>
-								</Avatar>
-								<span className='font-bold'>
-									{user.name}
-								</span>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent>
-								<DropdownMenuItem>
-									<Link to='/me'>Profile</Link>
-								</DropdownMenuItem>
-								<DropdownMenuItem>
-									Settings
-								</DropdownMenuItem>
-								<DropdownMenuItem>
-									<Form method='POST' action='/logout'>
-										<button
-											type='submit'
-											className='appearance-none'
-										>
-											Logout
-										</button>
-									</Form>
-								</DropdownMenuItem>
-							</DropdownMenuContent>
-						</DropdownMenu>
+						<DropdownMenuHeader
+							name={user.name}
+							profileImage={user.profileImage}
+						/>
 					) : (
 						<SLink to='/login' variant='default'>
 							Entrar
@@ -97,10 +72,64 @@ export default function MainLayout() {
 				</nav>
 			</header>
 
-			<main className='container my-4'>
+			<main className='container my-4 flex-grow'>
 				<Outlet />
 			</main>
-			<footer></footer>
-		</>
+
+			<footer className='w-full bg-secondary text-secondary-foreground text-center min-h-8'>
+				Made with ❤️ by{' '}
+				<Link
+					to='https://boardgamegeek.com/user/andrewmat'
+					target='_blank'
+					rel='noreferrer'
+					className={cn(
+						buttonVariants({
+							variant: 'link',
+						}),
+						'inline p-0',
+					)}
+				>
+					@andrewmat
+				</Link>
+			</footer>
+		</div>
+	)
+}
+
+function DropdownMenuHeader({
+	profileImage,
+	name,
+}: {
+	profileImage: string | undefined
+	name: string
+}) {
+	return (
+		<DropdownMenu>
+			<DropdownMenuTrigger className='inline-flex items-center gap-2'>
+				<Avatar>
+					<AvatarImage src={profileImage} />
+					<AvatarFallback>
+						{name.slice(0, 2).toUpperCase()}
+					</AvatarFallback>
+				</Avatar>
+				<span className='font-bold'>{name}</span>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent>
+				<DropdownMenuItem>
+					<Link to='/me'>Profile</Link>
+				</DropdownMenuItem>
+				<DropdownMenuItem>Settings</DropdownMenuItem>
+				<DropdownMenuItem>
+					<Form method='POST' action='/logout'>
+						<button
+							type='submit'
+							className='appearance-none'
+						>
+							Logout
+						</button>
+					</Form>
+				</DropdownMenuItem>
+			</DropdownMenuContent>
+		</DropdownMenu>
 	)
 }

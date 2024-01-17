@@ -1,6 +1,19 @@
 import {LoaderFunctionArgs, json} from '@remix-run/node'
-import {useLoaderData} from '@remix-run/react'
+import {
+	Outlet,
+	isRouteErrorResponse,
+	useLoaderData,
+	useParams,
+	useRouteError,
+} from '@remix-run/react'
 import invariant from 'tiny-invariant'
+import {Alert} from '~/components/ui/alert'
+import {
+	Card,
+	CardContent,
+	CardHeader,
+	CardTitle,
+} from '~/components/ui/card'
 import {getUserByUsername} from '~/lib/db/user.server'
 
 export async function loader({params}: LoaderFunctionArgs) {
@@ -9,6 +22,7 @@ export async function loader({params}: LoaderFunctionArgs) {
 	if (!user) {
 		throw new Response('Not found', {status: 404})
 	}
+
 	return json({user})
 }
 
@@ -17,14 +31,31 @@ export default function UserPage() {
 
 	return (
 		<div>
-			<h1>Hello {user.name}</h1>
-			{user.Score.map((score) => (
-				<div key={score.id}>
-					Game id: {score.gameId}
-					<br />
-					Score: {score.value}
-				</div>
-			))}
+			<Card>
+				<CardHeader>
+					<CardTitle>{user.name}</CardTitle>
+					<small>{user.username}</small>
+				</CardHeader>
+				<CardContent>
+					<Outlet />
+				</CardContent>
+			</Card>
+		</div>
+	)
+}
+
+export function ErrorBoundary() {
+	const {username} = useParams()
+	const error = useRouteError()
+	if (!isRouteErrorResponse(error)) {
+		throw error
+	}
+
+	return (
+		<div>
+			<Alert variant='destructive'>
+				User {username} not found!
+			</Alert>
 		</div>
 	)
 }

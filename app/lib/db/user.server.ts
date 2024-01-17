@@ -7,7 +7,6 @@ export async function getUser(id: string) {
 export async function getUserByUsername(username: string) {
 	return db.user.findUnique({
 		where: {username},
-		include: {Score: true},
 	})
 }
 
