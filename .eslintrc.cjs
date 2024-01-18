@@ -74,6 +74,10 @@ module.exports = {
 				'plugin:import/recommended',
 				'plugin:import/typescript',
 			],
+			rules: {
+				// unnecessary, also shadcn-ui has some issues
+				'react/prop-types': 'off',
+			},
 		},
 
 		// Node
