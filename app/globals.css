@@ -86,3 +86,17 @@
 		height: 100%;
 	}
 }
+
+.main-container {
+	display: grid;
+	grid-template-columns: 1fr min(100%, 100ch) 1fr;
+}
+
+.main-container > * {
+	grid-column: 2;
+}
+
+.main-container > .full-bleed {
+	width: 100%;
+	grid-column: 1 / 4;
+}

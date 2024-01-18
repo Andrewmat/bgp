@@ -23,7 +23,7 @@ export async function loader({
 export default function Login() {
 	const {redirectTo} = useLoaderData<typeof loader>()
 	return (
-		<div className='container max-w-[450px]'>
+		<div className='w-full max-w-md mx-auto'>
 			<Card>
 				<CardHeader>
 					<CardTitle className='text-center'>

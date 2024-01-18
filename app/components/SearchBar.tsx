@@ -1,5 +1,5 @@
 import {Form, useSearchParams} from '@remix-run/react'
-import {useId} from 'react'
+import {useEffect, useId, useState} from 'react'
 import {Input} from './ui/input'
 import {Button} from './ui/button'
 import {Search} from 'lucide-react'
@@ -10,23 +10,31 @@ export function SearchBar() {
 	const id = useId()
 	const [searchParams] = useSearchParams()
 	const term = searchParams.get('q')
+	const [placeholder, setPlaceholder] = useState('')
+	useEffect(() => {
+		setPlaceholder(getPlaceholderGame())
+	}, [])
+
 	return (
 		<Form method='GET' action='/search'>
-			<label htmlFor={`search-${id}`} className='sr-only'>
-				Search
-			</label>
 			<div className='flex'>
 				<div className='relative flex-grow'>
+					<label
+						htmlFor={`search-${id}`}
+						className='sr-only'
+					>
+						Search
+					</label>
 					<Input
 						name='q'
 						type='search'
 						id={`search-${id}`}
-						placeholder='Wingspan, 7 Wonders, Uno, etc'
+						placeholder={placeholder}
 						defaultValue={term ?? undefined}
-						className='rounded-r-none pr-[80px]'
+						className='rounded-r-none pr-20'
 						minLength={3}
 					/>
-					<div className='absolute h-full top-0 right-2 flex items-center gap-2'>
+					<div className='absolute h-full top-0 right-3 flex items-center gap-2'>
 						<Checkbox
 							id={`exact-${id}`}
 							name='exact'
@@ -42,4 +50,22 @@ export function SearchBar() {
 			</div>
 		</Form>
 	)
+}
+
+const placeholderGames = [
+	'Azul',
+	'7 Wonders',
+	'Carcassone',
+	'Terraforming Mars',
+	'Eldritch Horror',
+	// 'Race for the Galaxy',
+	// 'Uno',
+	// "It's a Wonderful World",
+]
+
+function getPlaceholderGame() {
+	const randIndex = Math.floor(
+		Math.random() * placeholderGames.length,
+	)
+	return placeholderGames[randIndex]
 }

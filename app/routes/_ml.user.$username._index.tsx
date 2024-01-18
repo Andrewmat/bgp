@@ -1,5 +1,5 @@
 import {LoaderFunctionArgs, json} from '@remix-run/node'
-import {useLoaderData} from '@remix-run/react'
+import {Link, useLoaderData} from '@remix-run/react'
 import invariant from 'tiny-invariant'
 import {
 	Card,
@@ -48,12 +48,16 @@ export default function UserScores() {
 	const {scores} = useLoaderData<typeof loader>()
 	return (
 		<div>
-			<div className='grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4 lg:gap-4'>
+			<div className='grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3'>
 				{scores.map((s) => (
 					<li key={s.game.id} className='list-none'>
 						<Card>
 							<CardHeader>
-								<CardTitle>{s.game.name}</CardTitle>
+								<CardTitle>
+									<Link to={`/game/${s.game.id}`}>
+										{s.game.name}
+									</Link>
+								</CardTitle>
 							</CardHeader>
 							<CardFooter>
 								<EvaluationForm

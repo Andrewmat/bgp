@@ -1,4 +1,4 @@
-import {useFetcher} from '@remix-run/react'
+import {useFetcher, useLocation} from '@remix-run/react'
 import {
 	Dice1Icon,
 	Dice2Icon,
@@ -20,7 +20,6 @@ import {cn} from '~/lib/utils'
 export function EvaluationForm({
 	gameId,
 	score,
-	className,
 }: {
 	gameId: string
 	score: number | undefined
@@ -28,6 +27,7 @@ export function EvaluationForm({
 }) {
 	const [hover, setHover] = useState<number>()
 	const selected = score ? score : 0
+	const location = useLocation()
 	const fetcher = useFetcher()
 	const optimistic = fetcher.formData
 		? Number(fetcher.formData.get('score'))
@@ -53,6 +53,11 @@ export function EvaluationForm({
 							type='hidden'
 							name='score'
 							value={i + 1}
+						/>
+						<input
+							type='hidden'
+							name='location'
+							value={location.pathname}
 						/>
 						<SimpleTooltip tooltip={<p>Nota {i + 1}</p>}>
 							{cloneElement(element, {

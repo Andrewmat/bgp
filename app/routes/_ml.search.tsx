@@ -13,8 +13,7 @@ import {BggSearchResult, searchGames} from '~/lib/bgg'
 import noResultsImage from '~/assets/undraw_empty.svg'
 import emptyStateImage from '~/assets/undraw_searching.svg'
 import {Alert} from '~/components/ui/alert'
-import {Button} from '~/components/ui/button'
-import {Card, CardContent} from '~/components/ui/card'
+import {Card} from '~/components/ui/card'
 import {cn} from '~/lib/utils'
 
 export const meta: MetaFunction = () => {
@@ -148,7 +147,7 @@ export default function SearchPage() {
 			) : (
 				<DrawingWrapper
 					drawing={emptyStateImage}
-					text='Procure jogos no BGP!'
+					text='Pesquise por jogos na barra de busca'
 				/>
 			)}
 		</div>
@@ -166,7 +165,7 @@ function DrawingWrapper({
 		<div className='w-full flex-grow mt-6 flex flex-col items-center gap-6 justify-center'>
 			<img className='h-[200px]' src={drawing} alt='' />
 
-			<p className='w-[150px] font-bold text-large text-center text-pretty'>
+			<p className='max-w-prose font-bold text-large text-center text-pretty'>
 				{text}
 			</p>
 		</div>

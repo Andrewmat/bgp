@@ -34,7 +34,30 @@ export default function MainLayout() {
 	const {user} = useLoaderData<typeof loader>()
 	return (
 		<div className='flex flex-col min-h-full'>
-			<header className='flex items-center p-4 gap-3'>
+			<header className='md:hidden flex flex-col justify-stretch p-3 gap-2'>
+				<div className='flex justify-between'>
+					<Link to='/'>
+						<img
+							src='/logo.png'
+							alt='BGP logo'
+							width='30'
+							height='30'
+						/>
+					</Link>
+					{user ? (
+						<DropdownMenuHeader
+							name={user.name}
+							profileImage={null}
+						/>
+					) : (
+						<SLink to='/login' variant='default'>
+							Entrar
+						</SLink>
+					)}
+				</div>
+				<SearchBar />
+			</header>
+			<header className='hidden md:flex items-center p-4 gap-3'>
 				<Link to='/'>
 					<img
 						src='/logo.png'
@@ -44,24 +67,23 @@ export default function MainLayout() {
 					/>
 				</Link>
 				<div className='flex-grow'>
-					<SearchBar />
+					<div className='w-full max-w-sm'>
+						<SearchBar />
+					</div>
 				</div>
-				<nav className='flex gap-2 items-center'>
-					<SLink to='/home'>Home</SLink>
-					{user ? (
-						<DropdownMenuHeader
-							name={user.name}
-							profileImage={user.profileImage}
-						/>
-					) : (
-						<SLink to='/login' variant='default'>
-							Entrar
-						</SLink>
-					)}
-				</nav>
+				{user ? (
+					<DropdownMenuHeader
+						name={user.name}
+						profileImage={user.profileImage}
+					/>
+				) : (
+					<SLink to='/login' variant='default'>
+						Entrar
+					</SLink>
+				)}
 			</header>
 
-			<main className='container my-4 flex-grow flex flex-col'>
+			<main className='main-container my-4 flex-grow flex flex-col'>
 				<Outlet />
 			</main>
 
@@ -103,18 +125,20 @@ function DropdownMenuHeader({
 	profileImage,
 	name,
 }: {
-	profileImage: string | undefined
+	profileImage: string | null | undefined
 	name: string
 }) {
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger className='inline-flex items-center gap-2'>
-				<Avatar>
-					<AvatarImage src={profileImage} />
-					<AvatarFallback>
-						{name.slice(0, 2).toUpperCase()}
-					</AvatarFallback>
-				</Avatar>
+				{profileImage !== null && (
+					<Avatar>
+						<AvatarImage src={profileImage} />
+						<AvatarFallback>
+							{name.slice(0, 2).toUpperCase()}
+						</AvatarFallback>
+					</Avatar>
+				)}
 				<span className='font-bold'>{name}</span>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent>
