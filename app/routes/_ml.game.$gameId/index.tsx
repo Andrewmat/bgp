@@ -17,6 +17,12 @@ import {getScoreByUserGame} from '~/lib/db/score.server'
 import {withUser} from '~/lib/remix/wrapUser'
 import {EvaluationForm} from '~/components/EvaluationForm'
 import {PlayersTable} from './PlayerSuggestionTable'
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from '~/components/ui/tooltip'
 
 export const loader = withUser(async ({params, user}) => {
 	const gameId = params.gameId
@@ -50,19 +56,28 @@ export default function GameDetailsPage() {
 							{game.name.slice(0, 2)}
 						</AvatarFallback>
 					</Avatar>
-					<CardTitle>{game.name}</CardTitle>
-					<Link
-						to={`https://boardgamegeek.com/boardgame/${game.id}`}
-						target='_blank'
-						onClick={(e) => e.stopPropagation()}
-						rel='noreferrer'
-						className='mt-2'
-					>
-						<ExternalLink
-							className='stroke-muted-foreground'
-							size='0.8rem'
-						/>
-					</Link>
+					<CardTitle>
+						{game.name}
+						<TooltipProvider>
+							<Tooltip>
+								<TooltipTrigger className='ml-2'>
+									<Link
+										to={`https://boardgamegeek.com/boardgame/${game.id}`}
+										target='_blank'
+										rel='noreferrer'
+									>
+										<ExternalLink
+											className='stroke-muted-foreground'
+											size='0.8rem'
+										/>
+									</Link>
+								</TooltipTrigger>
+								<TooltipContent>
+									Abrir no BoardGameGeek
+								</TooltipContent>
+							</Tooltip>
+						</TooltipProvider>
+					</CardTitle>
 				</div>
 				<div className='w-[200px] md:w-[300px]'>
 					{user && (

@@ -3,8 +3,9 @@ import {
 	LoaderFunctionArgs,
 	json,
 } from '@remix-run/node'
-import {Form, useLoaderData} from '@remix-run/react'
+import {useFetcher, useLoaderData} from '@remix-run/react'
 import {useId} from 'react'
+import {ShellIcon} from 'lucide-react'
 import {Button} from '~/components/ui/button'
 import {
 	Card,
@@ -18,6 +19,8 @@ import {getUser, updateUsername} from '~/lib/db/user.server'
 import {assertAuthenticated} from '~/lib/login/auth.server'
 import {sessionStorage} from '~/lib/login/session.server'
 import {SessionUser} from '~/lib/login/user.schema'
+import {Alert} from '~/components/ui/alert'
+import {AlertClosable} from '~/components/ui/alert-closable'
 
 export async function loader({
 	request,
@@ -85,6 +88,7 @@ export async function action({
 export default function ConfigPage() {
 	const {user} = useLoaderData<typeof loader>()
 	const id = useId()
+	const fetcher = useFetcher<typeof action>()
 
 	return (
 		<Card>
@@ -92,7 +96,7 @@ export default function ConfigPage() {
 				<CardTitle>Configurações</CardTitle>
 			</CardHeader>
 			<CardContent>
-				<Form
+				<fetcher.Form
 					method='POST'
 					className='flex flex-col w-full gap-2 items-start'
 				>
@@ -111,14 +115,24 @@ export default function ConfigPage() {
 						defaultValue={user.username}
 						maxLength={30}
 					/>
-					<Button
-						variant='secondary'
-						type='submit'
-						className='self-end mt-2'
-					>
-						Salvar dados
-					</Button>
-				</Form>
+					<div className='self-stretch mt-2 flex items-start flex-row-reverse justify-between align-start gap-2'>
+						<Button
+							variant='secondary'
+							type='submit'
+							disabled={fetcher.state !== 'idle'}
+						>
+							{fetcher.state !== 'idle' && (
+								<ShellIcon className='mr-2 h-4 w-4 motion-safe:animate-[spin_2s_linear_infinite_reverse]' />
+							)}
+							Salvar dados
+						</Button>
+						{fetcher.data?.success && (
+							<AlertClosable className='self-start'>
+								Alterações feitas com sucesso!
+							</AlertClosable>
+						)}
+					</div>
+				</fetcher.Form>
 			</CardContent>
 		</Card>
 	)

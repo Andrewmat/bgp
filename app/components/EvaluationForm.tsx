@@ -1,12 +1,12 @@
 import {useFetcher, useLocation} from '@remix-run/react'
 import {
-	Dice1Icon,
-	Dice2Icon,
-	Dice3Icon,
-	Dice4Icon,
-	Dice5Icon,
-	Dice6Icon,
-	X,
+	Dice1Icon as Dice1,
+	Dice2Icon as Dice2,
+	Dice3Icon as Dice3,
+	Dice4Icon as Dice4,
+	Dice5Icon as Dice5,
+	Dice6Icon as Dice6,
+	Trash2Icon as Trash,
 } from 'lucide-react'
 import {cloneElement, useState} from 'react'
 import {
@@ -88,7 +88,7 @@ export function EvaluationForm({
 						value='delete'
 					/>
 					<SimpleTooltip tooltip={<p>Deletar nota</p>}>
-						<X
+						<Trash
 							size='100%'
 							className='fill-muted stroke-muted-foreground hover:fill-destructive hover:stroke-destructive-foreground focus-visible:fill-destructive focus-visible:stroke-destructive-foreground'
 						/>
@@ -101,12 +101,12 @@ export function EvaluationForm({
 
 const dices = [
 	/* eslint-disable react/jsx-key */
-	<Dice1Icon size='100%' />,
-	<Dice2Icon size='100%' />,
-	<Dice3Icon size='100%' />,
-	<Dice4Icon size='100%' />,
-	<Dice5Icon size='100%' />,
-	<Dice6Icon size='100%' />,
+	<Dice1 size='100%' />,
+	<Dice2 size='100%' />,
+	<Dice3 size='100%' />,
+	<Dice4 size='100%' />,
+	<Dice5 size='100%' />,
+	<Dice6 size='100%' />,
 	/* eslint-enable react/jsx-key */
 ] as const
 

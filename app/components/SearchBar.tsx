@@ -55,12 +55,12 @@ export function SearchBar() {
 const placeholderGames = [
 	'Azul',
 	'7 Wonders',
-	'Carcassone',
+	'Carcassonne',
 	'Terraforming Mars',
 	'Eldritch Horror',
-	// 'Race for the Galaxy',
-	// 'Uno',
-	// "It's a Wonderful World",
+	'Race for the Galaxy',
+	'Uno',
+	"It's a Wonderful World",
 ]
 
 function getPlaceholderGame() {

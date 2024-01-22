@@ -1,5 +1,40 @@
-import {redirect} from '@remix-run/node'
+import {LoaderFunctionArgs, json} from '@remix-run/node'
+import {useLoaderData} from '@remix-run/react'
+import invariant from 'tiny-invariant'
+import {ScoreGame, Scores} from '~/components/Scores'
+import {getGameId} from '~/lib/bgg'
+import {getScoresByUser} from '~/lib/db/score.server'
+import {getUser} from '~/lib/db/user.server'
+import {assertAuthenticated} from '~/lib/login/auth.server'
 
-export function loader() {
-	return redirect('/search')
+export async function loader({
+	params,
+	request,
+}: LoaderFunctionArgs) {
+	const user = await assertAuthenticated(request)
+	const searchParams = new URL(request.url).searchParams
+
+	const scorePage =
+		Number(searchParams.get('score_page')) || 1
+	const scorePageSize =
+		Number(searchParams.get('score_page_size')) || 10
+	const rawScores = await getScoresByUser({
+		userId: user.id,
+		skip: (scorePage - 1) * scorePageSize,
+		take: scorePageSize,
+	})
+	const games = await Promise.all(
+		rawScores.map((score) => getGameId(score.gameId)),
+	)
+	return json({
+		scores: rawScores.map((s) => ({
+			score: s.value,
+			game: games.find((g) => g.id === s.gameId)!,
+		})),
+	})
+}
+
+export default function HomePage() {
+	const {scores} = useLoaderData<typeof loader>()
+	return <Scores scores={scores as ScoreGame[]} />
 }

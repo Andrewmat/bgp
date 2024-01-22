@@ -48,9 +48,9 @@ export default function UserScores() {
 	const {scores} = useLoaderData<typeof loader>()
 	return (
 		<div>
-			<div className='grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3'>
+			<ul className='grid grid-cols-1 gap-2 list-none md:grid-cols-2 lg:grid-cols-3'>
 				{scores.map((s) => (
-					<li key={s.game.id} className='list-none'>
+					<li key={s.game.id}>
 						<Card>
 							<CardHeader>
 								<CardTitle>
@@ -68,7 +68,7 @@ export default function UserScores() {
 						</Card>
 					</li>
 				))}
-			</div>
+			</ul>
 		</div>
 	)
 }

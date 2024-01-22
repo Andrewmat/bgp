@@ -1,17 +1,17 @@
-import {useReducer} from 'react'
 import type {LoaderFunctionArgs} from '@remix-run/node'
-import {Link, json, useLoaderData} from '@remix-run/react'
 import {
-	ExternalLink,
-	AlertCircleIcon,
-	X,
-} from 'lucide-react'
+	Link,
+	json,
+	redirect,
+	useLoaderData,
+} from '@remix-run/react'
+import {ExternalLink, AlertCircleIcon} from 'lucide-react'
 import {searchGames} from '~/lib/bgg'
 import noResultsImage from '~/assets/undraw_empty.svg'
 import emptyStateImage from '~/assets/undraw_searching.svg'
-import {Alert} from '~/components/ui/alert'
 import {Card} from '~/components/ui/card'
 import {cn} from '~/lib/utils'
+import {AlertClosable} from '~/components/ui/alert-closable'
 
 export async function loader({
 	request,
@@ -20,12 +20,12 @@ export async function loader({
 	const term = searchParams.get('q') ?? undefined
 
 	if (typeof term === 'string' && term.length === 0) {
-		// return redirect('/search')
+		return redirect('/search')
 	}
 
 	if (term == null) {
 		return json({
-			term: undefined,
+			term: null,
 			results: null,
 			errorMessage: null,
 		})
@@ -67,35 +67,23 @@ export default function SearchPage() {
 	const {results, term, errorMessage} =
 		useLoaderData<typeof loader>()
 
-	const [shouldHideAlert, hideAlert] = useReducer(
-		() => true,
-		false,
-	)
-
 	return (
 		<div className='w-full flex-grow flex items-center gap-6 justify-center'>
-			{errorMessage && !shouldHideAlert && (
-				<Alert
+			{errorMessage && (
+				<AlertClosable
 					variant='destructive'
-					className='flex justify-between'
+					className='transition-colors hover:bg-destructive/15 focus-visible:bg-destructive/15'
 				>
 					<span className='inline-flex gap-2'>
 						<AlertCircleIcon />
 						<span>{errorMessage}</span>
 					</span>
-
-					<button
-						className='appearance-none rounded-full transition-colors hover:bg-destructive/15 focus-visible:bg-destructive/15'
-						onClick={hideAlert}
-					>
-						<X className='stroke-muted-foreground' />
-					</button>
-				</Alert>
+				</AlertClosable>
 			)}
 			{results ? (
 				<>
 					{results.length > 0 ? (
-						<ul className='grid grid-cols-3 gap-2'>
+						<ul className='grid grid-cols-3 gap-2 self-start'>
 							{results.map((game) => (
 								<li key={game.id} className='relative'>
 									<Link
@@ -108,7 +96,6 @@ export default function SearchPage() {
 										)}
 									>
 										<Card className='p-5 h-full'>
-											{/* <div className='flex flex-col gap-2 border-accent hover:bg-accent p-2 rounded-md'> */}
 											{game.name} (
 											<em>
 												<small>{game.yearPublished}</small>
