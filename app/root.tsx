@@ -1,5 +1,8 @@
 import {cssBundleHref} from '@remix-run/css-bundle'
-import type {LinksFunction} from '@remix-run/node'
+import type {
+	LinksFunction,
+	MetaFunction,
+} from '@remix-run/node'
 import {
 	Links,
 	LiveReload,
@@ -30,6 +33,16 @@ export const links: LinksFunction = () => [
 		? [{rel: 'stylesheet', href: cssBundleHref}]
 		: []),
 ]
+
+export const meta: MetaFunction = () => {
+	return [
+		{title: 'BGP | Board Game Planilha'},
+		{
+			name: 'description',
+			content: 'Pesquise e revise board games!',
+		},
+	]
+}
 
 export default function App() {
 	return (

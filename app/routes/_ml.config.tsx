@@ -84,7 +84,6 @@ export async function action({
 
 export default function ConfigPage() {
 	const {user} = useLoaderData<typeof loader>()
-	// const actionData = useActionData<typeof action>()
 	const id = useId()
 
 	return (

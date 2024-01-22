@@ -1,30 +1,17 @@
 import {useReducer} from 'react'
-import type {
-	LoaderFunctionArgs,
-	MetaFunction,
-} from '@remix-run/node'
+import type {LoaderFunctionArgs} from '@remix-run/node'
 import {Link, json, useLoaderData} from '@remix-run/react'
 import {
 	ExternalLink,
 	AlertCircleIcon,
 	X,
 } from 'lucide-react'
-import {BggSearchResult, searchGames} from '~/lib/bgg'
+import {searchGames} from '~/lib/bgg'
 import noResultsImage from '~/assets/undraw_empty.svg'
 import emptyStateImage from '~/assets/undraw_searching.svg'
 import {Alert} from '~/components/ui/alert'
 import {Card} from '~/components/ui/card'
 import {cn} from '~/lib/utils'
-
-export const meta: MetaFunction = () => {
-	return [
-		{title: 'BGP | Board Game Planilha'},
-		{
-			name: 'description',
-			content: 'Procure e revise board games!',
-		},
-	]
-}
 
 export async function loader({
 	request,
@@ -32,38 +19,48 @@ export async function loader({
 	const searchParams = new URL(request.url).searchParams
 	const term = searchParams.get('q') ?? undefined
 
-	let results: BggSearchResult[] | null = null
-	if (typeof term === 'string') {
-		if (term.length < 3) {
-			return json({
-				term,
-				results: null,
-				errorMessage:
-					'Termo de pesquisa deve ter no mínimo 3 caracteres',
-			})
-		}
-
-		const exact = searchParams.get('exact')
-		try {
-			results = await searchGames(term, exact === 'true')
-		} catch (e) {
-			return json({
-				term,
-				results: null,
-				fieldMessage: null,
-				errorMessage:
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					(e as any)?.message ??
-					'Houve um erro ao fazer pesquisa',
-			})
-		}
+	if (typeof term === 'string' && term.length === 0) {
+		// return redirect('/search')
 	}
 
-	return json({
-		term,
-		results,
-		errorMessage: null,
-	})
+	if (term == null) {
+		return json({
+			term: undefined,
+			results: null,
+			errorMessage: null,
+		})
+	}
+
+	if (term.length < 3) {
+		return json({
+			term,
+			results: null,
+			errorMessage:
+				'Termo de pesquisa deve ter no mínimo 3 caracteres',
+		})
+	}
+
+	const exact = searchParams.get('exact')
+	try {
+		const results = await searchGames(
+			term,
+			exact === 'true',
+		)
+		return json({
+			term,
+			results,
+			errorMessage: null,
+		})
+	} catch (e) {
+		return json({
+			term,
+			results: null,
+			errorMessage:
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				(e as any)?.message ??
+				'Houve um erro ao fazer pesquisa',
+		})
+	}
 }
 
 export default function SearchPage() {
