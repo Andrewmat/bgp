@@ -9,6 +9,7 @@ import {
 } from '~/components/ui/card'
 import {assertNotAuthenticated} from '~/lib/login/auth.server'
 import discordLogo from '~/assets/discord-logo-white.svg'
+import {Input} from '~/components/ui/input'
 
 export async function loader({
 	request,
@@ -30,7 +31,7 @@ export default function Login() {
 						Login
 					</CardTitle>
 				</CardHeader>
-				<CardContent>
+				<CardContent className='flex flex-col gap-2'>
 					<Form action='/auth/discord' method='POST'>
 						<input
 							type='hidden'
@@ -46,6 +47,20 @@ export default function Login() {
 							/>
 						</Button>
 					</Form>
+					{process.env.NODE_ENV === 'development' && (
+						<Form
+							action='/auth/mock'
+							method='POST'
+							className='flex gap-2'
+						>
+							<Input
+								type='email'
+								name='email'
+								className='flex-grow'
+							/>
+							<Button type='submit'>Mock User</Button>
+						</Form>
+					)}
 				</CardContent>
 			</Card>
 		</div>

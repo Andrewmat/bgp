@@ -1,14 +1,11 @@
 import {LoaderFunctionArgs, json} from '@remix-run/node'
 import {useLoaderData} from '@remix-run/react'
-import invariant from 'tiny-invariant'
 import {ScoreGame, Scores} from '~/components/Scores'
 import {getGameId} from '~/lib/bgg'
 import {getScoresByUser} from '~/lib/db/score.server'
-import {getUser} from '~/lib/db/user.server'
 import {assertAuthenticated} from '~/lib/login/auth.server'
 
 export async function loader({
-	params,
 	request,
 }: LoaderFunctionArgs) {
 	const user = await assertAuthenticated(request)

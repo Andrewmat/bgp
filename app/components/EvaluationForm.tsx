@@ -37,17 +37,14 @@ export function EvaluationForm({
 			? hover
 			: optimistic ?? selected
 	return (
-		<div
-			className={cn(
-				'w-full flex justify-stretch [&>*]:flex-grow',
-			)}
-		>
+		<div className='w-full flex justify-stretch [&>*]:flex-grow'>
 			<TooltipProvider>
 				{dices.map((element, i) => (
 					<fetcher.Form
 						key={`dice${i}`}
 						method='POST'
 						action={`/game/${gameId}/evaluate`}
+						className='flex items-center'
 					>
 						<input
 							type='hidden'

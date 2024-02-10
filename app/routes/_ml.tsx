@@ -146,6 +146,9 @@ function DropdownMenuHeader({
 					<Link to='/me'>Meu perfil</Link>
 				</DropdownMenuItem>
 				<DropdownMenuItem>
+					<Link to='/following'>Seguindo</Link>
+				</DropdownMenuItem>
+				<DropdownMenuItem>
 					<Link to='/config'>Configurações</Link>
 				</DropdownMenuItem>
 				<DropdownMenuItem>

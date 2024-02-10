@@ -11,6 +11,11 @@ import {getGameId} from '~/lib/bgg'
 import {getScoresByUser} from '~/lib/db/score.server'
 import {getUserByUsername} from '~/lib/db/user.server'
 import {EvaluationForm} from '~/components/EvaluationForm'
+import {
+	Avatar,
+	AvatarFallback,
+	AvatarImage,
+} from '~/components/ui/avatar'
 
 export async function loader({
 	params,
@@ -54,7 +59,16 @@ export default function UserScores() {
 						<Card>
 							<CardHeader>
 								<CardTitle>
-									<Link to={`/game/${s.game.id}`}>
+									<Link
+										to={`/game/${s.game.id}`}
+										className='hover:underline flex gap-2 items-center'
+									>
+										<Avatar>
+											<AvatarImage src={s.game.thumbnail} />
+											<AvatarFallback>
+												{s.game.name}
+											</AvatarFallback>
+										</Avatar>
 										{s.game.name}
 									</Link>
 								</CardTitle>

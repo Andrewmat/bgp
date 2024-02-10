@@ -1,44 +1,36 @@
-# Welcome to Remix!
+# Board Game Planilha
 
-- [Remix Docs](https://remix.run/docs)
+Project to gather people to rate and play games
+
+Made with Remix, deployed at Fly.io
 
 ## Development
+
+You'll need Node 18, you can run `nvm use`
+
+### Setup: first time
 
 From your terminal:
 
 ```sh
-npm run dev
+pnpm install
+pnpm db:setup
+```
+
+### Developing
+
+```sh
+pnpm dev
 ```
 
 This starts your app in development mode, rebuilding assets on file changes.
 
-## Deployment
-
-First, build your app for production:
-
-```sh
-npm run build
-```
-
-Then run the app in production mode:
-
-```sh
-npm start
-```
-
-Now you'll need to pick a host to deploy it to.
-
-### DIY
-
-If you're familiar with deploying node applications, the built-in Remix app server is production-ready.
-
-Make sure to deploy the output of `remix build`
-
-- `build/`
-- `public/build/`
-
-## Developing
+## UI
 
 To create new components, use [shadcn/ui](https://ui.shadcn.com/)
 
 `pnpm ui:add <<component_name>>`
+
+## Deploy
+
+TODO

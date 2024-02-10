@@ -1,17 +1,25 @@
-export type SessionUser = DiscordUser
+export type SessionUser = MockUser | DiscordUser
 
-interface DiscordUser extends GenericUser {
+export interface DiscordUser extends GenericUser {
 	provider: 'discord'
 }
 
+export interface MockUser extends GenericUser {
+	provider: 'mock'
+	providerId?: undefined
+	profileImage?: undefined
+	accessToken?: undefined
+	refreshToken?: undefined
+}
+
 interface GenericUser {
-	provider: 'discord' | 'google'
+	provider: 'discord' | 'google' | 'mock'
 	id: string
 	username: string
-	providerId: string
 	name: string
-	profileImage: string | undefined
 	email: string
-	accessToken: string
-	refreshToken: string | undefined
+	providerId?: string
+	profileImage?: string
+	accessToken?: string
+	refreshToken?: string
 }

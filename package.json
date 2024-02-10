@@ -14,6 +14,7 @@
 		"add:ui": "pnpm dlx shadcn-ui add",
 		"see:ui": "opener https://ui.shadcn.com/docs/components",
 		"see:db": "prisma studio",
+		"db:setup": "prisma db push",
 		"db:migrate": "prisma migrate dev --name"
 	},
 	"dependencies": {
@@ -34,10 +35,12 @@
 		"isbot": "^4.1.0",
 		"lucide-react": "^0.309.0",
 		"next-themes": "^0.2.1",
+		"random-word-slugs": "^0.1.7",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"remix-auth": "^3.6.0",
 		"remix-auth-discord": "^1.3.2",
+		"remix-auth-form": "^1.4.0",
 		"sonner": "^1.3.1",
 		"tailwind-merge": "^2.2.0",
 		"tailwindcss-animate": "^1.0.7",

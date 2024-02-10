@@ -3,6 +3,7 @@ import {sessionStorage} from './session.server'
 import {type SessionUser} from './user.schema'
 import {discordStrategy} from './auth-discord.server'
 import {redirect} from '@remix-run/node'
+import {mockStrategy} from './auth-mock.server'
 
 function createAuthenticator() {
 	// do not expose authenticator directly. It should always
@@ -12,6 +13,9 @@ function createAuthenticator() {
 	)
 
 	authenticator.use(discordStrategy)
+	if (process.env.NODE_ENV === 'development') {
+		authenticator.use(mockStrategy, 'mock')
+	}
 
 	/** Call this to check if the user is authenticated.
 	 * It will return a Promise with the user object or null,
@@ -22,6 +26,13 @@ function createAuthenticator() {
 	}
 	async function authenticateDiscord(request: Request) {
 		return authenticator.authenticate('discord', request)
+	}
+	async function authenticateMock(request: Request) {
+		return authenticator.authenticate('mock', request, {
+			successRedirect: '/me',
+			throwOnError: true,
+			failureRedirect: '/login?error',
+		})
 	}
 
 	/** @returns Response to redirect to destination, in case of success or failure */
@@ -48,6 +59,7 @@ function createAuthenticator() {
 	return {
 		getSessionUser: getSessionUser,
 		authenticateDiscord,
+		authenticateMock,
 		callbackDiscord,
 		logout,
 	}
@@ -56,6 +68,7 @@ function createAuthenticator() {
 export const {
 	getSessionUser,
 	authenticateDiscord,
+	authenticateMock,
 	callbackDiscord,
 	logout,
 } = createAuthenticator()
