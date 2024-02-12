@@ -19,7 +19,6 @@ import {getUser, updateUsername} from '~/lib/db/user.server'
 import {assertAuthenticated} from '~/lib/login/auth.server'
 import {sessionStorage} from '~/lib/login/session.server'
 import {SessionUser} from '~/lib/login/user.schema'
-import {Alert} from '~/components/ui/alert'
 import {AlertClosable} from '~/components/ui/alert-closable'
 
 export async function loader({
@@ -54,6 +53,18 @@ export async function action({
 				name: typeof name,
 				username: typeof username,
 			},
+			{status: 422},
+		)
+	}
+	if (username.length < 3) {
+		throw new Response(
+			`Username '${username}' requires at least 3 characters`,
+			{status: 422},
+		)
+	}
+	if (!username.match(/^[A-z][A-z0-9-_.]{2,}$/)) {
+		throw new Response(
+			`Username '${username}' has invalid characters. It should include only alphanumeric characters, or hyphen (-) underscore (_) dot (.)`,
 			{status: 422},
 		)
 	}

@@ -33,5 +33,16 @@ export async function loader({
 
 export default function HomePage() {
 	const {scores} = useLoaderData<typeof loader>()
-	return <Scores scores={scores as ScoreGame[]} />
+	return (
+		<div className='px-2'>
+			<h1 className='text-xl'>Notas</h1>
+			{scores.length > 0 ? (
+				<Scores scores={scores as ScoreGame[]} />
+			) : (
+				<div>
+					Parece que você não deu nota para nenhum jogo
+				</div>
+			)}
+		</div>
+	)
 }

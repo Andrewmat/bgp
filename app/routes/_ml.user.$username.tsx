@@ -108,7 +108,7 @@ export default function UserPage() {
 	})()
 
 	return (
-		<div>
+		<div className='px-3 md:px-6 lg:px-8'>
 			<Card>
 				<CardHeader className='flex justify-between'>
 					<div>

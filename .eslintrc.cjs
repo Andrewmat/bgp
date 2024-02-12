@@ -51,6 +51,16 @@ module.exports = {
 					typescript: {},
 				},
 			},
+			rules: {
+				'jsx-a11y/label-has-associated-control': [
+					2,
+					{
+						labelComponents: ['Label'],
+						controlComponents: ['Input', 'Select'],
+						depth: 3,
+					},
+				],
+			},
 		},
 
 		// Typescript

@@ -54,9 +54,10 @@ export default function Login() {
 							className='flex gap-2'
 						>
 							<Input
-								type='email'
-								name='email'
+								type='term'
+								name='term'
 								className='flex-grow'
+								placeholder='adorable-cat'
 							/>
 							<Button type='submit'>Mock User</Button>
 						</Form>

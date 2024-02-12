@@ -1,16 +1,24 @@
 import {FormStrategy} from 'remix-auth-form'
-import {upsertMockUser} from '../db/user.server'
+import {
+	getUserByUsername,
+	insertMockUser,
+} from '../db/user.server'
 import {MockUser} from './user.schema'
 
 export const mockStrategy = new FormStrategy(
 	async ({form}): Promise<MockUser> => {
-		const email = form.get('email')
-		if (typeof email !== 'string') {
-			throw new Response(`Email parameter is required`, {
-				status: 422,
-			})
+		const term = form.get('term')
+		let user
+		if (typeof term !== 'string' || term.length === 0) {
+			user = await insertMockUser()
+		} else {
+			user = await getUserByUsername(term)
+			if (!user?.email.endsWith('@example.com')) {
+				throw new Error(
+					'Não pode entrar com user dos outros',
+				)
+			}
 		}
-		const user = await upsertMockUser({email})
 		return {
 			provider: 'mock',
 			email: user.email,

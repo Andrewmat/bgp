@@ -11,20 +11,58 @@ export async function getUserByUsername(username: string) {
 	})
 }
 
-export async function upsertMockUser({
-	email,
-}: {
-	email: string
-}) {
-	const name = generateSlug(2, {format: 'title'})
+export async function searchUsers(
+	term: string,
+	exact: boolean = false,
+) {
+	const search = exact ? {equals: term} : {contains: term}
+	return db.user.findMany({
+		where: {
+			OR: [
+				//
+				{username: search},
+				{name: search},
+			],
+		},
+		select: {
+			id: true,
+			username: true,
+			name: true,
+			discordId: true,
+		},
+	})
+}
+
+export async function insertMockUser() {
 	const username = generateSlug(2, {format: 'kebab'})
+	return db.user.create({
+		data: {
+			username,
+			name: username,
+			email: `${username}@example.com`,
+		},
+	})
+}
+
+export async function upsertMockUser({
+	term,
+}: {
+	term: string
+}) {
+	let where
+	if (term.includes('@')) {
+		where = {email: term}
+	} else {
+	}
+	const username = generateSlug(2, {format: 'kebab'})
+	const name = username
 	return db.user.upsert({
 		create: {
 			email,
 			name,
 			username,
 		},
-		update: {name, username},
+		update: {},
 		where: {email},
 		select: selectSession,
 	})
@@ -44,8 +82,9 @@ export async function upsertDiscordUser({
 	})
 
 	if (!user) {
+		const username = generateSlug(2, {format: 'kebab'})
 		return db.user.create({
-			data: {email, name, discordId},
+			data: {email, name, discordId, username},
 			select: {
 				id: true,
 				name: true,
@@ -69,7 +108,7 @@ const selectSession = {
 	username: true,
 	email: true,
 	discordId: true,
-}
+} as const
 
 export async function updateUsername({
 	username,

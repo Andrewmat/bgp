@@ -62,3 +62,27 @@ export function getScoresByUser({
 		orderBy: {updatedAt: 'desc'},
 	})
 }
+
+export async function getScoresFollowingGame({
+	gameId,
+	userId,
+}: {
+	gameId: string
+	userId: string
+}) {
+	return await db.score.findMany({
+		where: {
+			gameId,
+			userId: {
+				in:
+					(
+						await db.follows.findMany({
+							where: {followedById: userId},
+							select: {followingId: true},
+						})
+					).map((f) => f.followingId) || [],
+			},
+		},
+		select: {user: true, value: true},
+	})
+}

@@ -67,7 +67,7 @@ export default function MainLayout() {
 					/>
 				</Link>
 				<div className='flex-grow'>
-					<div className='w-full max-w-sm'>
+					<div className='w-full max-w-md'>
 						<SearchBar />
 					</div>
 				</div>

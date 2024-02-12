@@ -13,7 +13,10 @@ import {
 	CardTitle,
 } from '~/components/ui/card'
 import {BggBoardgame, getGameId} from '~/lib/bgg'
-import {getScoreByUserGame} from '~/lib/db/score.server'
+import {
+	getScoreByUserGame,
+	getScoresFollowingGame,
+} from '~/lib/db/score.server'
 import {withUser} from '~/lib/remix/wrapUser'
 import {EvaluationForm} from '~/components/EvaluationForm'
 import {PlayersTable} from './PlayerSuggestionTable'
@@ -23,6 +26,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from '~/components/ui/tooltip'
+import {useMemo} from 'react'
 
 export const loader = withUser(async ({params, user}) => {
 	const gameId = params.gameId
@@ -34,18 +38,92 @@ export const loader = withUser(async ({params, user}) => {
 	let score: Awaited<
 		ReturnType<typeof getScoreByUserGame>
 	> = null
+	let followingScore: Awaited<
+		ReturnType<typeof getScoresFollowingGame>
+	> | null = null
 
 	if (user?.id) {
 		score = await getScoreByUserGame({
 			gameId,
 			userId: user.id,
 		})
+		followingScore = await getScoresFollowingGame({
+			gameId,
+			userId: user.id,
+		})
 	}
-	return {game, score: score?.value}
+	return {game, score: score?.value, followingScore}
 })
 
 export default function GameDetailsPage() {
-	const {game, score, user} = useLoaderData<typeof loader>()
+	const {game, score, user, followingScore} =
+		useLoaderData<typeof loader>()
+	return (
+		<div className='flex flex-col gap-4'>
+			<GameBggInfo
+				game={game as BggBoardgame}
+				score={score}
+				showEvaluation={Boolean(user)}
+			/>
+			{followingScore && followingScore.length > 0 && (
+				<Card>
+					<CardHeader>
+						<CardTitle>Notas</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<strong>
+							<Stats
+								numbers={followingScore.map((s) => s.value)}
+							/>
+						</strong>
+						<ul>
+							{followingScore.map((s) => (
+								<li key={s.user.id}>
+									<Link to={`/user/${s.user.username}`}>
+										{s.user.username}
+									</Link>
+									: {s.value}
+								</li>
+							))}
+						</ul>
+					</CardContent>
+				</Card>
+			)}
+		</div>
+	)
+}
+
+function Stats({numbers}: {numbers: number[]}) {
+	const {mean, deviation} = useMemo(() => {
+		const sum = numbers.reduce((s, x) => s + x, 0)
+		const mean = sum / numbers.length
+		const deviation =
+			numbers.reduce((s, x) => Math.pow(x - mean, 2), 0) /
+			numbers.length
+		return {
+			mean,
+			deviation,
+		}
+	}, [numbers])
+
+	return (
+		<>
+			&mu;: {mean}
+			<br />
+			&sigma;: {deviation}
+		</>
+	)
+}
+
+function GameBggInfo(
+	props: {
+		game: BggBoardgame
+	} & (
+		| {showEvaluation: true; score: number | undefined}
+		| {showEvaluation: false}
+	),
+) {
+	const {game, showEvaluation} = props
 	return (
 		<Card>
 			<CardHeader className='flex flex-row justify-between'>
@@ -80,10 +158,10 @@ export default function GameDetailsPage() {
 					</CardTitle>
 				</div>
 				<div className='w-[200px] md:w-[300px]'>
-					{user && (
+					{showEvaluation && (
 						<EvaluationForm
 							gameId={game.id}
-							score={score}
+							score={props.score}
 							className='flex-row-reverse'
 						/>
 					)}
