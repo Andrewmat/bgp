@@ -17,7 +17,11 @@ import {Input} from '~/components/ui/input'
 import {Label} from '~/components/ui/label'
 import {getUser, updateUsername} from '~/lib/db/user.server'
 import {assertAuthenticated} from '~/lib/login/auth.server'
-import {sessionStorage} from '~/lib/login/session.server'
+import {
+	getOnSession,
+	sessionStorage,
+	setOnSession,
+} from '~/lib/login/session.server'
 import {SessionUser} from '~/lib/login/user.schema'
 import {AlertClosable} from '~/components/ui/alert-closable'
 
@@ -75,24 +79,27 @@ export async function action({
 		username: username.trim().toLowerCase(),
 	})
 
-	const session = await sessionStorage.getSession(
-		request.headers.get('cookie'),
+	const rawSessionUser = await getOnSession(request, 'user')
+
+	if (rawSessionUser == null) {
+		throw new Error(
+			'No user in the session after user update',
+		)
+	}
+
+	const commitSession = await setOnSession(
+		request,
+		'user',
+		{
+			...rawSessionUser,
+			name: newUser.name,
+			username: newUser.username,
+		},
 	)
-	const rawSessionUser = session.get('user') as SessionUser
-	session.set('user', {
-		...rawSessionUser,
-		name: newUser.name,
-		username: newUser.username,
-	} satisfies SessionUser)
 
 	return json(
 		{success: true},
-		{
-			headers: {
-				'Set-Cookie':
-					await sessionStorage.commitSession(session),
-			},
-		},
+		{headers: {'Set-Cookie': await commitSession()}},
 	)
 }
 

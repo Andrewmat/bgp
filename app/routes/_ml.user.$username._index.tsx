@@ -1,5 +1,9 @@
 import {LoaderFunctionArgs, json} from '@remix-run/node'
-import {Link, useLoaderData} from '@remix-run/react'
+import {
+	Link,
+	useLoaderData,
+	useParams,
+} from '@remix-run/react'
 import invariant from 'tiny-invariant'
 import {
 	Card,
@@ -73,12 +77,7 @@ export default function UserScores() {
 									</Link>
 								</CardTitle>
 							</CardHeader>
-							<CardFooter>
-								<EvaluationForm
-									gameId={s.game.id}
-									score={s.score}
-								/>
-							</CardFooter>
+							<CardFooter>Nota: {s.score}</CardFooter>
 						</Card>
 					</li>
 				))}

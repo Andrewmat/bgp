@@ -1,18 +1,18 @@
 import type {LoaderFunctionArgs} from '@remix-run/node'
 import {
-	Link,
 	json,
 	redirect,
 	useLoaderData,
 } from '@remix-run/react'
-import {ExternalLink, AlertCircleIcon} from 'lucide-react'
-import {BggSearchResult, searchGames} from '~/lib/bgg'
+import {AlertCircleIcon} from 'lucide-react'
+import {searchGames} from '~/lib/bgg'
 import noResultsImage from '~/assets/undraw_empty.svg'
 import emptyStateImage from '~/assets/undraw_searching.svg'
-import {Card} from '~/components/ui/card'
-import {cn} from '~/lib/utils'
 import {AlertClosable} from '~/components/ui/alert-closable'
 import {searchUsers} from '~/lib/db/user.server'
+import {ResultsUsers} from './ResultsUsers'
+import {ResultsGames} from './ResultsGames'
+import {DrawingWrapper} from './DrawingWrapper'
 
 export async function loader({
 	request,
@@ -132,108 +132,6 @@ export default function SearchPage() {
 					text='Pesquise por jogos na barra de busca'
 				/>
 			)}
-		</div>
-	)
-}
-
-function ResultsGames({
-	results,
-}: {
-	results: BggSearchResult[]
-}) {
-	return (
-		<div>
-			<h1 className='mb-2'>Games ({results.length})</h1>
-			<ul className='grid grid-cols-3 gap-2 self-start'>
-				{results.map((game) => (
-					<li key={game.id} className='relative'>
-						<Link
-							to={`/game/${game.id}`}
-							className={cn(
-								'[&>*]:hover:bg-accent',
-								'[&>*]:hover:text-accent-foreground',
-								'[&>*]:focus-visible:bg-accent',
-								'[&>*]:focus-visible:text-accent-foreground',
-							)}
-						>
-							<Card className='p-5 h-full'>
-								{game.name} (
-								<em>
-									<small>{game.yearPublished}</small>
-								</em>
-								)
-							</Card>
-						</Link>
-						<Link
-							to={`https://boardgamegeek.com/boardgame/${game.id}`}
-							target='_blank'
-							rel='noreferrer'
-							onClick={(e) => e.stopPropagation()}
-							className='absolute right-2 top-2'
-						>
-							<ExternalLink size='0.8rem' />
-						</Link>
-					</li>
-				))}
-			</ul>
-		</div>
-	)
-}
-
-function ResultsUsers({
-	results,
-}: {
-	results: {
-		id: string
-		username: string
-		name: string
-		discordId: string | null
-	}[]
-}) {
-	return (
-		<div>
-			<h1 className='mb-2'>Users ({results.length})</h1>
-			<ul className='grid grid-cols-3 gap-2 self-start'>
-				{results.map((user) => (
-					<li key={user.id}>
-						<Link
-							to={`/user/${user.username}`}
-							className={cn(
-								'[&>*]:hover:bg-accent',
-								'[&>*]:hover:text-accent-foreground',
-								'[&>*]:focus-visible:bg-accent',
-								'[&>*]:focus-visible:text-accent-foreground',
-							)}
-						>
-							<Card className='p-5 h-full'>
-								{user.name} (
-								<em>
-									<small>@{user.username}</small>
-								</em>
-								)
-							</Card>
-						</Link>
-					</li>
-				))}
-			</ul>
-		</div>
-	)
-}
-
-function DrawingWrapper({
-	drawing,
-	text,
-}: {
-	drawing: string
-	text: React.ReactNode
-}) {
-	return (
-		<div className='w-full flex-grow mt-6 flex flex-col items-center gap-6 justify-center self-center'>
-			<img className='h-[200px]' src={drawing} alt='' />
-
-			<p className='max-w-prose font-bold text-large text-center text-pretty'>
-				{text}
-			</p>
 		</div>
 	)
 }
