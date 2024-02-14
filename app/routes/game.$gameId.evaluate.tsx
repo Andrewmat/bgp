@@ -35,12 +35,13 @@ export async function action({
 		}
 	}
 
-	const redirectTo =
-		typeof evaluationForm.get('location') === 'string'
-			? (evaluationForm.get('location') as string)
-			: `/game/${gameId}`
+	// TODO redirectTo after evaluation
+	// const redirectTo =
+	// 	typeof evaluationForm.get('location') === 'string'
+	// 		? (evaluationForm.get('location') as string)
+	// 		: `/game/${gameId}`
 
-	return redirect(redirectTo)
+	return null
 }
 
 async function methodPost({

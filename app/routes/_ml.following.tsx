@@ -15,6 +15,7 @@ export async function loader({
 
 export default function FollowingPage() {
 	const {following} = useLoaderData<typeof loader>()
+
 	return (
 		<ul>
 			{following.map((follow) => (
