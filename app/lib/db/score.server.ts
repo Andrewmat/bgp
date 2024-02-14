@@ -1,3 +1,4 @@
+import {BggBoardgame, getGamesListId} from '../bgg'
 import {db} from './singleton.server'
 
 export async function upsertScore({
@@ -85,4 +86,59 @@ export async function getScoresFollowingGame({
 		},
 		select: {user: true, value: true},
 	})
+}
+
+export type ScoreTableGame = {
+	game: BggBoardgame
+	avgValue: number | null
+	table: {
+		user: {
+			id: string
+			name: string
+			username: string
+		}
+		score: number
+	}[]
+}
+
+export async function getScoresTable({
+	table,
+}: {
+	table: string[]
+}): Promise<ScoreTableGame[]> {
+	const resultScores = await db.score.groupBy({
+		by: ['gameId'],
+		where: {userId: {in: table}},
+		_avg: {value: true},
+		orderBy: [
+			{_count: {userId: 'desc'}},
+			{_avg: {value: 'desc'}},
+		],
+	})
+	const gameIds = resultScores.map((g) => g.gameId)
+	const resultGames = await getGamesListId(gameIds)
+	const resultUsers = await db.score.findMany({
+		where: {
+			gameId: {in: gameIds},
+			userId: {in: table},
+		},
+		select: {
+			gameId: true,
+			user: {
+				select: {id: true, name: true, username: true},
+			},
+			value: true,
+		},
+	})
+
+	return resultScores.map((group) => ({
+		game: resultGames.find((g) => g.id === group.gameId)!,
+		avgValue: group._avg.value,
+		table: resultUsers
+			.filter((u) => u.gameId === group.gameId)
+			.map((u) => ({
+				user: u.user,
+				score: u.value,
+			})),
+	}))
 }

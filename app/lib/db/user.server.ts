@@ -4,6 +4,12 @@ import {generateSlug} from 'random-word-slugs'
 export async function getUser(id: string) {
 	return db.user.findUnique({where: {id}})
 }
+export async function getUsers(ids: string[]) {
+	return db.user.findMany({
+		where: {id: {in: ids}},
+		select: {id: true, name: true, username: true},
+	})
+}
 
 export async function getUserByUsername(username: string) {
 	return db.user.findUnique({

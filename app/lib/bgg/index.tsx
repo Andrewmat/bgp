@@ -53,12 +53,15 @@ export async function getGamesListId(gameIds: string[]) {
 		`/boardgame/${gameIds.join(',')}`,
 	)) as {
 		boardgames: {
-			boardgame: BggSchemaBoardgame[]
+			boardgame: BggSchemaBoardgame | BggSchemaBoardgame[]
 		}
 	}
-	return result.boardgames.boardgame.map((boardgame) =>
-		adaptBoardGame(boardgame),
-	)
+
+	return Array.isArray(result.boardgames.boardgame)
+		? result.boardgames.boardgame.map((boardgame) =>
+				adaptBoardGame(boardgame),
+			)
+		: [adaptBoardGame(result.boardgames.boardgame)]
 }
 
 export type BggSearchResult = {

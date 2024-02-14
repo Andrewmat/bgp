@@ -25,6 +25,8 @@ export function SearchBar() {
 		setPlaceholder(getPlaceholderGame())
 	}, [])
 	const nav = useNavigation()
+	const isSearchNav =
+		nav.formAction === '/search' && nav.formMethod === 'GET'
 
 	return (
 		<Form method='GET' action='/search'>
@@ -65,10 +67,10 @@ export function SearchBar() {
 				<Button
 					type='submit'
 					className='rounded-l-none'
-					disabled={nav.state !== 'idle'}
+					disabled={isSearchNav}
 				>
 					<span className='sr-only'>Pesquisar</span>
-					{nav.state === 'idle' ? (
+					{!isSearchNav ? (
 						<Search />
 					) : (
 						<Shell className='animate-spin' />

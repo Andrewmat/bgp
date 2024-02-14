@@ -7,7 +7,11 @@ invariant(
 	`SESSION_SECRET should be set in the env`,
 )
 
-type SessionTable = string[]
+export type SessionTable = {
+	id: string
+	name: string
+	username: string
+}[]
 
 interface SessionValue {
 	user: SessionUser
@@ -26,10 +30,12 @@ export const sessionStorage =
 		},
 	})
 
-export async function setOnSession(
+export async function setOnSession<
+	TName extends keyof SessionValue,
+>(
 	request: Request,
-	name: keyof SessionValue,
-	value: SessionValue[typeof name],
+	name: TName,
+	value: SessionValue[TName],
 ) {
 	const session = await sessionStorage.getSession(
 		request.headers.get('cookie'),
@@ -47,4 +53,16 @@ export async function getOnSession<
 		request.headers.get('cookie'),
 	)
 	return session.get(name)
+}
+
+export async function unsetOnSession<
+	TName extends keyof SessionValue,
+>(request: Request, name: TName) {
+	const session = await sessionStorage.getSession(
+		request.headers.get('cookie'),
+	)
+	session.unset(name)
+	return function commit() {
+		return sessionStorage.commitSession(session)
+	}
 }
