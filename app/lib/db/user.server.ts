@@ -50,30 +50,6 @@ export async function insertMockUser() {
 	})
 }
 
-export async function upsertMockUser({
-	term,
-}: {
-	term: string
-}) {
-	let where
-	if (term.includes('@')) {
-		where = {email: term}
-	} else {
-	}
-	const username = generateSlug(2, {format: 'kebab'})
-	const name = username
-	return db.user.upsert({
-		create: {
-			email,
-			name,
-			username,
-		},
-		update: {},
-		where: {email},
-		select: selectSession,
-	})
-}
-
 export async function upsertDiscordUser({
 	email,
 	name,
