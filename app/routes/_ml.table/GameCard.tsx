@@ -1,11 +1,15 @@
-import {TooltipTrigger} from '@radix-ui/react-tooltip'
 import {Link} from '@remix-run/react'
-import {DicesIcon} from 'lucide-react'
+import {DicesIcon, UnfoldHorizontalIcon} from 'lucide-react'
 import {useMemo} from 'react'
 import {EvaluationForm} from '~/components/EvaluationForm'
 import {NumPlayerSuggestion} from '~/components/NumPlayerSuggestion'
 import {Alert} from '~/components/ui/alert'
-import {buttonVariants} from '~/components/ui/button'
+import {
+	Avatar,
+	AvatarFallback,
+	AvatarImage,
+} from '~/components/ui/avatar'
+import {Button} from '~/components/ui/button'
 import {
 	Card,
 	CardContent,
@@ -30,6 +34,7 @@ import {
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
+	TooltipTrigger,
 } from '~/components/ui/tooltip'
 import {ScoreTableGame} from '~/lib/db/score.server'
 import {SessionTable} from '~/lib/login/session.server'
@@ -58,39 +63,82 @@ export function GameCard({
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle>{game.name}</CardTitle>
+				<Link
+					to={`/game/${game.id}`}
+					className='flex gap-2 items-center hover:underline focus:underline'
+				>
+					<Avatar>
+						<AvatarImage src={game.thumbnail} />
+						<AvatarFallback>{game.name}</AvatarFallback>
+					</Avatar>
+					<CardTitle>{game.name}</CardTitle>
+				</Link>
 			</CardHeader>
 			<CardContent>
 				<div className='flex flex-col items-start gap-2'>
 					<Drawer>
-						<DrawerTrigger>
-							<span
-								className={buttonVariants({
-									variant: 'ghost',
-									className: 'flex gap-2 items-center',
-								})}
+						<DrawerTrigger asChild>
+							<Button
+								variant='ghost'
+								className='flex gap-4 items-center'
 							>
-								<TooltipProvider>
-									<Tooltip>
-										<TooltipTrigger asChild>
-											<DicesIcon />
-										</TooltipTrigger>
-										<TooltipContent>
-											Média de nota da mesa
-										</TooltipContent>
-									</Tooltip>
-								</TooltipProvider>
-								<span>{avgValue?.toFixed(2)}</span>
-								<span>({tableScore.length} votos)</span>
-							</span>
+								{avgValue ? (
+									<>
+										<span className='flex gap-2'>
+											<TooltipProvider>
+												<Tooltip>
+													<TooltipTrigger asChild>
+														<DicesIcon />
+													</TooltipTrigger>
+													<TooltipContent>
+														Média de nota da mesa
+													</TooltipContent>
+												</Tooltip>
+											</TooltipProvider>
+											<span>{avgValue?.toFixed(2)}</span>
+											<span>
+												({tableScore.length} votos)
+											</span>
+										</span>
+										<span className='flex gap-2'>
+											<TooltipProvider>
+												<Tooltip>
+													<TooltipTrigger asChild>
+														<UnfoldHorizontalIcon />
+													</TooltipTrigger>
+													<TooltipContent>
+														Variância padrão da nota da mesa
+													</TooltipContent>
+												</Tooltip>
+											</TooltipProvider>
+
+											<span>
+												{(
+													tableScore.reduce(
+														(s, ts) =>
+															s +
+															Math.pow(
+																ts.score - avgValue,
+																2,
+															),
+														0,
+													) / tableScore.length
+												).toFixed(2)}
+											</span>
+										</span>
+									</>
+								) : (
+									'Notas de quem você tá seguindo'
+								)}
+							</Button>
 						</DrawerTrigger>
 						<DrawerContent>
 							<Table>
 								<TableHeader>
 									<TableRow>
-										<TableHead>User</TableHead>
+										<TableHead>Usuário</TableHead>
 										<TableHead className='text-center'>
-											Score
+											Nota
 										</TableHead>
 									</TableRow>
 								</TableHeader>
@@ -131,19 +179,21 @@ export function GameCard({
 					</Alert>
 				)}
 				{missing.some((m) => m.id === sessionUserId) && (
-					<Alert>Adicione sua nota para {game.name}</Alert>
+					<Alert className='flex gap-1 flex-col items-center'>
+						<div>Adicione sua nota para {game.name}</div>
+						<div className='max-w-[300px]'>
+							<EvaluationForm
+								gameId={game.id}
+								hiddenTrashClassName='hidden'
+								score={
+									tableScore.find(
+										(ts) => ts.user.id === sessionUserId,
+									)?.score
+								}
+							/>
+						</div>
+					</Alert>
 				)}
-				<div className='max-w-[300px]'>
-					<EvaluationForm
-						gameId={game.id}
-						hiddenTrashClassName='hidden'
-						score={
-							tableScore.find(
-								(ts) => ts.user.id === sessionUserId,
-							)?.score
-						}
-					/>
-				</div>
 			</CardFooter>
 		</Card>
 	)

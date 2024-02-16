@@ -27,6 +27,15 @@ import {
 	TooltipTrigger,
 } from '~/components/ui/tooltip'
 import {useMemo} from 'react'
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from '~/components/ui/table'
+import {DiceScore} from '~/components/DiceScore'
 
 export const loader = withUser(async ({params, user}) => {
 	const gameId = params.gameId
@@ -68,7 +77,9 @@ export default function GameDetailsPage() {
 			{followingScore && followingScore.length > 0 && (
 				<Card>
 					<CardHeader>
-						<CardTitle>Notas</CardTitle>
+						<CardTitle>
+							Notas de quem você tá seguindo
+						</CardTitle>
 					</CardHeader>
 					<CardContent>
 						<strong>
@@ -76,42 +87,26 @@ export default function GameDetailsPage() {
 								numbers={followingScore.map((s) => s.value)}
 							/>
 						</strong>
-						<ul>
-							{followingScore.map((s) => (
-								<li key={s.user.id}>
-									<Link to={`/user/${s.user.username}`}>
-										{s.user.username}
-									</Link>
-									: {s.value}
-								</li>
-							))}
-						</ul>
+						<Table>
+							<TableHeader>
+								<TableHead>Usuário</TableHead>
+								<TableHead>Nota</TableHead>
+							</TableHeader>
+							<TableBody>
+								{followingScore.map((fs) => (
+									<TableRow key={fs.user.id}>
+										<TableCell>{fs.user.name}</TableCell>
+										<TableCell>
+											<DiceScore score={fs.value} />
+										</TableCell>
+									</TableRow>
+								))}
+							</TableBody>
+						</Table>
 					</CardContent>
 				</Card>
 			)}
 		</div>
-	)
-}
-
-function Stats({numbers}: {numbers: number[]}) {
-	const {mean, deviation} = useMemo(() => {
-		const sum = numbers.reduce((s, x) => s + x, 0)
-		const mean = sum / numbers.length
-		const deviation =
-			numbers.reduce((s, x) => Math.pow(x - mean, 2), 0) /
-			numbers.length
-		return {
-			mean,
-			deviation,
-		}
-	}, [numbers])
-
-	return (
-		<>
-			&mu;: {mean}
-			<br />
-			&sigma;: {deviation}
-		</>
 	)
 }
 
@@ -209,5 +204,29 @@ function RangeInfo({
 		<p>
 			{min === max ? min : `${min} - ${max}`} {appendix}
 		</p>
+	)
+}
+
+function Stats({numbers}: {numbers: number[]}) {
+	const {mean, deviation} = useMemo(() => {
+		const sum = numbers.reduce((s, x) => s + x, 0)
+		const mean = sum / numbers.length
+		const deviation =
+			numbers.reduce(
+				(s, x) => s + Math.pow(x - mean, 2),
+				0,
+			) / numbers.length
+		return {
+			mean,
+			deviation,
+		}
+	}, [numbers])
+
+	return (
+		<>
+			&mu;: {mean}
+			<br />
+			&sigma;: {deviation}
+		</>
 	)
 }

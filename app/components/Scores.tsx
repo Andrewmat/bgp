@@ -6,12 +6,12 @@ import {
 	CardTitle,
 } from './ui/card'
 import {Link} from '@remix-run/react'
-import {EvaluationForm} from './EvaluationForm'
 import {
 	Avatar,
 	AvatarFallback,
 	AvatarImage,
 } from './ui/avatar'
+import {DiceScore} from './DiceScore'
 
 export type ScoreGame = {
 	score: number
@@ -20,15 +20,13 @@ export type ScoreGame = {
 
 export function Scores({scores}: {scores: ScoreGame[]}) {
 	return (
-		<div className='container'>
-			<ul className='px-3 grid grid-cols-1 gap-2 list-none sm:grid-cols-2 lg:grid-cols-3 lg:gap-3'>
-				{scores.map((s) => (
-					<li key={s.game.id}>
-						<GameCard score={s.score} game={s.game} />
-					</li>
-				))}
-			</ul>
-		</div>
+		<ul className='grid grid-cols-1 gap-2 list-none sm:grid-cols-2 lg:grid-cols-3 lg:gap-3'>
+			{scores.map((s) => (
+				<li key={s.game.id}>
+					<GameCard score={s.score} game={s.game} />
+				</li>
+			))}
+		</ul>
 	)
 }
 
@@ -41,23 +39,19 @@ export function GameCard({game, score}: GameCardProps) {
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle>
-					<Link
-						to={`/game/${game.id}`}
-						className='hover:underline flex gap-2 items-center'
-					>
-						<Avatar>
-							<AvatarImage src={game.thumbnail} />
-							<AvatarFallback>{game.name}</AvatarFallback>
-						</Avatar>
-						{game.name}
-					</Link>
-				</CardTitle>
+				<Link
+					to={`/game/${game.id}`}
+					className='flex gap-2 items-center hover:underline focus:underline'
+				>
+					<Avatar>
+						<AvatarImage src={game.thumbnail} />
+						<AvatarFallback>{game.name}</AvatarFallback>
+					</Avatar>
+					<CardTitle>{game.name}</CardTitle>
+				</Link>
 			</CardHeader>
 			<CardFooter>
-				<div className='mx-auto max-w-sm'>
-					<EvaluationForm gameId={game.id} score={score} />
-				</div>
+				<DiceScore score={score} />
 			</CardFooter>
 		</Card>
 	)

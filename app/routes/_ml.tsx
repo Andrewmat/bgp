@@ -8,6 +8,7 @@ import {
 	json,
 	useLoaderData,
 } from '@remix-run/react'
+import {HeartIcon} from 'lucide-react'
 import {SearchBar} from '~/components/SearchBar'
 import SLink from '~/components/ui/SLink'
 import {
@@ -85,7 +86,11 @@ export default function MainLayout() {
 				{user ? (
 					<DropdownMenuHeader
 						name={user.name}
-						profileImage={user.profileImage}
+						profileImage={
+							'profileImage' in user
+								? user.profileImage
+								: null
+						}
 					/>
 				) : (
 					<SLink to='/login' variant='default'>
@@ -99,8 +104,15 @@ export default function MainLayout() {
 			</main>
 
 			<footer className='w-full flex justify-center items-center gap-10 p-5 bg-secondary text-secondary-foreground border-t-2 border-t-border'>
+				<small>v0.1.0</small>
 				<div>
-					Made with ❤️ by{' '}
+					Made with{' '}
+					<HeartIcon
+						size='1em'
+						fill='red'
+						className='inline-block'
+					/>{' '}
+					by{' '}
 					<Link
 						to='https://boardgamegeek.com/user/andrewmat'
 						target='_blank'
@@ -159,7 +171,7 @@ function DropdownMenuHeader({
 	profileImage,
 	name,
 }: {
-	profileImage: string | null | undefined
+	profileImage?: string | null
 	name: string
 }) {
 	return (

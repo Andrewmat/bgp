@@ -6,7 +6,7 @@
 	"scripts": {
 		"build": "remix build",
 		"dev": "remix dev --manual",
-		"lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
+		"lint": "eslint --cache --cache-location ./node_modules/.cache/eslint app",
 		"format:fix": "prettier --write .",
 		"format:check": "prettier --check .",
 		"start": "remix-serve ./build/index.js",

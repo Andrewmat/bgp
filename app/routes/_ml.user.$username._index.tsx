@@ -1,25 +1,10 @@
 import {LoaderFunctionArgs, json} from '@remix-run/node'
-import {
-	Link,
-	useLoaderData,
-	useParams,
-} from '@remix-run/react'
+import {useLoaderData} from '@remix-run/react'
 import invariant from 'tiny-invariant'
-import {
-	Card,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from '~/components/ui/card'
-import {getGameId} from '~/lib/bgg'
+import {BggBoardgame, getGameId} from '~/lib/bgg'
 import {getScoresByUser} from '~/lib/db/score.server'
 import {getUserByUsername} from '~/lib/db/user.server'
-import {EvaluationForm} from '~/components/EvaluationForm'
-import {
-	Avatar,
-	AvatarFallback,
-	AvatarImage,
-} from '~/components/ui/avatar'
+import {Scores} from '~/components/Scores'
 
 export async function loader({
 	params,
@@ -56,32 +41,10 @@ export async function loader({
 export default function UserScores() {
 	const {scores} = useLoaderData<typeof loader>()
 	return (
-		<div>
-			<ul className='grid grid-cols-1 gap-2 list-none md:grid-cols-2 lg:grid-cols-3'>
-				{scores.map((s) => (
-					<li key={s.game.id}>
-						<Card>
-							<CardHeader>
-								<CardTitle>
-									<Link
-										to={`/game/${s.game.id}`}
-										className='hover:underline flex gap-2 items-center'
-									>
-										<Avatar>
-											<AvatarImage src={s.game.thumbnail} />
-											<AvatarFallback>
-												{s.game.name}
-											</AvatarFallback>
-										</Avatar>
-										{s.game.name}
-									</Link>
-								</CardTitle>
-							</CardHeader>
-							<CardFooter>Nota: {s.score}</CardFooter>
-						</Card>
-					</li>
-				))}
-			</ul>
-		</div>
+		<Scores
+			scores={
+				scores as {score: number; game: BggBoardgame}[]
+			}
+		/>
 	)
 }

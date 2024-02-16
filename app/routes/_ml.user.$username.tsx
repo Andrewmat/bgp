@@ -4,7 +4,6 @@ import {
 	json,
 } from '@remix-run/node'
 import {
-	Link,
 	Outlet,
 	isRouteErrorResponse,
 	useFetcher,
@@ -13,6 +12,7 @@ import {
 	useRouteError,
 } from '@remix-run/react'
 import invariant from 'tiny-invariant'
+import SLink from '~/components/ui/SLink'
 import {Alert} from '~/components/ui/alert'
 import {Button} from '~/components/ui/button'
 import {
@@ -140,8 +140,8 @@ export default function UserPage() {
 								</relationFetcher.Form>
 							) : (
 								<>
-									<Link to='/following'>Seguindo</Link>
-									<Link to='/followers'>Seguidores</Link>
+									<SLink to='/following'>Seguindo</SLink>
+									<SLink to='/followers'>Seguidores</SLink>
 								</>
 							)}
 						</>

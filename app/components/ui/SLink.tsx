@@ -1,8 +1,6 @@
 import {
 	Link as RemixLink,
-	NavLink as RemixNavLink,
 	LinkProps,
-	NavLinkProps,
 } from '@remix-run/react'
 import {Button, ButtonProps} from './button'
 

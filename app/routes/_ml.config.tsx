@@ -19,10 +19,8 @@ import {getUser, updateUsername} from '~/lib/db/user.server'
 import {assertAuthenticated} from '~/lib/login/auth.server'
 import {
 	getOnSession,
-	sessionStorage,
 	setOnSession,
 } from '~/lib/login/session.server'
-import {SessionUser} from '~/lib/login/user.schema'
 import {AlertClosable} from '~/components/ui/alert-closable'
 
 export async function loader({

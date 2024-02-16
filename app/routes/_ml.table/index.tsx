@@ -97,7 +97,21 @@ export default function TablePage() {
 			</Card>
 			{table && (
 				<div className='flex flex-col gap-6'>
-					<div className='grid gap-2 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-center'>
+					<Form method='DELETE'>
+						<input
+							type='hidden'
+							name='intent'
+							value='delete'
+						/>
+						<Button
+							type='submit'
+							className='flex items-center gap-2'
+						>
+							<Trash2Icon size='1em' />{' '}
+							<span>Deletar mesa</span>
+						</Button>
+					</Form>
+					<div className='grid gap-2 grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>
 						{tableScores?.map((s) => (
 							<div key={s.game.id}>
 								<GameCard
@@ -110,17 +124,6 @@ export default function TablePage() {
 							</div>
 						))}
 					</div>
-					<Form method='DELETE'>
-						<input
-							type='hidden'
-							name='intent'
-							value='delete'
-						/>
-						<Button type='submit'>
-							<Trash2Icon />
-							Deletar mesa
-						</Button>
-					</Form>
 				</div>
 			)}
 		</div>
