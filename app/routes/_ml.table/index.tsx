@@ -21,7 +21,13 @@ import {
 import {GameCard} from './GameCard'
 import {withUser} from '~/lib/remix/wrapUser'
 import {Trash2Icon} from 'lucide-react'
-import {FormTableManager} from './FormTableManager'
+import {FormTableManager} from '../../components/FormTableManager'
+import {
+	Card,
+	CardContent,
+	CardHeader,
+	CardTitle,
+} from '~/components/ui/card'
 
 export const loader = withUser(
 	async ({request}: LoaderFunctionArgs) => {
@@ -44,12 +50,9 @@ export async function action({
 	request,
 }: ActionFunctionArgs) {
 	const formData = await request.formData()
-	const user = await assertAuthenticated(request)
 	switch (formData.get('intent')) {
 		case 'post': {
-			const userIds = (
-				formData.getAll('user-id') as string[]
-			).concat(user.id)
+			const userIds = formData.getAll('user-id') as string[]
 			const users = await getUsers(userIds)
 
 			const commitSession = await setOnSession(
@@ -77,23 +80,34 @@ export default function TablePage() {
 	const {following, user, table, tableScores} =
 		useLoaderData<typeof loader>()
 	return (
-		<>
-			<FormTableManager
-				following={following}
-				table={table ?? []}
-			/>
+		<div className='flex flex-col gap-6 px-2'>
+			<Card>
+				<CardHeader>
+					<CardTitle>Mesa</CardTitle>
+				</CardHeader>
+				<CardContent>
+					{user && (
+						<FormTableManager
+							user={user}
+							following={following}
+							table={table ?? []}
+						/>
+					)}
+				</CardContent>
+			</Card>
 			{table && (
-				<div>
-					<div className='grid gap-2 grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>
+				<div className='flex flex-col gap-6'>
+					<div className='grid gap-2 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-center'>
 						{tableScores?.map((s) => (
-							<GameCard
-								key={s.game.id}
-								avgValue={s.avgValue}
-								game={s.game as BggBoardgame}
-								tableScore={s.table}
-								table={table}
-								sessionUserId={user?.id ?? null}
-							/>
+							<div key={s.game.id}>
+								<GameCard
+									avgValue={s.avgValue}
+									game={s.game as BggBoardgame}
+									tableScore={s.table}
+									table={table}
+									sessionUserId={user?.id ?? null}
+								/>
+							</div>
 						))}
 					</div>
 					<Form method='DELETE'>
@@ -104,11 +118,11 @@ export default function TablePage() {
 						/>
 						<Button type='submit'>
 							<Trash2Icon />
-							Remover mesa
+							Deletar mesa
 						</Button>
 					</Form>
 				</div>
 			)}
-		</>
+		</div>
 	)
 }

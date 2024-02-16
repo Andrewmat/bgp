@@ -1,30 +1,37 @@
 import {LoaderFunctionArgs, json} from '@remix-run/node'
-import {Link, useLoaderData} from '@remix-run/react'
+import {useLoaderData} from '@remix-run/react'
+import {Card, CardContent} from '~/components/ui/card'
 import {getFollowing} from '~/lib/db/follow.server'
 import {assertAuthenticated} from '~/lib/login/auth.server'
+import {FormTableManager} from '../components/FormTableManager'
+import {getOnSession} from '~/lib/login/session.server'
 
 export async function loader({
 	request,
 }: LoaderFunctionArgs) {
-	const sessionUser = await assertAuthenticated(request)
+	const user = await assertAuthenticated(request)
 	const following = await getFollowing({
-		followedById: sessionUser.id,
+		followedById: user.id,
 	})
-	return json({following})
+	const table = await getOnSession(request, 'table')
+	return json({following, table, user})
 }
 
 export default function FollowingPage() {
-	const {following} = useLoaderData<typeof loader>()
+	const {following, table, user} =
+		useLoaderData<typeof loader>()
 
 	return (
-		<ul>
-			{following.map((follow) => (
-				<li key={follow.id}>
-					<Link to={`/user/${follow.username}`}>
-						{follow.name}
-					</Link>
-				</li>
-			))}
-		</ul>
+		<div className='container'>
+			<Card>
+				<CardContent className='pt-6'>
+					<FormTableManager
+						user={user}
+						following={following}
+						table={table ?? []}
+					/>
+				</CardContent>
+			</Card>
+		</div>
 	)
 }

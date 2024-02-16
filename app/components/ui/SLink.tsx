@@ -1,6 +1,8 @@
 import {
 	Link as RemixLink,
+	NavLink as RemixNavLink,
 	LinkProps,
+	NavLinkProps,
 } from '@remix-run/react'
 import {Button, ButtonProps} from './button'
 
@@ -10,6 +12,7 @@ interface SLinkProps extends LinkProps {
 	className?: ButtonProps['className']
 }
 
+// Link as Button
 export default function SLink({
 	variant = 'link',
 	size,

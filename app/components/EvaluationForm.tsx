@@ -20,10 +20,12 @@ import {cn} from '~/lib/utils'
 export function EvaluationForm({
 	gameId,
 	score,
+	hiddenTrashClassName = 'invisible',
 }: {
 	gameId: string
 	score: number | undefined
 	className?: string
+	hiddenTrashClassName?: 'hidden' | 'invisible'
 }) {
 	const [hover, setHover] = useState<number>()
 	const selected = score ? score : 0
@@ -76,7 +78,9 @@ export function EvaluationForm({
 					method='POST'
 					action={`/game/${gameId}/evaluate`}
 					className={cn(
-						score == null ? 'invisible' : 'animate-in',
+						score == null
+							? hiddenTrashClassName
+							: 'animate-in',
 					)}
 				>
 					<input

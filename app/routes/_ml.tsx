@@ -2,6 +2,8 @@ import {LoaderFunctionArgs} from '@remix-run/node'
 import {
 	Form,
 	Link,
+	NavLink,
+	NavLinkProps,
 	Outlet,
 	json,
 	useLoaderData,
@@ -13,7 +15,11 @@ import {
 	AvatarFallback,
 	AvatarImage,
 } from '~/components/ui/avatar'
-import {buttonVariants} from '~/components/ui/button'
+import {
+	Button,
+	ButtonProps,
+	buttonVariants,
+} from '~/components/ui/button'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -66,10 +72,15 @@ export default function MainLayout() {
 						height='30'
 					/>
 				</Link>
-				<div className='flex-grow'>
+				<div className='flex-grow flex gap-2'>
 					<div className='w-full max-w-md'>
 						<SearchBar />
 					</div>
+					<nav className='flex gap-2'>
+						<NavButton to='/home'>Home</NavButton>
+						<NavButton to='/following'>Seguindo</NavButton>
+						<NavButton to='/table'>Mesa</NavButton>
+					</nav>
 				</div>
 				{user ? (
 					<DropdownMenuHeader
@@ -118,6 +129,29 @@ export default function MainLayout() {
 				</Link>
 			</footer>
 		</div>
+	)
+}
+
+function NavButton({
+	to,
+	children,
+}: {
+	to: NavLinkProps['to']
+	children: ButtonProps['children']
+}) {
+	return (
+		<NavLink to={to}>
+			{({isActive, isPending}) => (
+				<Button
+					variant={
+						isActive || isPending ? 'secondary' : 'link'
+					}
+					disabled={isPending}
+				>
+					{children}
+				</Button>
+			)}
+		</NavLink>
 	)
 }
 
