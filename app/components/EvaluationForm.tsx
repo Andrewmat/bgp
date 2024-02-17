@@ -1,5 +1,10 @@
-import {useFetcher, useLocation} from '@remix-run/react'
 import {
+	useActionData,
+	useFetcher,
+	useLocation,
+} from '@remix-run/react'
+import {
+	CheckIcon,
 	Dice1Icon,
 	Dice2Icon,
 	Dice3Icon,
@@ -8,7 +13,8 @@ import {
 	Dice6Icon,
 	Trash2Icon,
 } from 'lucide-react'
-import {cloneElement, useState} from 'react'
+import {cloneElement, useEffect, useState} from 'react'
+import {toast} from 'sonner'
 import {
 	Tooltip,
 	TooltipContent,
@@ -16,6 +22,7 @@ import {
 	TooltipTrigger,
 } from '~/components/ui/tooltip'
 import {cn} from '~/lib/utils'
+import {action as evaluateAction} from '~/routes/game.$gameId.evaluate'
 
 export function EvaluationForm({
 	gameId,
@@ -30,7 +37,8 @@ export function EvaluationForm({
 	const [hover, setHover] = useState<number>()
 	const selected = score ? score : 0
 	const location = useLocation()
-	const fetcher = useFetcher()
+	const fetcher = useFetcher<typeof evaluateAction>()
+
 	const optimistic = fetcher.formData
 		? Number(fetcher.formData.get('score'))
 		: undefined
@@ -38,6 +46,22 @@ export function EvaluationForm({
 		typeof hover === 'number'
 			? hover
 			: optimistic ?? selected
+
+	useEffect(() => {
+		if (typeof fetcher.data !== 'object') {
+			return
+		}
+
+		toast.success(
+			{
+				delete: 'Avaliação removida',
+				post: 'Avaliado com sucesso',
+			}[fetcher.data.intent],
+			{
+				icon: <CheckIcon />,
+			},
+		)
+	}, [fetcher.data])
 	return (
 		<div className='w-full flex justify-stretch [&>*]:flex-grow'>
 			<TooltipProvider>

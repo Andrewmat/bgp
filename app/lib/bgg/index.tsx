@@ -1,9 +1,11 @@
 import {XMLParser} from 'fast-xml-parser'
+// import he from 'he'
 import {
 	prefixAttr,
 	type BggSchemaBoardgame,
 	type BggSchemaSearchResult,
 	type BggSchemaPollResultNumPlayers,
+	text,
 } from './schema'
 
 const xmlParser = new XMLParser({
@@ -12,6 +14,8 @@ const xmlParser = new XMLParser({
 	attributeNamePrefix: prefixAttr,
 	processEntities: true,
 })
+xmlParser.addEntity('#034', '"')
+xmlParser.addEntity('#039', "'")
 
 export type BggBoardgame = {
 	id: string
@@ -26,6 +30,8 @@ export type BggBoardgame = {
 	age: number
 	image: string
 	thumbnail: string
+	mechanics: {id: string; label: string}[]
+	bga: {implemented: boolean}
 	numPlayerSuggestion: {
 		numPlayers: string
 		best: string | undefined
@@ -97,7 +103,7 @@ export async function searchGames(
 			name:
 				typeof game.name === 'string'
 					? game.name
-					: game.name['#text'],
+					: game.name[text],
 			yearPublished: game.yearpublished,
 		}
 	}
@@ -116,7 +122,7 @@ async function fetchBgg(
 	searchParams?: URLSearchParams,
 ) {
 	const response = await fetch(
-		`https://api.geekdo.com/xmlapi/${endpoint}?${
+		`https://api.geekdo.com/xmlapi/${endpoint.startsWith('/') ? endpoint.slice(1) : endpoint}?${
 			searchParams ?? ''
 		}`,
 	)
@@ -124,20 +130,32 @@ async function fetchBgg(
 		throw response
 	}
 	const xml = await response.text()
+
 	const parsed = xmlParser.parse(xml) as unknown
 	return parsed
 }
 
+const FAMILY_BGA_ID = '70360'
+
 function adaptBoardGame(
 	game: BggSchemaBoardgame,
 ): BggBoardgame {
+	const family = Array.isArray(game.boardgamefamily)
+		? game.boardgamefamily
+		: [game.boardgamefamily]
+	const hasBGA = family.some(
+		(f) => f._objectid === FAMILY_BGA_ID,
+	)
+	const mechanics = Array.isArray(game.boardgamemechanic)
+		? game.boardgamemechanic
+		: [game.boardgamemechanic]
 	return {
 		id: game._objectid,
 		name: Array.isArray(game.name)
 			? game.name.find((p) => p._primary === 'true')?.[
-					'#text'
-				] ?? game.name[0]['#text']
-			: game.name['#text'],
+					text
+				] ?? game.name[0][text]
+			: game.name[text],
 		description: game.description,
 		minPlayers: game.minplayers,
 		maxPlayers: game.maxplayers,
@@ -148,6 +166,11 @@ function adaptBoardGame(
 		age: game.age,
 		image: game.image,
 		thumbnail: game.thumbnail,
+		mechanics: mechanics.map((m) => ({
+			label: m[text],
+			id: m._objectid,
+		})),
+		bga: {implemented: hasBGA},
 		numPlayerSuggestion: (() => {
 			const poll = game.poll.find(
 				(p) => p._name === 'suggested_numplayers',

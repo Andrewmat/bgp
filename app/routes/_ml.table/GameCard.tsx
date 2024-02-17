@@ -3,6 +3,7 @@ import {DicesIcon, UnfoldHorizontalIcon} from 'lucide-react'
 import {useMemo} from 'react'
 import {EvaluationForm} from '~/components/EvaluationForm'
 import {NumPlayerSuggestion} from '~/components/NumPlayerSuggestion'
+import {Stats} from '~/components/Stats'
 import {Alert} from '~/components/ui/alert'
 import {
 	Avatar,
@@ -82,53 +83,9 @@ export function GameCard({
 								variant='ghost'
 								className='flex gap-4 items-center'
 							>
-								{avgValue ? (
-									<>
-										<span className='flex gap-2'>
-											<TooltipProvider>
-												<Tooltip>
-													<TooltipTrigger asChild>
-														<DicesIcon />
-													</TooltipTrigger>
-													<TooltipContent>
-														Média de nota da mesa
-													</TooltipContent>
-												</Tooltip>
-											</TooltipProvider>
-											<span>{avgValue?.toFixed(2)}</span>
-											<span>
-												({tableScore.length} votos)
-											</span>
-										</span>
-										<span className='flex gap-2'>
-											<TooltipProvider>
-												<Tooltip>
-													<TooltipTrigger asChild>
-														<UnfoldHorizontalIcon />
-													</TooltipTrigger>
-													<TooltipContent>
-														Variância padrão da nota da mesa
-													</TooltipContent>
-												</Tooltip>
-											</TooltipProvider>
-											<span>
-												{(
-													tableScore.reduce(
-														(s, ts) =>
-															s +
-															Math.pow(
-																ts.score - avgValue,
-																2,
-															),
-														0,
-													) / tableScore.length
-												).toFixed(2)}
-											</span>
-										</span>
-									</>
-								) : (
-									'Notas de quem você tá seguindo'
-								)}
+								<Stats
+									values={tableScore.map((ts) => ts.score)}
+								/>
 							</Button>
 						</DrawerTrigger>
 						<DrawerContent>

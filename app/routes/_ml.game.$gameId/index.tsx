@@ -19,14 +19,13 @@ import {
 } from '~/lib/db/score.server'
 import {withUser} from '~/lib/remix/wrapUser'
 import {EvaluationForm} from '~/components/EvaluationForm'
-import {PlayersTable} from './PlayerSuggestionTable'
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
 } from '~/components/ui/tooltip'
-import {useMemo} from 'react'
+import {PropsWithChildren, useMemo} from 'react'
 import {
 	Table,
 	TableBody,
@@ -36,6 +35,9 @@ import {
 	TableRow,
 } from '~/components/ui/table'
 import {DiceScore} from '~/components/DiceScore'
+import {Separator} from '~/components/ui/separator'
+import SLink from '~/components/ui/SLink'
+import {Stats} from '~/components/Stats'
 
 export const loader = withUser(async ({params, user}) => {
 	const gameId = params.gameId
@@ -82,21 +84,25 @@ export default function GameDetailsPage() {
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<strong>
+						<div className='flex flex-col gap-2 items-start justify-start'>
 							<Stats
-								numbers={followingScore.map((s) => s.value)}
+								values={followingScore.map((s) => s.value)}
 							/>
-						</strong>
+						</div>
 						<Table>
 							<TableHeader>
 								<TableHead>Usuário</TableHead>
-								<TableHead>Nota</TableHead>
+								<TableHead className='text-center'>
+									Nota
+								</TableHead>
 							</TableHeader>
 							<TableBody>
 								{followingScore.map((fs) => (
 									<TableRow key={fs.user.id}>
-										<TableCell>{fs.user.name}</TableCell>
-										<TableCell>
+										<TableCell className='p-1'>
+											{fs.user.name}
+										</TableCell>
+										<TableCell className='p-1 text-center'>
 											<DiceScore score={fs.value} />
 										</TableCell>
 									</TableRow>
@@ -121,7 +127,7 @@ function GameBggInfo(
 	const {game, showEvaluation} = props
 	return (
 		<Card>
-			<CardHeader className='flex flex-row justify-between'>
+			<CardHeader className='flex flex-col gap-2 sm:flex-row sm:justify-between'>
 				<div className='flex gap-2'>
 					<Avatar>
 						<AvatarImage src={game.image} />
@@ -152,7 +158,7 @@ function GameBggInfo(
 						</TooltipProvider>
 					</CardTitle>
 				</div>
-				<div className='w-[200px] md:w-[300px]'>
+				<div className='w-[260px] md:w-[300px]'>
 					{showEvaluation && (
 						<EvaluationForm
 							gameId={game.id}
@@ -163,8 +169,8 @@ function GameBggInfo(
 				</div>
 			</CardHeader>
 			<CardContent>
-				<div className='grid gap-2 md:grid-cols-4 lg:grid-cols-6'>
-					<div>
+				<div className='flex flex-col gap-4'>
+					<Section title='Geral'>
 						<RangeInfo
 							min={game.minPlayers}
 							max={game.maxPlayers}
@@ -179,15 +185,39 @@ function GameBggInfo(
 							max={game.maxPlayTime}
 							appendix='min'
 						/>
-					</div>
-					<div className='md:col-span-3 lg:col-span-5'>
-						<Card>
-							<PlayersTable game={game as BggBoardgame} />
-						</Card>
-					</div>
+						{game.bga.implemented && <em>Tem no BGA!</em>}
+					</Section>
+					<Section title='Mecânicas'>
+						<div className='text-muted-foreground'>
+							{game.mechanics.map((m) => (
+								<div key={m.id}>
+									<Link
+										to={`https://boardgamegeek.com/boardgamemechanic/${m.id}`}
+										rel='noreferrer'
+										className='hover:underline focus:underline'
+									>
+										{m.label}
+									</Link>
+								</div>
+							))}
+						</div>
+					</Section>
 				</div>
 			</CardContent>
 		</Card>
+	)
+}
+
+function Section({
+	children,
+	title,
+}: PropsWithChildren<{title: React.ReactNode}>) {
+	return (
+		<div className='text-sm'>
+			<h2 className='text-lg'>{title}</h2>
+			<Separator className='my-2' />
+			{children}
+		</div>
 	)
 }
 
@@ -204,29 +234,5 @@ function RangeInfo({
 		<p>
 			{min === max ? min : `${min} - ${max}`} {appendix}
 		</p>
-	)
-}
-
-function Stats({numbers}: {numbers: number[]}) {
-	const {mean, deviation} = useMemo(() => {
-		const sum = numbers.reduce((s, x) => s + x, 0)
-		const mean = sum / numbers.length
-		const deviation =
-			numbers.reduce(
-				(s, x) => s + Math.pow(x - mean, 2),
-				0,
-			) / numbers.length
-		return {
-			mean,
-			deviation,
-		}
-	}, [numbers])
-
-	return (
-		<>
-			&mu;: {mean}
-			<br />
-			&sigma;: {deviation}
-		</>
 	)
 }

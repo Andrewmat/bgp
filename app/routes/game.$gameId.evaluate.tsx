@@ -1,4 +1,8 @@
-import {LoaderFunctionArgs, redirect} from '@remix-run/node'
+import {
+	LoaderFunctionArgs,
+	json,
+	redirect,
+} from '@remix-run/node'
 import {
 	deleteScore,
 	getScoreByUserGame,
@@ -26,12 +30,12 @@ export async function action({
 	switch (evaluationForm.get('method')) {
 		case 'delete': {
 			await methodDelete({userId: user.id, gameId})
-			break
+			return json({success: true, intent: 'delete'})
 		}
 		default: {
 			const score = evaluationForm.get('score')
 			await methodPost({userId: user.id, gameId, score})
-			break
+			return json({success: true, intent: 'post'})
 		}
 	}
 
@@ -40,8 +44,6 @@ export async function action({
 	// 	typeof evaluationForm.get('location') === 'string'
 	// 		? (evaluationForm.get('location') as string)
 	// 		: `/game/${gameId}`
-
-	return null
 }
 
 async function methodPost({

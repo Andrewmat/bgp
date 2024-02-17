@@ -7,8 +7,10 @@ import {
 	Outlet,
 	json,
 	useLoaderData,
+	useNavigation,
 } from '@remix-run/react'
 import {HeartIcon} from 'lucide-react'
+import {PropsWithChildren, useEffect, useState} from 'react'
 import {SearchBar} from '~/components/SearchBar'
 import SLink from '~/components/ui/SLink'
 import {
@@ -27,6 +29,7 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
+import {Progress} from '~/components/ui/progress'
 import {getSessionUser} from '~/lib/login/auth.server'
 import {cn} from '~/lib/utils'
 
@@ -55,7 +58,14 @@ export default function MainLayout() {
 						<DropdownMenuHeader
 							name={user.name}
 							profileImage={null}
-						/>
+						>
+							<DropdownMenuItem asChild>
+								<Link to='/following'>Seguindo</Link>
+							</DropdownMenuItem>
+							<DropdownMenuItem asChild>
+								<Link to='/table'>Mesa</Link>
+							</DropdownMenuItem>
+						</DropdownMenuHeader>
 					) : (
 						<SLink to='/login' variant='default'>
 							Entrar
@@ -78,7 +88,6 @@ export default function MainLayout() {
 						<SearchBar />
 					</div>
 					<nav className='flex gap-2'>
-						<NavButton to='/home'>Home</NavButton>
 						<NavButton to='/following'>Seguindo</NavButton>
 						<NavButton to='/table'>Mesa</NavButton>
 					</nav>
@@ -140,7 +149,35 @@ export default function MainLayout() {
 					/>
 				</Link>
 			</footer>
+			<ProgressLoading totalTime={1000} />
 		</div>
+	)
+}
+
+function ProgressLoading({totalTime}: {totalTime: number}) {
+	const nav = useNavigation()
+	const isLoading = nav.state === 'loading'
+	const [progress, setProgress] = useState(0)
+
+	useEffect(() => {
+		if (!isLoading) {
+			setProgress(0)
+			return
+		}
+		const iId = window.setInterval(() => {
+			setProgress((v) => Math.min(100, v + 20))
+		}, totalTime / 5)
+		return () => {
+			window.clearInterval(iId)
+		}
+	}, [isLoading, totalTime])
+	return (
+		isLoading && (
+			<Progress
+				className='fixed top-0 left-0 w-full h-1 rounded-none'
+				value={progress}
+			/>
+		)
 	)
 }
 
@@ -168,12 +205,13 @@ function NavButton({
 }
 
 function DropdownMenuHeader({
+	children,
 	profileImage,
 	name,
-}: {
+}: PropsWithChildren<{
 	profileImage?: string | null
 	name: string
-}) {
+}>) {
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger className='inline-flex items-center gap-2'>
@@ -191,6 +229,7 @@ function DropdownMenuHeader({
 				<DropdownMenuItem asChild>
 					<Link to='/me'>Meu perfil</Link>
 				</DropdownMenuItem>
+				{children}
 				<DropdownMenuItem asChild>
 					<Link to='/config'>Configurações</Link>
 				</DropdownMenuItem>

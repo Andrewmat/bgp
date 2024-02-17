@@ -1,4 +1,4 @@
-const text = '#text'
+export const text = '#text'
 export const prefixAttr = '_'
 type PrefixAttr = typeof prefixAttr
 

@@ -7,7 +7,12 @@ export function DrawingWrapper({
 }) {
 	return (
 		<div className='w-full flex-grow mt-6 flex flex-col items-center gap-6 justify-center self-center'>
-			<img className='h-[200px]' src={drawing} alt='' />
+			<img
+				className='h-[200px]'
+				src={drawing}
+				alt=''
+				height='200'
+			/>
 
 			<p className='max-w-prose font-bold text-large text-center text-pretty'>
 				{text}

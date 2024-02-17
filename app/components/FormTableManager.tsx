@@ -45,7 +45,7 @@ export function FormTableManager({
 							? table.some((t) => t.id === user.id)
 							: true
 					}
-					to='/user/me'
+					to='/me'
 					value={user.id}
 				>
 					{user.name}

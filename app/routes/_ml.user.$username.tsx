@@ -10,6 +10,7 @@ import {
 	useParams,
 	useRouteError,
 } from '@remix-run/react'
+import {AlertCircleIcon} from 'lucide-react'
 import invariant from 'tiny-invariant'
 import {FollowButton} from '~/components/FollowButton'
 import SLink from '~/components/ui/SLink'
@@ -31,6 +32,7 @@ import {
 	assertAuthenticated,
 	getSessionUser,
 } from '~/lib/login/auth.server'
+import notFoundImage from '~/assets/undraw_empty.svg'
 
 export async function loader({
 	params,
@@ -129,9 +131,20 @@ export function ErrorBoundary() {
 	}
 
 	return (
-		<div>
-			<Alert variant='destructive'>
-				User {username} not found!
+		<div className='flex items-center justify-center'>
+			<Alert
+				variant='destructive'
+				className='flex flex-col gap-6 md:aspect-square max-w-md items-center justify-center'
+			>
+				<img
+					src={notFoundImage}
+					className='h-[150px]'
+					alt=''
+					height='150'
+				/>
+				<p className='max-w-prose font-bold text-large text-center text-pretty'>
+					Usuário {username} não foi encontrado
+				</p>
 			</Alert>
 		</div>
 	)
