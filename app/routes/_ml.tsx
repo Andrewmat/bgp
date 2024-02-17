@@ -152,17 +152,17 @@ function NavButton({
 	children: ButtonProps['children']
 }) {
 	return (
-		<NavLink to={to}>
-			{({isActive, isPending}) => (
-				<Button
-					variant={
-						isActive || isPending ? 'secondary' : 'link'
-					}
-					disabled={isPending}
-				>
-					{children}
-				</Button>
-			)}
+		<NavLink
+			to={to}
+			className={({isActive, isPending}) =>
+				buttonVariants({
+					variant:
+						isActive || isPending ? 'secondary' : 'link',
+					className: isPending ? 'opacity-60' : undefined,
+				})
+			}
+		>
+			{children}
 		</NavLink>
 	)
 }
@@ -188,20 +188,21 @@ function DropdownMenuHeader({
 				<span className='font-bold'>{name}</span>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent>
-				<DropdownMenuItem>
+				<DropdownMenuItem asChild>
 					<Link to='/me'>Meu perfil</Link>
 				</DropdownMenuItem>
-				<DropdownMenuItem>
-					<Link to='/following'>Seguindo</Link>
-				</DropdownMenuItem>
-				<DropdownMenuItem>
+				<DropdownMenuItem asChild>
 					<Link to='/config'>Configurações</Link>
 				</DropdownMenuItem>
 				<DropdownMenuItem>
-					<Form method='POST' action='/logout'>
+					<Form
+						method='POST'
+						action='/logout'
+						className='w-full'
+					>
 						<button
 							type='submit'
-							className='appearance-none'
+							className='appearance-none text-start w-full'
 						>
 							Sair
 						</button>

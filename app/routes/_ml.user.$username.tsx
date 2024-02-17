@@ -6,21 +6,21 @@ import {
 import {
 	Outlet,
 	isRouteErrorResponse,
-	useFetcher,
 	useLoaderData,
 	useParams,
 	useRouteError,
 } from '@remix-run/react'
 import invariant from 'tiny-invariant'
+import {FollowButton} from '~/components/FollowButton'
 import SLink from '~/components/ui/SLink'
 import {Alert} from '~/components/ui/alert'
-import {Button} from '~/components/ui/button'
 import {
 	Card,
 	CardContent,
 	CardHeader,
 	CardTitle,
 } from '~/components/ui/card'
+import {TooltipProvider} from '~/components/ui/tooltip'
 import {
 	followUser,
 	getIsFollowing,
@@ -95,18 +95,6 @@ export default function UserPage() {
 	const {userFromPage, sessionUser, isFollowing} =
 		useLoaderData<typeof loader>()
 
-	const relationFetcher = useFetcher()
-	const finalIsFollowing = (() => {
-		const optimisticIntent =
-			relationFetcher.formData?.get('intent')
-		if (optimisticIntent === 'follow') {
-			return true
-		} else if (optimisticIntent === 'unfollow') {
-			return false
-		}
-		return isFollowing
-	})()
-
 	return (
 		<div className='px-3 md:px-6 lg:px-8'>
 			<Card>
@@ -115,37 +103,15 @@ export default function UserPage() {
 						<CardTitle>{userFromPage.name}</CardTitle>
 						<small>{userFromPage.username}</small>
 					</div>
-					{sessionUser && (
-						<>
-							{sessionUser.id !== userFromPage.id ? (
-								<relationFetcher.Form method='POST'>
-									<input
-										type='hidden'
-										name='intent'
-										value={
-											finalIsFollowing
-												? 'unfollow'
-												: 'follow'
-										}
-									/>
-									<Button
-										disabled={
-											finalIsFollowing !== isFollowing
-										}
-									>
-										{finalIsFollowing
-											? 'Deixar de seguir'
-											: 'Seguir'}
-									</Button>
-								</relationFetcher.Form>
-							) : (
-								<>
-									<SLink to='/following'>Seguindo</SLink>
-									<SLink to='/followers'>Seguidores</SLink>
-								</>
-							)}
-						</>
-					)}
+					{sessionUser &&
+						sessionUser.id !== userFromPage.id && (
+							<TooltipProvider>
+								<FollowButton
+									username={userFromPage.username}
+									following={isFollowing || false}
+								/>
+							</TooltipProvider>
+						)}
 				</CardHeader>
 				<CardContent>
 					<Outlet />

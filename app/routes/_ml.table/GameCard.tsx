@@ -111,7 +111,6 @@ export function GameCard({
 													</TooltipContent>
 												</Tooltip>
 											</TooltipProvider>
-
 											<span>
 												{(
 													tableScore.reduce(

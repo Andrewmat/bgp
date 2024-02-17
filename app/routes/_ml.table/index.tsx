@@ -80,7 +80,7 @@ export default function TablePage() {
 	const {following, user, table, tableScores} =
 		useLoaderData<typeof loader>()
 	return (
-		<div className='flex flex-col gap-6 px-2'>
+		<div className='flex flex-col gap-6'>
 			<Card>
 				<CardHeader>
 					<CardTitle>Mesa</CardTitle>

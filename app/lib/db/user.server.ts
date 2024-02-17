@@ -20,9 +20,10 @@ export async function getUserByUsername(username: string) {
 export async function searchUsers(
 	term: string,
 	exact: boolean = false,
+	followedById: string | undefined = undefined,
 ) {
 	const search = exact ? {equals: term} : {contains: term}
-	return db.user.findMany({
+	const result = await db.user.findMany({
 		where: {
 			OR: [
 				//
@@ -35,8 +36,19 @@ export async function searchUsers(
 			username: true,
 			name: true,
 			discordId: true,
+			following: followedById
+				? {
+						select: {followedById: true},
+						where: {followedById},
+						take: 1,
+					}
+				: undefined,
 		},
 	})
+	return result.map((r) => ({
+		...r,
+		following: r.following.length > 0,
+	}))
 }
 
 export async function insertMockUser() {

@@ -1,6 +1,11 @@
 import {LoaderFunctionArgs, json} from '@remix-run/node'
 import {useLoaderData} from '@remix-run/react'
-import {Card, CardContent} from '~/components/ui/card'
+import {
+	Card,
+	CardContent,
+	CardHeader,
+	CardTitle,
+} from '~/components/ui/card'
 import {getFollowing} from '~/lib/db/follow.server'
 import {assertAuthenticated} from '~/lib/login/auth.server'
 import {FormTableManager} from '../components/FormTableManager'
@@ -18,20 +23,22 @@ export async function loader({
 }
 
 export default function FollowingPage() {
+	console.log
 	const {following, table, user} =
 		useLoaderData<typeof loader>()
 
 	return (
-		<div className='container'>
-			<Card>
-				<CardContent className='pt-6'>
-					<FormTableManager
-						user={user}
-						following={following}
-						table={table ?? []}
-					/>
-				</CardContent>
-			</Card>
-		</div>
+		<Card>
+			<CardHeader>
+				<CardTitle>Seguindo</CardTitle>
+			</CardHeader>
+			<CardContent className='pt-6'>
+				<FormTableManager
+					user={user}
+					following={following}
+					table={table ?? []}
+				/>
+			</CardContent>
+		</Card>
 	)
 }

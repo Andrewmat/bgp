@@ -10,8 +10,10 @@ import noResultsImage from '~/assets/undraw_empty.svg'
 import emptyStateImage from '~/assets/undraw_searching.svg'
 import {AlertClosable} from '~/components/ui/alert-closable'
 import {searchUsers} from '~/lib/db/user.server'
-import {ResultsUsers} from './ResultsUsers'
-import {ResultsGames} from './ResultsGames'
+import {getSessionUser} from '~/lib/login/auth.server'
+import {TooltipProvider} from '~/components/ui/tooltip'
+import {ResultUser} from './ResultUser'
+import {ResultGame} from './ResultGame'
 import {DrawingWrapper} from './DrawingWrapper'
 
 export async function loader({
@@ -24,12 +26,14 @@ export async function loader({
 		return redirect('/search')
 	}
 
+	const user = await getSessionUser(request)
 	const entity =
 		searchParams.get('e') === 'user' ? 'user' : 'game'
 	if (term == null) {
 		return json({
 			term: null,
 			entity,
+			user,
 			results: null,
 			errorMessage: null,
 		} as const)
@@ -40,6 +44,7 @@ export async function loader({
 			term,
 			entity,
 			results: null,
+			user,
 			errorMessage:
 				'Termo de pesquisa deve ter no mínimo 3 caracteres',
 		} as const)
@@ -48,11 +53,16 @@ export async function loader({
 	const exact = searchParams.get('exact')
 	try {
 		if (entity === 'user') {
-			const results = await searchUsers(term)
+			const results = await searchUsers(
+				term,
+				exact === 'true',
+				user?.id,
+			)
 			return json({
 				term,
 				entity,
 				results,
+				user,
 				errorMessage: null,
 			} as const)
 		} else {
@@ -64,6 +74,7 @@ export async function loader({
 				term,
 				entity,
 				results,
+				user,
 				errorMessage: null,
 			} as const)
 		}
@@ -71,6 +82,7 @@ export async function loader({
 		return json({
 			term,
 			entity,
+			user: null,
 			results: null,
 			errorMessage:
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -81,16 +93,11 @@ export async function loader({
 }
 
 export default function SearchPage() {
-	const {entity, results, term, errorMessage} =
+	const {entity, results, term, errorMessage, user} =
 		useLoaderData<typeof loader>()
 
-	if (entity === 'user') {
-		results
-	} else {
-		results
-	}
 	return (
-		<div className='w-full flex-grow flex gap-6'>
+		<div className='container flex-grow flex flex-col gap-6'>
 			{errorMessage && (
 				<AlertClosable
 					variant='destructive'
@@ -106,11 +113,30 @@ export default function SearchPage() {
 				<>
 					{results.length > 0 ? (
 						<>
-							{entity === 'user' ? (
-								<ResultsUsers results={results} />
-							) : (
-								<ResultsGames results={results} />
-							)}
+							<h2 className='mb-2'>
+								{entity === 'user' ? 'Usuários' : 'Jogos'}{' '}
+								&quot;{term}&quot; ({results.length})
+							</h2>
+							<div className='w-full'>
+								<TooltipProvider>
+									<ul className='grid sm:grid-cols-2 lg:grid-cols-3 gap-2'>
+										{entity === 'user'
+											? results.map((u) => (
+													<li key={u.id}>
+														<ResultUser
+															user={u}
+															sessionUserId={user?.id}
+														/>
+													</li>
+												))
+											: results.map((g) => (
+													<li key={g.id}>
+														<ResultGame game={g} />
+													</li>
+												))}
+									</ul>
+								</TooltipProvider>
+							</div>
 						</>
 					) : (
 						<DrawingWrapper

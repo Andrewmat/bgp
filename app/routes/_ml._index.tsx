@@ -50,12 +50,12 @@ export default function IndexPage() {
 					Entrar
 				</SLink>
 				<SLink
-					to='/home'
+					to='/search'
 					variant='secondary'
 					size='lg'
 					className='rounded-full text-lg'
 				>
-					Home
+					Busca
 				</SLink>
 			</div>
 		</div>
