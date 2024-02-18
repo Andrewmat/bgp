@@ -30,6 +30,7 @@ export async function loader({
 		rawScores.map((score) => getGameId(score.gameId)),
 	)
 	return json({
+		scorePage,
 		scores: rawScores.map((s) => ({
 			score: s.value,
 			game: games.find((g) => g.id === s.gameId)!,
@@ -38,9 +39,10 @@ export async function loader({
 }
 
 export default function UserScores() {
-	const {scores} = useLoaderData<typeof loader>()
+	const {scores, scorePage} = useLoaderData<typeof loader>()
 	return (
 		<Scores
+			scorePage={scorePage}
 			scores={
 				scores as {score: number; game: BggBoardgame}[]
 			}
