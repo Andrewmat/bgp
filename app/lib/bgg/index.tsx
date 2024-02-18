@@ -144,7 +144,7 @@ function adaptBoardGame(
 		? game.boardgamefamily
 		: [game.boardgamefamily]
 	const hasBGA = family.some(
-		(f) => f._objectid === FAMILY_BGA_ID,
+		(f) => f?._objectid === FAMILY_BGA_ID,
 	)
 	const mechanics = Array.isArray(game.boardgamemechanic)
 		? game.boardgamemechanic
