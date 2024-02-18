@@ -20,8 +20,7 @@ export async function loader({
 
 	const scorePage =
 		Number(searchParams.get('score_page')) || 1
-	const scorePageSize =
-		Number(searchParams.get('score_page_size')) || 10
+	const scorePageSize = 12
 	const rawScores = await getScoresByUser({
 		userId: user.id,
 		skip: (scorePage - 1) * scorePageSize,

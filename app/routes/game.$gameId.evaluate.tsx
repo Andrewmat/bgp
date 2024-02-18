@@ -19,7 +19,7 @@ export async function action({
 	params,
 }: LoaderFunctionArgs) {
 	const user = await getSessionUser(request)
-	if (!user || typeof user.email !== 'string') {
+	if (!user) {
 		throw new Response('Unauthorized', {
 			status: 401,
 		})
@@ -59,7 +59,7 @@ async function methodPost({
 		typeof gameId !== 'string' ||
 		typeof score !== 'string' ||
 		isNaN(Number(score)) ||
-		Number(score) > 6 ||
+		Number(score) > 10 ||
 		Number(score) < 1
 	) {
 		throw new Response(

@@ -1,18 +1,5 @@
-import {
-	useActionData,
-	useFetcher,
-	useLocation,
-} from '@remix-run/react'
-import {
-	CheckIcon,
-	Dice1Icon,
-	Dice2Icon,
-	Dice3Icon,
-	Dice4Icon,
-	Dice5Icon,
-	Dice6Icon,
-	Trash2Icon,
-} from 'lucide-react'
+import {useFetcher, useLocation} from '@remix-run/react'
+import {CheckIcon, StarIcon, Trash2Icon} from 'lucide-react'
 import {cloneElement, useEffect, useState} from 'react'
 import {toast} from 'sonner'
 import {
@@ -51,7 +38,6 @@ export function EvaluationForm({
 		if (typeof fetcher.data !== 'object') {
 			return
 		}
-
 		toast.success(
 			{
 				delete: 'Avaliação removida',
@@ -62,89 +48,97 @@ export function EvaluationForm({
 			},
 		)
 	}, [fetcher.data])
+
 	return (
-		<div className='w-full flex justify-stretch [&>*]:flex-grow'>
+		<div className='w-full'>
 			<TooltipProvider>
-				{dices.map((element, i) => (
+				<div className='grid grid-cols-6 gap-2'>
+					{Array.from({length: 10}).map((_, i) => (
+						<fetcher.Form
+							key={i}
+							method='POST'
+							action={`/game/${gameId}/evaluate`}
+							className='flex items-center mx-auto'
+						>
+							<input
+								type='hidden'
+								name='score'
+								value={i + 1}
+							/>
+							<input
+								type='hidden'
+								name='location'
+								value={location.pathname}
+							/>
+							<SimpleTooltip
+								tooltip={<p>Nota {i + 1}</p>}
+								asChild
+							>
+								<button
+									className={cn(
+										'appearance-none focus-visible:ring focus-visible:outline-none',
+									)}
+									onMouseOver={() => setHover(i + 1)}
+									onFocus={() => setHover(i + 1)}
+									onMouseOut={() => setHover(undefined)}
+									onBlur={() => setHover(undefined)}
+								>
+									<StarIcon
+										className={cn(
+											'fill-muted stroke-muted-foreground',
+											'hover:fill-yellow-400 hover:stroke-black',
+											'dark:hover:fill-yellow-600 dark:hover:stroke-white',
+											i < highlighted &&
+												'fill-yellow-200 stroke-yellow-300 dark:fill-yellow-800 dark:stroke-yellow-700',
+										)}
+									/>
+								</button>
+							</SimpleTooltip>
+						</fetcher.Form>
+					))}
+
 					<fetcher.Form
-						key={`dice${i}`}
 						method='POST'
 						action={`/game/${gameId}/evaluate`}
-						className='flex items-center'
+						className={cn(
+							'col-start-6 row-start-1 row-end-3 flex items-center',
+							score == null
+								? hiddenTrashClassName
+								: 'animate-in',
+						)}
 					>
 						<input
 							type='hidden'
-							name='score'
-							value={i + 1}
+							name='method'
+							value='delete'
 						/>
-						<input
-							type='hidden'
-							name='location'
-							value={location.pathname}
-						/>
-						<SimpleTooltip tooltip={<p>Nota {i + 1}</p>}>
-							{cloneElement(element, {
-								className: cn(
-									'fill-muted stroke-muted-foreground hover:fill-accent hover:stroke-accent-foreground focus-visible:fill-accent focus-visible:stroke-accent-foreground',
-									i < highlighted &&
-										'fill-mutedaccent stroke-mutedaccent-foreground',
-								),
-								onMouseOver: () => setHover(i + 1),
-								onFocus: () => setHover(i + 1),
-								onMouseOut: () => setHover(undefined),
-								onBlur: () => setHover(undefined),
-							})}
+						<SimpleTooltip tooltip={<p>Deletar nota</p>}>
+							<Trash2Icon
+								size='100%'
+								className='fill-muted stroke-muted-foreground hover:fill-destructive hover:stroke-destructive-foreground focus-visible:fill-destructive focus-visible:stroke-destructive-foreground'
+							/>
 						</SimpleTooltip>
 					</fetcher.Form>
-				))}
-
-				<fetcher.Form
-					method='POST'
-					action={`/game/${gameId}/evaluate`}
-					className={cn(
-						score == null
-							? hiddenTrashClassName
-							: 'animate-in',
-					)}
-				>
-					<input
-						type='hidden'
-						name='method'
-						value='delete'
-					/>
-					<SimpleTooltip tooltip={<p>Deletar nota</p>}>
-						<Trash2Icon
-							size='100%'
-							className='fill-muted stroke-muted-foreground hover:fill-destructive hover:stroke-destructive-foreground focus-visible:fill-destructive focus-visible:stroke-destructive-foreground'
-						/>
-					</SimpleTooltip>
-				</fetcher.Form>
+				</div>
 			</TooltipProvider>
 		</div>
 	)
 }
 
-const dices = [
-	/* eslint-disable react/jsx-key */
-	<Dice1Icon size='100%' />,
-	<Dice2Icon size='100%' />,
-	<Dice3Icon size='100%' />,
-	<Dice4Icon size='100%' />,
-	<Dice5Icon size='100%' />,
-	<Dice6Icon size='100%' />,
-	/* eslint-enable react/jsx-key */
-] as const
-
 function SimpleTooltip({
 	tooltip,
 	children,
+	asChild,
 }: {
 	tooltip: React.ReactNode
 	children: React.ReactNode
+	asChild?: boolean
 }) {
 	return (
 		<Tooltip>
-			<TooltipTrigger>{children}</TooltipTrigger>
+			<TooltipTrigger asChild={asChild}>
+				{children}
+			</TooltipTrigger>
 			<TooltipContent>{tooltip}</TooltipContent>
 		</Tooltip>
 	)

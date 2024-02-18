@@ -34,7 +34,7 @@ import {
 	TableHeader,
 	TableRow,
 } from '~/components/ui/table'
-import {DiceScore} from '~/components/DiceScore'
+import {ScoreDisplay} from '~/components/DiceScore'
 import {Separator} from '~/components/ui/separator'
 import SLink from '~/components/ui/SLink'
 import {Stats} from '~/components/Stats'
@@ -103,7 +103,7 @@ export default function GameDetailsPage() {
 											{fs.user.name}
 										</TableCell>
 										<TableCell className='p-1 text-center'>
-											<DiceScore score={fs.value} />
+											<ScoreDisplay score={fs.value} />
 										</TableCell>
 									</TableRow>
 								))}

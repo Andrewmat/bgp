@@ -1,6 +1,9 @@
 import {LoaderFunctionArgs, json} from '@remix-run/node'
-import {useLoaderData} from '@remix-run/react'
+import {useLoaderData, useLocation} from '@remix-run/react'
+import {ArrowLeftIcon, ArrowRightIcon} from 'lucide-react'
 import {ScoreGame, Scores} from '~/components/Scores'
+import SLink from '~/components/ui/SLink'
+import {Button} from '~/components/ui/button'
 import {getGameId} from '~/lib/bgg'
 import {getScoresByUser} from '~/lib/db/score.server'
 import {assertAuthenticated} from '~/lib/login/auth.server'
@@ -13,8 +16,7 @@ export async function loader({
 
 	const scorePage =
 		Number(searchParams.get('score_page')) || 1
-	const scorePageSize =
-		Number(searchParams.get('score_page_size')) || 10
+	const scorePageSize = 12
 	const rawScores = await getScoresByUser({
 		userId: user.id,
 		skip: (scorePage - 1) * scorePageSize,
@@ -24,6 +26,7 @@ export async function loader({
 		rawScores.map((score) => getGameId(score.gameId)),
 	)
 	return json({
+		scorePage,
 		scores: rawScores.map((s) => ({
 			score: s.value,
 			game: games.find((g) => g.id === s.gameId)!,
@@ -32,17 +35,19 @@ export async function loader({
 }
 
 export default function HomePage() {
-	const {scores} = useLoaderData<typeof loader>()
+	const {scores, scorePage} = useLoaderData<typeof loader>()
+	const {pathname, search} = useLocation()
+	const prevParams = new URLSearchParams(search)
+	prevParams.set('score_page', String(scorePage - 1))
+	const nextParams = new URLSearchParams(search)
+	nextParams.set('score_page', String(scorePage + 1))
 	return (
-		<div>
-			<h1 className='text-xl mb-3'>Notas</h1>
-			{scores.length > 0 ? (
-				<Scores scores={scores as ScoreGame[]} />
-			) : (
-				<div>
-					Parece que você não deu nota para nenhum jogo
-				</div>
-			)}
+		<div className='flex flex-col gap-3'>
+			<h2 className='text-xl'>Notas</h2>
+			<Scores
+				scorePage={scorePage}
+				scores={scores as ScoreGame[]}
+			/>
 		</div>
 	)
 }

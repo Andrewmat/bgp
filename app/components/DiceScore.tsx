@@ -1,11 +1,4 @@
-import {
-	Dice1Icon,
-	Dice2Icon,
-	Dice3Icon,
-	Dice4Icon,
-	Dice5Icon,
-	Dice6Icon,
-} from 'lucide-react'
+import {StarIcon} from 'lucide-react'
 import {
 	Tooltip,
 	TooltipContent,
@@ -13,23 +6,21 @@ import {
 	TooltipTrigger,
 } from './ui/tooltip'
 
-export function DiceScore({score}: {score: number}) {
+export function ScoreDisplay({score}: {score: number}) {
 	return (
 		<TooltipProvider>
 			<Tooltip>
-				<TooltipTrigger>
-					{dices[score as keyof typeof dices] ?? null}
+				<TooltipTrigger className='inline-flex gap-2 items-center'>
+					<StarIcon
+						size='1em'
+						className='fill-yellow-800 stroke-yellow-700'
+					/>
+					<span className='text-yellow-600 font-bold'>
+						{score}
+					</span>
 				</TooltipTrigger>
 				<TooltipContent>Nota {score}</TooltipContent>
 			</Tooltip>
 		</TooltipProvider>
 	)
-}
-const dices = {
-	1: <Dice1Icon />,
-	2: <Dice2Icon />,
-	3: <Dice3Icon />,
-	4: <Dice4Icon />,
-	5: <Dice5Icon />,
-	6: <Dice6Icon />,
 }
