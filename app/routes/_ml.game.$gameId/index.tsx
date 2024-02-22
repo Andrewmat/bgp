@@ -25,7 +25,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from '~/components/ui/tooltip'
-import {PropsWithChildren, useMemo} from 'react'
+import {type PropsWithChildren} from 'react'
 import {
 	Table,
 	TableBody,
@@ -36,7 +36,6 @@ import {
 } from '~/components/ui/table'
 import {ScoreDisplay} from '~/components/DiceScore'
 import {Separator} from '~/components/ui/separator'
-import SLink from '~/components/ui/SLink'
 import {Stats} from '~/components/Stats'
 
 export const loader = withUser(async ({params, user}) => {
@@ -125,15 +124,14 @@ function GameBggInfo(
 	),
 ) {
 	const {game, showEvaluation} = props
+
 	return (
 		<Card>
 			<CardHeader className='flex flex-col gap-2 sm:flex-row sm:justify-between'>
 				<div className='flex gap-2'>
 					<Avatar>
 						<AvatarImage src={game.image} />
-						<AvatarFallback>
-							{game.name.slice(0, 2)}
-						</AvatarFallback>
+						<AvatarFallback>{game.name}</AvatarFallback>
 					</Avatar>
 					<CardTitle>
 						{game.name}

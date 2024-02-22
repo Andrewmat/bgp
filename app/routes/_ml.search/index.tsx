@@ -1,5 +1,6 @@
 import type {LoaderFunctionArgs} from '@remix-run/node'
 import {
+	Link,
 	json,
 	redirect,
 	useLoaderData,
@@ -15,26 +16,67 @@ import {TooltipProvider} from '~/components/ui/tooltip'
 import {ResultUser} from './ResultUser'
 import {ResultGame} from './ResultGame'
 import {DrawingWrapper} from './DrawingWrapper'
+import Pagination from '~/components/Pagination'
+
+const PAGE_SIZE = 12
 
 export async function loader({
 	request,
 }: LoaderFunctionArgs) {
 	const searchParams = new URL(request.url).searchParams
 	const term = searchParams.get('q') ?? undefined
+	const entity =
+		searchParams.get('e') === 'user' ? 'user' : 'game'
+	const exact = searchParams.get('exact')
+	const page = Number(searchParams.get('page')) || 1
 
-	if (typeof term === 'string' && term.length === 0) {
+	if (
+		typeof term === 'string' &&
+		term.length === 0 &&
+		entity === 'game'
+	) {
 		return redirect('/search')
 	}
 
 	const user = await getSessionUser(request)
-	const entity =
-		searchParams.get('e') === 'user' ? 'user' : 'game'
+	if (entity === 'user') {
+		try {
+			const results = await searchUsers(
+				term ?? '',
+				exact === 'true',
+				user?.id,
+				(page - 1) * PAGE_SIZE,
+				PAGE_SIZE,
+			)
+			return json({
+				term,
+				entity,
+				results,
+				user,
+				page,
+				errorMessage: null,
+			} as const)
+		} catch (e) {
+			return json({
+				term,
+				entity,
+				user: null,
+				results: null,
+				page,
+				errorMessage:
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					(e as any)?.message ??
+					'Houve um erro ao fazer pesquisa',
+			} as const)
+		}
+	}
 	if (term == null) {
 		return json({
 			term: null,
 			entity,
 			user,
 			results: null,
+			page,
 			errorMessage: null,
 		} as const)
 	}
@@ -45,45 +87,32 @@ export async function loader({
 			entity,
 			results: null,
 			user,
+			page,
 			errorMessage:
 				'Termo de pesquisa deve ter no mínimo 3 caracteres',
 		} as const)
 	}
 
-	const exact = searchParams.get('exact')
 	try {
-		if (entity === 'user') {
-			const results = await searchUsers(
-				term,
-				exact === 'true',
-				user?.id,
-			)
-			return json({
-				term,
-				entity,
-				results,
-				user,
-				errorMessage: null,
-			} as const)
-		} else {
-			const results = await searchGames(
-				term,
-				exact === 'true',
-			)
-			return json({
-				term,
-				entity,
-				results,
-				user,
-				errorMessage: null,
-			} as const)
-		}
+		const results = await searchGames(
+			term,
+			exact === 'true',
+		)
+		return json({
+			term,
+			entity,
+			results,
+			user,
+			page,
+			errorMessage: null,
+		} as const)
 	} catch (e) {
 		return json({
 			term,
 			entity,
 			user: null,
 			results: null,
+			page,
 			errorMessage:
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				(e as any)?.message ??
@@ -93,11 +122,11 @@ export async function loader({
 }
 
 export default function SearchPage() {
-	const {entity, results, term, errorMessage, user} =
+	const {entity, results, term, errorMessage, user, page} =
 		useLoaderData<typeof loader>()
 
 	return (
-		<div className='container flex-grow flex flex-col gap-6'>
+		<div className='flex-grow flex flex-col gap-6'>
 			{errorMessage && (
 				<AlertClosable
 					variant='destructive'
@@ -156,6 +185,17 @@ export default function SearchPage() {
 				<DrawingWrapper
 					drawing={emptyStateImage}
 					text='Pesquise por jogos na barra de busca'
+				/>
+			)}
+			{entity === 'user' && (
+				<Pagination
+					hasNext={
+						results?.length
+							? results?.length === PAGE_SIZE
+							: false
+					}
+					page={page}
+					searchParam='page'
 				/>
 			)}
 		</div>

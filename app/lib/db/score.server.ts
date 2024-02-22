@@ -45,7 +45,7 @@ export function getScoreByUserGame({
 export function getScoresByUser({
 	userId,
 	skip = 0,
-	take = 10,
+	take = 12,
 }: {
 	userId: string
 	skip?: number
@@ -60,7 +60,7 @@ export function getScoresByUser({
 		},
 		skip,
 		take,
-		orderBy: {updatedAt: 'desc'},
+		orderBy: {value: 'desc'},
 	})
 }
 

@@ -38,7 +38,7 @@ export default function IndexPage() {
 				Board Game Planilha
 			</h1>
 			<h2 className='text-2xl mt-8'>
-				Sua planilha online de board games
+				Otimize sua decisão de jogos
 			</h2>
 			<div className='flex justify-center gap-10 mt-12'>
 				<SLink
@@ -57,6 +57,23 @@ export default function IndexPage() {
 				>
 					Busca
 				</SLink>
+			</div>
+			<div className='py-10'>
+				<h2 className='text-xl font-bold mb-4'>
+					Como funciona?
+				</h2>
+
+				<ol type='a'>
+					<li>
+						1. <strong>Dê suas notas</strong>
+					</li>
+					<li>
+						2. <strong>Siga seus amigos</strong>
+					</li>
+					<li>
+						3. <strong>Crie uma mesa</strong>
+					</li>
+				</ol>
 			</div>
 		</div>
 	)

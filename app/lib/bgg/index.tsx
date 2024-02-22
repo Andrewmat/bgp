@@ -151,11 +151,13 @@ function adaptBoardGame(
 		: [game.boardgamemechanic]
 	return {
 		id: game._objectid,
-		name: Array.isArray(game.name)
-			? game.name.find((p) => p._primary === 'true')?.[
-					text
-				] ?? game.name[0][text]
-			: game.name[text],
+		name: String(
+			Array.isArray(game.name)
+				? game.name.find((p) => p._primary === 'true')?.[
+						text
+					] ?? game.name[0][text]
+				: game.name[text],
+		),
 		description: game.description,
 		minPlayers: game.minplayers,
 		maxPlayers: game.maxplayers,

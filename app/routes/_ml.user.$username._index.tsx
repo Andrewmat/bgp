@@ -6,6 +6,8 @@ import {getScoresByUser} from '~/lib/db/score.server'
 import {getUserByUsername} from '~/lib/db/user.server'
 import {Scores} from '~/components/Scores'
 
+const PAGE_SIZE = 12
+
 export async function loader({
 	params,
 	request,
@@ -20,11 +22,10 @@ export async function loader({
 
 	const scorePage =
 		Number(searchParams.get('score_page')) || 1
-	const scorePageSize = 12
 	const rawScores = await getScoresByUser({
 		userId: user.id,
-		skip: (scorePage - 1) * scorePageSize,
-		take: scorePageSize,
+		skip: (scorePage - 1) * PAGE_SIZE,
+		take: PAGE_SIZE,
 	})
 	const games = await Promise.all(
 		rawScores.map((score) => getGameId(score.gameId)),

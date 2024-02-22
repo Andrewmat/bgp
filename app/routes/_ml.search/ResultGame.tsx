@@ -35,7 +35,7 @@ export function ResultGame({
 				onClick={(e) => e.stopPropagation()}
 				className='absolute right-2 top-2'
 			>
-				<ExternalLink size='0.8rem' />
+				<ExternalLink size='1rem' />
 			</Link>
 		</div>
 	)

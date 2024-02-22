@@ -22,10 +22,12 @@ export function ResultUser({
 				to={`/user/${user.username}`}
 				className={cn(
 					buttonVariants({variant: 'link'}),
-					'inline-flex flex-col items-start gap-1',
+					'inline-flex flex-col items-start gap-1 h-auto',
 				)}
 			>
-				<CardTitle>{user.name} </CardTitle>
+				<CardTitle className='whitespace-break-spaces'>
+					{user.name}
+				</CardTitle>
 				<small className='text-muted-foreground decoration-muted-foreground'>
 					(@{user.username})
 				</small>

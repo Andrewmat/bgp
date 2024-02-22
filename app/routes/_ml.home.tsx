@@ -1,12 +1,11 @@
 import {LoaderFunctionArgs, json} from '@remix-run/node'
-import {useLoaderData, useLocation} from '@remix-run/react'
-import {ArrowLeftIcon, ArrowRightIcon} from 'lucide-react'
+import {useLoaderData} from '@remix-run/react'
 import {ScoreGame, Scores} from '~/components/Scores'
-import SLink from '~/components/ui/SLink'
-import {Button} from '~/components/ui/button'
 import {getGameId} from '~/lib/bgg'
 import {getScoresByUser} from '~/lib/db/score.server'
 import {assertAuthenticated} from '~/lib/login/auth.server'
+
+const PAGE_SIZE = 12
 
 export async function loader({
 	request,
@@ -16,11 +15,10 @@ export async function loader({
 
 	const scorePage =
 		Number(searchParams.get('score_page')) || 1
-	const scorePageSize = 12
 	const rawScores = await getScoresByUser({
 		userId: user.id,
-		skip: (scorePage - 1) * scorePageSize,
-		take: scorePageSize,
+		skip: (scorePage - 1) * PAGE_SIZE,
+		take: PAGE_SIZE,
 	})
 	const games = await Promise.all(
 		rawScores.map((score) => getGameId(score.gameId)),
@@ -36,11 +34,6 @@ export async function loader({
 
 export default function HomePage() {
 	const {scores, scorePage} = useLoaderData<typeof loader>()
-	const {pathname, search} = useLocation()
-	const prevParams = new URLSearchParams(search)
-	prevParams.set('score_page', String(scorePage - 1))
-	const nextParams = new URLSearchParams(search)
-	nextParams.set('score_page', String(scorePage + 1))
 	return (
 		<div className='flex flex-col gap-3'>
 			<h2 className='text-xl'>Notas</h2>
