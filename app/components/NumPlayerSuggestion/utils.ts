@@ -46,6 +46,13 @@ export function getPercentages(
 		suggestion.notRecommended,
 	)
 	const total = best + recommended + notRecommended
+	if (total === 0) {
+		return {
+			best: 0,
+			recommended: 0,
+			notRecommended: 0,
+		}
+	}
 	return {
 		best: best / total,
 		recommended: recommended / total,

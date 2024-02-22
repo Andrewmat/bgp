@@ -28,10 +28,17 @@ import {
 	CardHeader,
 	CardTitle,
 } from '~/components/ui/card'
+import Pagination from '~/components/Pagination'
+
+const PAGE_SIZE = 12
 
 export const loader = withUser(
 	async ({request}: LoaderFunctionArgs) => {
 		const user = await assertAuthenticated(request)
+		const pageParam = new URL(request.url).searchParams.get(
+			'page',
+		)
+		const page = Number(pageParam) || 1
 		const following = await getFollowing({
 			followedById: user.id,
 		})
@@ -40,9 +47,12 @@ export const loader = withUser(
 		if (table) {
 			tableScores = await getScoresTable({
 				table: table.map((t) => t.id),
+				skip: (page - 1) * PAGE_SIZE,
+				take: PAGE_SIZE,
 			})
 		}
-		return {table, following, tableScores}
+		console.log('aquiiii')
+		return {table, following, tableScores, page}
 	},
 )
 
@@ -77,8 +87,10 @@ export async function action({
 }
 
 export default function TablePage() {
-	const {following, user, table, tableScores} =
+	const {following, user, table, tableScores, page} =
 		useLoaderData<typeof loader>()
+
+	console.log({tableScores})
 	return (
 		<div className='flex flex-col gap-6'>
 			<Card>
@@ -115,7 +127,6 @@ export default function TablePage() {
 						{tableScores?.map((s) => (
 							<div key={s.game.id}>
 								<GameCard
-									avgValue={s.avgValue}
 									game={s.game as BggBoardgame}
 									tableScore={s.table}
 									table={table}
@@ -124,6 +135,11 @@ export default function TablePage() {
 							</div>
 						))}
 					</div>
+					<Pagination
+						hasNext={tableScores?.length === PAGE_SIZE}
+						page={page}
+						searchParam='page'
+					/>
 				</div>
 			)}
 		</div>

@@ -1,5 +1,4 @@
 import {Link} from '@remix-run/react'
-import {DicesIcon, UnfoldHorizontalIcon} from 'lucide-react'
 import {useMemo} from 'react'
 import {EvaluationForm} from '~/components/EvaluationForm'
 import {NumPlayerSuggestion} from '~/components/NumPlayerSuggestion'
@@ -31,24 +30,16 @@ import {
 	TableHeader,
 	TableRow,
 } from '~/components/ui/table'
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
-} from '~/components/ui/tooltip'
 import {ScoreTableGame} from '~/lib/db/score.server'
 import {SessionTable} from '~/lib/login/session.server'
 
 export function GameCard({
 	game,
-	avgValue,
 	tableScore,
 	sessionUserId,
 	table,
 }: {
 	game: ScoreTableGame['game']
-	avgValue: ScoreTableGame['avgValue']
 	tableScore: ScoreTableGame['table']
 	sessionUserId: string | null
 	table: SessionTable

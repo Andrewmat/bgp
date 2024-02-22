@@ -103,8 +103,12 @@ export type ScoreTableGame = {
 
 export async function getScoresTable({
 	table,
+	take = 12,
+	skip = 0,
 }: {
 	table: string[]
+	take?: number
+	skip?: number
 }): Promise<ScoreTableGame[]> {
 	const resultScores = await db.score.groupBy({
 		by: ['gameId'],
@@ -114,7 +118,12 @@ export async function getScoresTable({
 			{_count: {userId: 'desc'}},
 			{_avg: {value: 'desc'}},
 		],
+		take,
+		skip,
 	})
+	if (resultScores.length === 0) {
+		return []
+	}
 	const gameIds = resultScores.map((g) => g.gameId)
 	const resultGames = await getGamesListId(gameIds)
 	const resultUsers = await db.score.findMany({
