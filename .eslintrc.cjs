@@ -25,6 +25,9 @@ module.exports = {
 	rules: {
 		// prettier has some issues with tabs
 		'no-mixed-spaces-and-tabs': 'off',
+
+		// eslint has some trouble with prettier semi: false
+		'no-extra-semi': 'off',
 	},
 
 	overrides: [

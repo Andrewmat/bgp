@@ -1,9 +1,22 @@
-import {LoaderFunctionArgs, json} from '@remix-run/node'
+import {
+	LoaderFunctionArgs,
+	MetaFunction,
+	json,
+} from '@remix-run/node'
 import {useLoaderData} from '@remix-run/react'
 import {ScoreGame, Scores} from '~/components/Scores'
 import {getGameId} from '~/lib/bgg'
 import {getScoresByUser} from '~/lib/db/score.server'
 import {assertAuthenticated} from '~/lib/login/auth.server'
+
+export const meta: MetaFunction = () => {
+	return [
+		{
+			title:
+				'Home | BGP | Otimize sua decisão de jogos de tabuleiro',
+		},
+	]
+}
 
 const PAGE_SIZE = 12
 
@@ -40,6 +53,7 @@ export default function HomePage() {
 			<Scores
 				scorePage={scorePage}
 				scores={scores as ScoreGame[]}
+				canEditScore
 			/>
 		</div>
 	)

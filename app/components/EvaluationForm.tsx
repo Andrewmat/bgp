@@ -1,6 +1,6 @@
 import {useFetcher, useLocation} from '@remix-run/react'
 import {CheckIcon, StarIcon, Trash2Icon} from 'lucide-react'
-import {cloneElement, useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {toast} from 'sonner'
 import {
 	Tooltip,

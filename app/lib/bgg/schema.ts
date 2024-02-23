@@ -16,6 +16,11 @@ const value = attr('value')
 const numvotes = attr('numvotes')
 const numplayers = attr('numplayers')
 const level = attr('level')
+const message = attr('message')
+const type = attr('type')
+const id = attr('id')
+const friendlyname = attr('friendlyname')
+const bayersaverage = attr('bayersaverage')
 
 export type BggSchemaBoardgame = {
 	[objectid]: string
@@ -45,6 +50,11 @@ export type BggSchemaBoardgame = {
 	boardgamedesigner: SimpleObject
 	videogamebg: SimpleObject
 	poll: Poll[]
+	statistics?: Statistics
+}
+
+export type BggSchemaBoardgameError = {
+	error: {[message]: string}
 }
 
 export type BggSchemaSearchResult = {
@@ -87,6 +97,33 @@ type Poll = {
 			results: BggSchemaPollResultAge
 	  }
 )
+
+type Statistics = {
+	ratings: {
+		usersrated: number
+		average: number
+		bayersaverage: number
+		stddev: number
+		median: number
+		owned: number
+		trading: number
+		wanting: number
+		wishing: number
+		numcomments: number
+		numweights: number
+		averageweight: number
+		ranks: {
+			rank: {
+				[type]: 'subtype' | 'family'
+				[id]: string
+				[name]: string
+				[friendlyname]: string
+				[value]: string
+				[bayersaverage]: string
+			}[]
+		}
+	}
+}
 
 export type BggSchemaPollResultNumPlayers = {
 	result: {

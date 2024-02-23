@@ -34,7 +34,7 @@ export const meta: MetaFunction = () => {
 		{title: 'BGP | Board Game Planilha'},
 		{
 			name: 'description',
-			content: 'Pesquise e revise board games!',
+			content: 'Otimize sua decisão de jogos de tabuleiro!',
 		},
 	]
 }

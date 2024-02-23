@@ -3,7 +3,11 @@ import {
 	LoaderFunctionArgs,
 	json,
 } from '@remix-run/node'
-import {useFetcher, useLoaderData} from '@remix-run/react'
+import {
+	MetaFunction,
+	useFetcher,
+	useLoaderData,
+} from '@remix-run/react'
 import {useId} from 'react'
 import {ShellIcon} from 'lucide-react'
 import {Button} from '~/components/ui/button'
@@ -22,6 +26,10 @@ import {
 	setOnSession,
 } from '~/lib/login/session.server'
 import {AlertClosable} from '~/components/ui/alert-closable'
+
+export const meta: MetaFunction = () => {
+	return [{title: 'Configurações | BGP'}]
+}
 
 export async function loader({
 	request,

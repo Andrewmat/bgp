@@ -1,6 +1,6 @@
 import type {LoaderFunctionArgs} from '@remix-run/node'
 import {
-	Link,
+	MetaFunction,
 	json,
 	redirect,
 	useLoaderData,
@@ -17,6 +17,18 @@ import {ResultUser} from './ResultUser'
 import {ResultGame} from './ResultGame'
 import {DrawingWrapper} from './DrawingWrapper'
 import Pagination from '~/components/Pagination'
+
+export const meta: MetaFunction<typeof loader> = ({
+	data,
+}) => {
+	return [
+		{title: `Busca por "${data?.term}" | BGP`},
+		{
+			name: 'description',
+			content: 'Pesquise e revise board games!',
+		},
+	]
+}
 
 const PAGE_SIZE = 12
 

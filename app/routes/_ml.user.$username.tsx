@@ -10,10 +10,8 @@ import {
 	useParams,
 	useRouteError,
 } from '@remix-run/react'
-import {AlertCircleIcon} from 'lucide-react'
 import invariant from 'tiny-invariant'
 import {FollowButton} from '~/components/FollowButton'
-import SLink from '~/components/ui/SLink'
 import {Alert} from '~/components/ui/alert'
 import {
 	Card,
@@ -98,28 +96,26 @@ export default function UserPage() {
 		useLoaderData<typeof loader>()
 
 	return (
-		<div className='px-3 md:px-6 lg:px-8'>
-			<Card>
-				<CardHeader className='flex justify-between'>
-					<div>
-						<CardTitle>{userFromPage.name}</CardTitle>
-						<small>{userFromPage.username}</small>
-					</div>
-					{sessionUser &&
-						sessionUser.id !== userFromPage.id && (
-							<TooltipProvider>
-								<FollowButton
-									username={userFromPage.username}
-									following={isFollowing || false}
-								/>
-							</TooltipProvider>
-						)}
-				</CardHeader>
-				<CardContent>
-					<Outlet />
-				</CardContent>
-			</Card>
-		</div>
+		<Card>
+			<CardHeader className='flex justify-between'>
+				<div>
+					<CardTitle>{userFromPage.name}</CardTitle>
+					<small>{userFromPage.username}</small>
+				</div>
+				{sessionUser &&
+					sessionUser.id !== userFromPage.id && (
+						<TooltipProvider>
+							<FollowButton
+								username={userFromPage.username}
+								following={isFollowing || false}
+							/>
+						</TooltipProvider>
+					)}
+			</CardHeader>
+			<CardContent>
+				<Outlet />
+			</CardContent>
+		</Card>
 	)
 }
 

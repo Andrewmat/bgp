@@ -13,6 +13,7 @@ import {
 } from './ui/avatar'
 import {ScoreDisplay} from './DiceScore'
 import Pagination from './Pagination'
+import {EvaluationForm} from './EvaluationForm'
 
 export type ScoreGame = {
 	score: number
@@ -24,9 +25,11 @@ const PAGE_SIZE = 12
 export function Scores({
 	scores,
 	scorePage,
+	canEditScore = false,
 }: {
 	scores: ScoreGame[]
 	scorePage: number
+	canEditScore?: boolean
 }) {
 	return (
 		<>
@@ -34,7 +37,11 @@ export function Scores({
 				<ul className='grid grid-cols-1 gap-2 list-none sm:grid-cols-2 lg:grid-cols-3 lg:gap-3'>
 					{scores.map((s) => (
 						<li key={s.game.id}>
-							<GameCard score={s.score} game={s.game} />
+							<GameCard
+								score={s.score}
+								game={s.game}
+								canEditScore={canEditScore}
+							/>
 						</li>
 					))}
 				</ul>
@@ -55,9 +62,14 @@ export function Scores({
 type GameCardProps = {
 	game: BggBoardgame
 	score: number
+	canEditScore?: boolean
 }
 
-export function GameCard({game, score}: GameCardProps) {
+export function GameCard({
+	game,
+	score,
+	canEditScore,
+}: GameCardProps) {
 	return (
 		<Card>
 			<CardHeader>
@@ -73,7 +85,11 @@ export function GameCard({game, score}: GameCardProps) {
 				</Link>
 			</CardHeader>
 			<CardFooter>
-				<ScoreDisplay score={score} />
+				{canEditScore ? (
+					<EvaluationForm gameId={game.id} score={score} />
+				) : (
+					<ScoreDisplay score={score} />
+				)}
 			</CardFooter>
 		</Card>
 	)

@@ -1,5 +1,5 @@
 import {LoaderFunctionArgs, json} from '@remix-run/node'
-import {useLoaderData} from '@remix-run/react'
+import {MetaFunction, useLoaderData} from '@remix-run/react'
 import {
 	Card,
 	CardContent,
@@ -10,6 +10,15 @@ import {getFollowing} from '~/lib/db/follow.server'
 import {assertAuthenticated} from '~/lib/login/auth.server'
 import {FormTableManager} from '../components/FormTableManager'
 import {getOnSession} from '~/lib/login/session.server'
+
+export const meta: MetaFunction = () => {
+	return [
+		{
+			title:
+				'Seguindo | BGP | Otimize sua decisão de jogos de tabuleiro',
+		},
+	]
+}
 
 export async function loader({
 	request,
@@ -23,7 +32,6 @@ export async function loader({
 }
 
 export default function FollowingPage() {
-	console.log
 	const {following, table, user} =
 		useLoaderData<typeof loader>()
 

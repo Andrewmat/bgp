@@ -19,7 +19,6 @@ import {
 	AvatarImage,
 } from '~/components/ui/avatar'
 import {
-	Button,
 	ButtonProps,
 	buttonVariants,
 } from '~/components/ui/button'
@@ -32,6 +31,8 @@ import {
 import {Progress} from '~/components/ui/progress'
 import {getSessionUser} from '~/lib/login/auth.server'
 import {cn} from '~/lib/utils'
+import logo from '~/assets/logo.webp'
+import poweredByBgg from '~/assets/powered-by-bgg.webp'
 
 export async function loader({
 	request,
@@ -48,7 +49,7 @@ export default function MainLayout() {
 				<div className='flex justify-between'>
 					<Link to='/'>
 						<img
-							src='/logo.png'
+							src={logo}
 							alt='BGP logo'
 							width='30'
 							height='30'
@@ -77,7 +78,7 @@ export default function MainLayout() {
 			<header className='hidden md:flex items-center p-4 gap-3'>
 				<Link to='/'>
 					<img
-						src='/logo.png'
+						src={logo}
 						alt='BGP logo'
 						width='30'
 						height='30'
@@ -141,7 +142,7 @@ export default function MainLayout() {
 					rel='noreferrer'
 				>
 					<img
-						src='/powered-by-bgg.png'
+						src={poweredByBgg}
 						alt='Powered by BGG'
 						width='150'
 						height='45'

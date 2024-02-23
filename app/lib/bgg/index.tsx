@@ -6,6 +6,7 @@ import {
 	type BggSchemaSearchResult,
 	type BggSchemaPollResultNumPlayers,
 	text,
+	BggSchemaBoardgameError,
 } from './schema'
 
 const xmlParser = new XMLParser({
@@ -17,7 +18,7 @@ const xmlParser = new XMLParser({
 xmlParser.addEntity('#034', '"')
 xmlParser.addEntity('#039', "'")
 
-export type BggBoardgame = {
+export interface BggBoardgame {
 	id: string
 	name: string
 	description: string
@@ -38,16 +39,46 @@ export type BggBoardgame = {
 		recommended: string | undefined
 		notRecommended: string | undefined
 	}[]
+	stats?: BggBoardgameStats
+}
+export interface BggBoardgameStats {
+	usersRated: number
+	average: number
+	bayesAverage: number
+	stdDev: number
+	numWeight: number
+	averageWeight: number
+	ranks: {
+		type: 'subtype' | 'family'
+		id: string
+		name: string
+		friendlyName: string
+		value: string
+		bayersAverage: string
+	}[]
 }
 
 export async function getGameId(
 	gameId: string,
+	stats = false,
 ): Promise<BggBoardgame> {
 	const result = (await fetchBgg(
 		`/boardgame/${gameId}`,
+		new URLSearchParams({stats: stats ? '1' : '0'}),
 	)) as {
 		boardgames: {
-			boardgame: BggSchemaBoardgame
+			boardgame:
+				| BggSchemaBoardgame
+				| BggSchemaBoardgameError
+		}
+	}
+	if ('error' in result.boardgames.boardgame) {
+		const message =
+			result.boardgames.boardgame.error._message
+		if (message === 'Item not found') {
+			throw new Response(message, {status: 404})
+		} else {
+			throw new Response(message, {status: 500})
 		}
 	}
 
@@ -149,6 +180,30 @@ function adaptBoardGame(
 	const mechanics = Array.isArray(game.boardgamemechanic)
 		? game.boardgamemechanic
 		: [game.boardgamemechanic]
+	const stats = game.statistics?.ratings
+		? adaptStats(game.statistics)
+		: undefined
+
+	function adaptStats(
+		stats: NonNullable<BggSchemaBoardgame['statistics']>,
+	): BggBoardgame['stats'] {
+		return {
+			average: stats.ratings.average,
+			averageWeight: stats.ratings.averageweight,
+			bayesAverage: stats.ratings.averageweight,
+			numWeight: stats.ratings.numweights,
+			stdDev: stats.ratings.stddev,
+			usersRated: stats.ratings.usersrated,
+			ranks: stats.ratings.ranks.rank.map((rank) => ({
+				id: rank._id,
+				type: rank._type,
+				name: rank._name,
+				friendlyName: rank._friendlyname,
+				value: rank._value,
+				bayersAverage: rank._bayersaverage,
+			})),
+		}
+	}
 	return {
 		id: game._objectid,
 		name: String(
@@ -173,6 +228,7 @@ function adaptBoardGame(
 			id: m._objectid,
 		})),
 		bga: {implemented: hasBGA},
+		stats,
 		numPlayerSuggestion: (() => {
 			const poll = game.poll.find(
 				(p) => p._name === 'suggested_numplayers',
