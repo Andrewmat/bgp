@@ -57,12 +57,12 @@ export function NumPlayerSuggestion({
 						<DrawerTitle className='flex-grow'>
 							Sugestão de número de jogadores
 						</DrawerTitle>
-						<Button asChild variant='outline'>
-							<DrawerClose>
+						<DrawerClose asChild>
+							<Button variant='outline'>
 								<X />
 								<span className='sr-only'>Close</span>
-							</DrawerClose>
-						</Button>
+							</Button>
+						</DrawerClose>
 					</DrawerHeader>
 					<SuggestionTable
 						suggestions={suggestions}

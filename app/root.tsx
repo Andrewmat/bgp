@@ -1,17 +1,15 @@
-import {cssBundleHref} from '@remix-run/css-bundle'
 import type {
 	LinksFunction,
 	MetaFunction,
 } from '@remix-run/node'
 import {
 	Links,
-	LiveReload,
 	Meta,
 	Outlet,
 	Scripts,
 	ScrollRestoration,
 } from '@remix-run/react'
-import globals from './globals.css'
+import globals from './globals.css?url'
 import {Toaster} from '~/components/ui/sonner'
 
 export const links: LinksFunction = () => [
@@ -29,9 +27,6 @@ export const links: LinksFunction = () => [
 		rel: 'stylesheet',
 		href: 'https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,500;0,6..12,700;1,6..12,300;1,6..12,500;1,6..12,700&display=swap',
 	},
-	...(cssBundleHref
-		? [{rel: 'stylesheet', href: cssBundleHref}]
-		: []),
 ]
 
 export const meta: MetaFunction = () => {
@@ -60,7 +55,6 @@ export default function App() {
 				<Outlet />
 				<ScrollRestoration />
 				<Scripts />
-				<LiveReload />
 				<Toaster />
 			</body>
 		</html>

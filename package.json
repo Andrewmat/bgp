@@ -4,12 +4,12 @@
 	"sideEffects": false,
 	"type": "module",
 	"scripts": {
-		"build": "remix build",
-		"dev": "remix dev --manual",
+		"build": "remix vite:build",
+		"dev": "remix vite:dev --manual",
 		"lint": "eslint --cache --cache-location ./node_modules/.cache/eslint app",
 		"format:fix": "prettier --write .",
 		"format:check": "prettier --check .",
-		"start": "remix-serve ./build/index.js",
+		"start": "remix-serve ./build/server/index.js",
 		"typecheck": "tsc",
 		"add:ui": "pnpm dlx shadcn-ui add",
 		"see:ui": "opener https://ui.shadcn.com/docs/components",
@@ -32,10 +32,9 @@
 		"@radix-ui/react-slot": "^1.0.2",
 		"@radix-ui/react-tabs": "^1.0.4",
 		"@radix-ui/react-tooltip": "^1.0.7",
-		"@remix-run/css-bundle": "^2.5.0",
-		"@remix-run/node": "^2.5.0",
-		"@remix-run/react": "^2.5.0",
-		"@remix-run/serve": "^2.5.0",
+		"@remix-run/node": "^2.7.2",
+		"@remix-run/react": "^2.7.2",
+		"@remix-run/serve": "^2.7.2",
 		"class-variance-authority": "^0.7.0",
 		"clsx": "^2.1.0",
 		"fast-xml-parser": "^4.3.3",
@@ -58,7 +57,7 @@
 	},
 	"devDependencies": {
 		"@flydotio/dockerfile": "^0.5.0",
-		"@remix-run/dev": "^2.5.0",
+		"@remix-run/dev": "^2.7.2",
 		"@types/he": "^1.2.3",
 		"@types/react": "^18.2.20",
 		"@types/react-dom": "^18.2.7",
@@ -76,7 +75,9 @@
 		"prisma": "^5.8.1",
 		"tailwindcss": "^3.4.1",
 		"ts-node": "^10.9.2",
-		"typescript": "^5.3.3"
+		"typescript": "^5.3.3",
+		"vite": "^5.1.4",
+		"vite-tsconfig-paths": "^4.3.1"
 	},
 	"engines": {
 		"node": ">=18.0.0"
