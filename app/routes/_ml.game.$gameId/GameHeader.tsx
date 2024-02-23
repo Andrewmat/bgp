@@ -60,7 +60,7 @@ export function GameHeader(
 						</TooltipProvider>
 					</CardTitle>
 					{game.stats && (
-						<div className='flex flex-col gap-1 justify-center'>
+						<div className='flex flex-col gap-1 justify-center items-end'>
 							<ScoreDisplay score={game.stats.average} />
 							<ComplexityDisplay
 								complexity={game.stats.averageWeight}

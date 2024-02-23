@@ -52,7 +52,7 @@ export function EvaluationForm({
 	return (
 		<div className='w-full'>
 			<TooltipProvider>
-				<div className='grid grid-cols-6 gap-2'>
+				<div className='grid grid-cols-6 gap-y-2 gap-x-0 sm:gap-x-2'>
 					{Array.from({length: 10}).map((_, i) => (
 						<fetcher.Form
 							key={i}

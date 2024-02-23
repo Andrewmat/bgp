@@ -1,6 +1,7 @@
 import {
-	BrickWallIcon,
 	EggIcon,
+	HammerIcon,
+	PencilRulerIcon,
 	StarIcon,
 } from 'lucide-react'
 import {
@@ -36,8 +37,9 @@ export function ComplexityDisplay({
 }: {
 	complexity: number
 }) {
-	const isEasy = complexity < 1.5
-	const isHard = complexity > 3.5
+	const isEasy = complexity < 2
+	const isHard = complexity >= 4
+	const isMedium = !isEasy && !isHard
 	return (
 		<TooltipProvider>
 			<Tooltip>
@@ -48,8 +50,9 @@ export function ComplexityDisplay({
 							className='fill-green-700 stroke-green-900'
 						/>
 					)}
+					{isMedium && <PencilRulerIcon size='1em' />}
 					{isHard && (
-						<BrickWallIcon
+						<HammerIcon
 							size='1em'
 							className='fill-red-500 stroke-red-900'
 						/>
