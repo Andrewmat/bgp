@@ -64,27 +64,23 @@ export function getScoresByUser({
 	})
 }
 
-export async function getScoresFollowingGame({
+export async function getScoresGroup({
 	gameId,
-	userId,
+	userIds,
 }: {
 	gameId: string
-	userId: string
+	userIds: string[]
 }) {
 	return await db.score.findMany({
-		where: {
-			gameId,
-			userId: {
-				in:
-					(
-						await db.follows.findMany({
-							where: {followedById: userId},
-							select: {followingId: true},
-						})
-					).map((f) => f.followingId) || [],
+		where: {gameId, userId: {in: userIds}},
+		select: {
+			user: {
+				select: {id: true, name: true, username: true},
 			},
+			value: true,
 		},
-		select: {user: true, value: true},
+		take: 12,
+		orderBy: {value: 'desc'},
 	})
 }
 

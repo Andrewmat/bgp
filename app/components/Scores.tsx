@@ -14,6 +14,7 @@ import {
 import {ScoreDisplay} from './DiceScore'
 import Pagination from './Pagination'
 import {EvaluationForm} from './EvaluationForm'
+import {TooltipProvider} from './ui/tooltip'
 
 export type ScoreGame = {
 	score: number
@@ -71,14 +72,18 @@ export function GameCard({
 	canEditScore,
 }: GameCardProps) {
 	return (
-		<Card>
+		<Card className='border-none border-r-0'>
 			<CardHeader>
 				<Link
 					to={`/game/${game.id}`}
 					className='flex gap-2 items-center hover:underline focus:underline'
 				>
 					<Avatar>
-						<AvatarImage src={game.thumbnail} />
+						<AvatarImage
+							src={game.thumbnail}
+							height='40'
+							width='40'
+						/>
 						<AvatarFallback>{game.name}</AvatarFallback>
 					</Avatar>
 					<CardTitle>{game.name}</CardTitle>
@@ -88,7 +93,9 @@ export function GameCard({
 				{canEditScore ? (
 					<EvaluationForm gameId={game.id} score={score} />
 				) : (
-					<ScoreDisplay score={score} />
+					<TooltipProvider>
+						<ScoreDisplay score={score} />
+					</TooltipProvider>
 				)}
 			</CardFooter>
 		</Card>

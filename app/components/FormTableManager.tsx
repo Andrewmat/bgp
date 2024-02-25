@@ -3,8 +3,13 @@ import {
 	LinkProps,
 	useNavigation,
 } from '@remix-run/react'
-import {ShellIcon} from 'lucide-react'
-import {ComponentPropsWithoutRef, useId} from 'react'
+import {ShellIcon, Trash2Icon} from 'lucide-react'
+import {
+	ComponentPropsWithoutRef,
+	useId,
+	useRef,
+	useState,
+} from 'react'
 import {Button} from '~/components/ui/button'
 import {Checkbox} from '~/components/ui/checkbox'
 import {Label} from '~/components/ui/label'
@@ -15,7 +20,7 @@ interface FormTableManagerProps {
 		id: string
 		name: string
 	}
-	following: {
+	group: {
 		id: string
 		name: string
 		username: string
@@ -23,55 +28,102 @@ interface FormTableManagerProps {
 	table: {id: string}[]
 }
 
-export function FormTableManager({
-	following,
+export function TableManager({
+	group,
 	table,
 	user,
 }: FormTableManagerProps) {
 	const nav = useNavigation()
-	const isLoading =
-		nav.state !== 'idle' && nav.formAction === '/table'
-	return (
-		<Form
-			method='POST'
-			action='/table'
-			className='flex flex-col gap-2 items-start'
-		>
-			<input type='hidden' name='intent' value='post' />
-			<div className='flex gap-2 flex-col'>
-				<CheckboxUser
-					defaultChecked={
-						table.length > 0
-							? table.some((t) => t.id === user.id)
-							: true
-					}
-					to='/me'
-					value={user.id}
-				>
-					{user.name}
-				</CheckboxUser>
+	const isCreating =
+		nav.state !== 'idle' &&
+		nav.formAction === '/table' &&
+		nav.formMethod === 'POST'
+	const isDeleting =
+		nav.state !== 'idle' &&
+		nav.formAction === '/table' &&
+		nav.formMethod === 'DELETE'
 
-				{following.map((follow) => (
+	const [isCreatingDisabled, setIsCreatingDisabled] =
+		useState(false)
+
+	return (
+		<>
+			<Form
+				method='POST'
+				action='/table'
+				className='flex flex-col gap-2 items-start'
+				onChange={(e) => {
+					if (
+						new FormData(e.currentTarget).getAll('user-id')
+							.length === 0
+					) {
+						setIsCreatingDisabled(true)
+					} else {
+						setIsCreatingDisabled(false)
+					}
+				}}
+			>
+				<input type='hidden' name='intent' value='post' />
+				<div className='flex gap-2 flex-col'>
 					<CheckboxUser
-						key={follow.id}
-						to={`/user/${follow.username}`}
-						defaultChecked={table?.some(
-							(t) => t.id === follow.id,
-						)}
-						value={follow.id}
+						defaultChecked={
+							table.length > 0
+								? table.some((t) => t.id === user.id)
+								: true
+						}
+						to='/me'
+						value={user.id}
 					>
-						{follow.name}
+						{user.name}
 					</CheckboxUser>
-				))}
-			</div>
-			<Button type='submit'>
-				{isLoading ? (
-					<ShellIcon className='animate-spin' />
-				) : (
-					'Criar mesa'
-				)}
-			</Button>
-		</Form>
+
+					{group.map((gu) => (
+						<CheckboxUser
+							key={gu.id}
+							to={`/user/${gu.username}`}
+							defaultChecked={table?.some(
+								(t) => t.id === gu.id,
+							)}
+							value={gu.id}
+						>
+							{gu.name}
+						</CheckboxUser>
+					))}
+				</div>
+				<Button
+					type='submit'
+					disabled={isCreating || isCreatingDisabled}
+				>
+					{isCreating ? (
+						<ShellIcon className='animate-spin' />
+					) : (
+						'Criar mesa'
+					)}
+				</Button>
+			</Form>
+			{table.length > 0 && (
+				<Form method='DELETE'>
+					<input
+						type='hidden'
+						name='intent'
+						value='delete'
+					/>
+					<Button
+						type='submit'
+						variant='destructive'
+						className='flex items-center gap-2'
+						disabled={isDeleting}
+					>
+						<Trash2Icon size='1em' />{' '}
+						{isDeleting ? (
+							<ShellIcon className='animate-spin' />
+						) : (
+							'Deletar mesa'
+						)}
+					</Button>
+				</Form>
+			)}
+		</>
 	)
 }
 

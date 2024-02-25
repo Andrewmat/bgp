@@ -35,33 +35,35 @@ export function SuggestionTable({
 		<TooltipProvider>
 			<Table>
 				<TableHeader>
-					<TableHead>Jogadores</TableHead>
-					<TableHead>
-						<Tooltip>
-							<TooltipTrigger>
-								<HeartIcon />
-							</TooltipTrigger>
-							<TooltipContent>Supremo</TooltipContent>
-						</Tooltip>
-					</TableHead>
-					<TableHead>
-						<Tooltip>
-							<TooltipTrigger>
-								<ThumbsUpIcon />
-							</TooltipTrigger>
-							<TooltipContent>Recomendado</TooltipContent>
-						</Tooltip>
-					</TableHead>
-					<TableHead>
-						<Tooltip>
-							<TooltipTrigger>
-								<ThumbsDownIcon />
-							</TooltipTrigger>
-							<TooltipContent>
-								Não recomendado
-							</TooltipContent>
-						</Tooltip>
-					</TableHead>
+					<TableRow>
+						<TableHead>Jogadores</TableHead>
+						<TableHead>
+							<Tooltip>
+								<TooltipTrigger>
+									<HeartIcon />
+								</TooltipTrigger>
+								<TooltipContent>Supremo</TooltipContent>
+							</Tooltip>
+						</TableHead>
+						<TableHead>
+							<Tooltip>
+								<TooltipTrigger>
+									<ThumbsUpIcon />
+								</TooltipTrigger>
+								<TooltipContent>Recomendado</TooltipContent>
+							</Tooltip>
+						</TableHead>
+						<TableHead>
+							<Tooltip>
+								<TooltipTrigger>
+									<ThumbsDownIcon />
+								</TooltipTrigger>
+								<TooltipContent>
+									Não recomendado
+								</TooltipContent>
+							</Tooltip>
+						</TableHead>
+					</TableRow>
 				</TableHeader>
 				<TableBody>
 					{numPlayerSuggestion

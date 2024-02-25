@@ -5,6 +5,7 @@ import {
 } from '@remix-run/node'
 import SLink from '~/components/ui/SLink'
 import {getSessionUser} from '~/lib/login/auth.server'
+import logoBgp from './homelogo.webp'
 
 export const links: LinksFunction = () => [
 	{
@@ -28,8 +29,8 @@ export default function IndexPage() {
 		<div className='full-bleed hero w-full bg-primary text-primary-foreground text-center flex flex-col justify-center py-12'>
 			<div className='flex justify-center'>
 				<img
-					src='/logo.png'
-					alt='Logo do BGG'
+					src={logoBgp}
+					alt='Logo do BGP'
 					height={100}
 					width={100}
 				/>

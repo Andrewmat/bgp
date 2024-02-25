@@ -56,12 +56,20 @@ export async function getFollowing({
 	followedById: string
 }) {
 	const result = await db.follows.findMany({
-		where: {
-			followedById,
-		},
-		select: {
-			following: true,
-		},
+		where: {followedById},
+		select: {following: true},
 	})
 	return result.map((r) => r.following)
+}
+
+export async function getFollowers({
+	followingId,
+}: {
+	followingId: string
+}) {
+	const result = await db.follows.findMany({
+		where: {followingId},
+		select: {followedBy: true},
+	})
+	return result.map((r) => r.followedBy)
 }

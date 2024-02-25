@@ -53,14 +53,18 @@ export function GameCard({
 		[table, tableScore],
 	)
 	return (
-		<Card>
+		<Card className='border-none border-r-0'>
 			<CardHeader>
 				<Link
 					to={`/game/${game.id}`}
 					className='flex gap-2 items-center hover:underline focus:underline'
 				>
 					<Avatar>
-						<AvatarImage src={game.thumbnail} />
+						<AvatarImage
+							src={game.thumbnail}
+							height='40'
+							width='40'
+						/>
 						<AvatarFallback>{game.name}</AvatarFallback>
 					</Avatar>
 					<CardTitle>{game.name}</CardTitle>
@@ -71,8 +75,8 @@ export function GameCard({
 					<Drawer>
 						<DrawerTrigger asChild>
 							<Button
-								variant='ghost'
-								className='flex gap-4 items-center'
+								variant='outline'
+								className='flex gap-4 items-center ms-auto'
 							>
 								<Stats
 									values={tableScore.map((ts) => ts.score)}
@@ -108,12 +112,11 @@ export function GameCard({
 							</Table>
 						</DrawerContent>
 					</Drawer>
-					<div className='flex justify-center'>
-						<NumPlayerSuggestion
-							suggestions={game.numPlayerSuggestion}
-							numPlayers={table.length}
-						/>
-					</div>
+
+					<NumPlayerSuggestion
+						suggestions={game.numPlayerSuggestion}
+						numPlayers={table.length}
+					/>
 				</div>
 			</CardContent>
 			<CardFooter className='flex flex-col gap-2'>

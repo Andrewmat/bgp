@@ -64,6 +64,9 @@ export default function MainLayout() {
 								<Link to='/following'>Seguindo</Link>
 							</DropdownMenuItem>
 							<DropdownMenuItem asChild>
+								<Link to='/followers'>Seguidores</Link>
+							</DropdownMenuItem>
+							<DropdownMenuItem asChild>
 								<Link to='/table'>Mesa</Link>
 							</DropdownMenuItem>
 						</DropdownMenuHeader>
@@ -90,6 +93,9 @@ export default function MainLayout() {
 					</div>
 					<nav className='flex gap-2'>
 						<NavButton to='/following'>Seguindo</NavButton>
+						<NavButton to='/followers'>
+							Seguidores
+						</NavButton>
 						<NavButton to='/table'>Mesa</NavButton>
 					</nav>
 				</div>
@@ -114,7 +120,7 @@ export default function MainLayout() {
 			</main>
 
 			<footer className='w-full flex justify-center items-center gap-10 p-5 bg-secondary text-secondary-foreground border-t-2 border-t-border'>
-				<small>v0.1.0</small>
+				<small>v0.2.0</small>
 				<div>
 					Made with{' '}
 					<HeartIcon
@@ -123,14 +129,12 @@ export default function MainLayout() {
 						className='inline-block'
 					/>{' '}
 					by{' '}
+					{/* eslint-disable-next-line react/jsx-no-target-blank */}
 					<Link
-						to='https://boardgamegeek.com/user/andrewmat'
+						to='https://boardgameplanilha.xyz/user/andrewmat'
 						target='_blank'
-						rel='noreferrer'
 						className={cn(
-							buttonVariants({
-								variant: 'link',
-							}),
+							buttonVariants({variant: 'link'}),
 							'inline p-0',
 						)}
 					>
@@ -218,7 +222,11 @@ function DropdownMenuHeader({
 			<DropdownMenuTrigger className='inline-flex items-center gap-2'>
 				{profileImage !== null && (
 					<Avatar>
-						<AvatarImage src={profileImage} />
+						<AvatarImage
+							src={profileImage}
+							height='40'
+							width='40'
+						/>
 						<AvatarFallback>
 							{name.slice(0, 2).toUpperCase()}
 						</AvatarFallback>

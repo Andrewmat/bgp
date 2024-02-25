@@ -6,7 +6,15 @@ import {
 	TooltipTrigger,
 } from './ui/tooltip'
 
-export function Stats({values}: {values: number[]}) {
+export function Stats({
+	values,
+	averageLabel = 'Média',
+	stdDevLabel = 'Variância Padrão',
+}: {
+	values: number[]
+	averageLabel?: React.ReactNode
+	stdDevLabel?: React.ReactNode
+}) {
 	const sum = values.reduce((s, n) => s + n, 0)
 	const avg = sum / values.length
 	const varp =
@@ -15,10 +23,6 @@ export function Stats({values}: {values: number[]}) {
 
 	return (
 		<TooltipProvider>
-			<small className='text-muted-foreground'>
-				({values.length}{' '}
-				{values.length > 1 ? 'votos' : 'voto'})
-			</small>
 			<Tooltip>
 				<TooltipTrigger asChild>
 					<span className='flex gap-2'>
@@ -26,7 +30,7 @@ export function Stats({values}: {values: number[]}) {
 						<span>{avg.toFixed(2)}</span>
 					</span>
 				</TooltipTrigger>
-				<TooltipContent>Média</TooltipContent>
+				<TooltipContent>{averageLabel}</TooltipContent>
 			</Tooltip>
 			<Tooltip>
 				<TooltipTrigger asChild>
@@ -35,7 +39,7 @@ export function Stats({values}: {values: number[]}) {
 						<span>{varp.toFixed(2)}</span>
 					</span>
 				</TooltipTrigger>
-				<TooltipContent>Variância padrão</TooltipContent>
+				<TooltipContent>{stdDevLabel}</TooltipContent>
 			</Tooltip>
 		</TooltipProvider>
 	)

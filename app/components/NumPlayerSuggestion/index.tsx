@@ -11,8 +11,8 @@ import {Button} from '../ui/button'
 import {suggestionByNumPlayers} from './utils'
 import {SuggestionTable} from './SuggestionTable'
 import {
-	DefaultSuggestionButton,
-	SuggestionButton,
+	DefaultSuggestion,
+	PickedSuggestion,
 } from './SuggestionButton'
 import {X} from 'lucide-react'
 
@@ -34,28 +34,31 @@ export function NumPlayerSuggestion({
 			: undefined
 
 	return (
-		<div className='flex items-baseline'>
+		<div className='w-full flex items-baseline gap-2 justify-end'>
 			{pickedSuggestion && (
-				<span className='mr-2'>
-					{pickedSuggestion.numPlayers} jogadores
-				</span>
+				<span>{pickedSuggestion.numPlayers} jog.:</span>
 			)}
 			<Drawer>
-				<DrawerTrigger>
-					{pickedSuggestion ? (
-						<SuggestionButton
-							pickedSuggestion={pickedSuggestion}
-						/>
-					) : (
-						<DefaultSuggestionButton
-							suggestions={suggestions}
-						/>
-					)}
+				<DrawerTrigger asChild>
+					<Button
+						variant='outline'
+						className='flex gap-4 items-center'
+					>
+						{pickedSuggestion ? (
+							<PickedSuggestion
+								pickedSuggestion={pickedSuggestion}
+							/>
+						) : (
+							<DefaultSuggestion
+								suggestions={suggestions}
+							/>
+						)}
+					</Button>
 				</DrawerTrigger>
 				<DrawerContent>
 					<DrawerHeader className='flex items-center gap-2'>
 						<DrawerTitle className='flex-grow'>
-							Sugestão de número de jogadores
+							Sugestão de jogadores
 						</DrawerTitle>
 						<DrawerClose asChild>
 							<Button variant='outline'>

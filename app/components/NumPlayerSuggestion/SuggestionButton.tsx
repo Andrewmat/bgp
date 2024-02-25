@@ -3,14 +3,13 @@ import {
 	ThumbsDownIcon,
 	ThumbsUpIcon,
 } from 'lucide-react'
-import {Button, buttonVariants} from '../ui/button'
 import {
 	TSuggestion,
 	getPercentages,
 	percentFormatter,
 } from './utils'
 
-export function SuggestionButton({
+export function PickedSuggestion({
 	pickedSuggestion,
 }: {
 	pickedSuggestion: TSuggestion
@@ -18,12 +17,7 @@ export function SuggestionButton({
 	const pickedPercent = getPercentages(pickedSuggestion)
 
 	return (
-		<span
-			className={buttonVariants({
-				variant: 'ghost',
-				className: 'inline-flex items-center gap-3',
-			})}
-		>
+		<>
 			<span className='inline-flex items-center gap-1'>
 				<HeartIcon size='1em' />
 				{percentFormatter.format(pickedPercent.best)}
@@ -38,11 +32,11 @@ export function SuggestionButton({
 					pickedPercent.notRecommended,
 				)}
 			</span>
-		</span>
+		</>
 	)
 }
 
-export function DefaultSuggestionButton({
+export function DefaultSuggestion({
 	suggestions,
 }: {
 	suggestions: TSuggestion[]
@@ -65,10 +59,7 @@ export function DefaultSuggestionButton({
 		.map((s) => s.numPlayers)
 
 	return (
-		<Button
-			variant='link'
-			className='inline-flex flex-col justify-center gap-2'
-		>
+		<>
 			<span className='inline-flex items-center gap-2'>
 				<ThumbsUpIcon size='1em' /> {bestSugs?.at(0)}{' '}
 				&mdash; {recommendedSugs?.at(-1)} jogadores
@@ -77,6 +68,6 @@ export function DefaultSuggestionButton({
 				<HeartIcon size='1em' /> {recommendedSugs?.at(0)}{' '}
 				&mdash; {recommendedSugs?.at(-1)} jogadores
 			</span>
-		</Button>
+		</>
 	)
 }

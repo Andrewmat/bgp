@@ -1,6 +1,8 @@
 import {
 	Link,
+	MetaFunction,
 	isRouteErrorResponse,
+	json,
 	useLoaderData,
 	useParams,
 	useRouteError,
@@ -10,25 +12,46 @@ import {Card} from '~/components/ui/card'
 import {BggBoardgame, getGameId} from '~/lib/bgg'
 import {
 	getScoreByUserGame,
-	getScoresFollowingGame,
+	getScoresGroup,
 } from '~/lib/db/score.server'
-import {withUser} from '~/lib/remix/wrapUser'
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from '~/components/ui/table'
-import {ScoreDisplay} from '~/components/DiceScore'
 import {Stats} from '~/components/Stats'
 import {RangeInfo} from './RangeInfo'
 import {Section} from './Section'
 import {GameHeader} from './GameHeader'
 import {Alert} from '~/components/ui/alert'
+import {getSessionUser} from '~/lib/login/auth.server'
+import {
+	LinksFunction,
+	LoaderFunctionArgs,
+} from '@remix-run/node'
+import {getFollowing} from '~/lib/db/follow.server'
+import {getOnSession} from '~/lib/login/session.server'
+import {GroupTable} from './GroupTable'
 
-export const loader = withUser(async ({params, user}) => {
+export const meta: MetaFunction<typeof loader> = ({
+	data,
+}) => {
+	return [
+		{
+			title: data
+				? `${data.game.name} | BGP`
+				: 'Jogos de mesa | BGP',
+		},
+	]
+}
+
+export const links: LinksFunction = () => [
+	{
+		rel: 'dns-prefetch',
+		href: 'https://cf.geekdo-images.com/',
+	},
+]
+
+export const loader = async ({
+	request,
+	params,
+}: LoaderFunctionArgs) => {
+	const user = await getSessionUser(request)
 	const gameId = params.gameId
 	invariant(
 		typeof gameId === 'string',
@@ -38,25 +61,48 @@ export const loader = withUser(async ({params, user}) => {
 	let score: Awaited<
 		ReturnType<typeof getScoreByUserGame>
 	> = null
-	let followingScore: Awaited<
-		ReturnType<typeof getScoresFollowingGame>
+	let groupScore: Awaited<
+		ReturnType<typeof getScoresGroup>
 	> | null = null
+	let groupType: 'following' | 'table' | null = null
 
 	if (user?.id) {
-		score = await getScoreByUserGame({
-			gameId,
-			userId: user.id,
-		})
-		followingScore = await getScoresFollowingGame({
-			gameId,
-			userId: user.id,
-		})
+		const table = await getOnSession(request, 'table')
+
+		;[score, groupScore] = await Promise.all([
+			getScoreByUserGame({
+				gameId,
+				userId: user.id,
+			}),
+			table
+				? getScoresGroup({
+						gameId,
+						userIds: table.map((t) => t.id),
+					})
+				: getFollowing({followedById: user.id}).then(
+						(following) => {
+							return getScoresGroup({
+								gameId,
+								userIds: following
+									.map((f) => f.id)
+									.concat(user.id),
+							})
+						},
+					),
+		])
+		groupType = table ? 'table' : 'following'
 	}
-	return {game, score: score?.value, followingScore}
-})
+	return json({
+		game,
+		score: score?.value,
+		groupType,
+		groupScore,
+		user,
+	})
+}
 
 export default function GameDetailsPage() {
-	const {game, score, user, followingScore} =
+	const {game, score, user, groupScore, groupType} =
 		useLoaderData<typeof loader>()
 
 	return (
@@ -69,6 +115,7 @@ export default function GameDetailsPage() {
 
 			<div className='flex flex-col gap-4'>
 				<Section title='Geral'>
+					<div className='flex flex-row'></div>
 					<RangeInfo
 						min={game.minPlayers}
 						max={game.maxPlayers}
@@ -82,6 +129,25 @@ export default function GameDetailsPage() {
 						appendix='min'
 					/>
 					{game.bga.implemented && <em>Tem no BGA!</em>}
+					{game.stats?.ranks.map((rank) => (
+						<div key={rank.id}>
+							<Link
+								className='underline'
+								target='_blank'
+								rel='noreferrer'
+								to={`https://boardgamegeek.com/browse/boardgame?${new URLSearchParams(
+									[
+										['sort', 'rank'],
+										['rankobjecttype', rank.type],
+										['rankobjectid', rank.id],
+										['rank', rank.value],
+									],
+								)}#${rank.value}`}
+							>
+								{rank.friendlyName}: {rank.value}
+							</Link>
+						</div>
+					))}
 				</Section>
 				<Section title='Mecânicas'>
 					<div className='text-muted-foreground'>
@@ -90,6 +156,7 @@ export default function GameDetailsPage() {
 								<Link
 									to={`https://boardgamegeek.com/boardgamemechanic/${m.id}`}
 									rel='noreferrer'
+									target='_blank'
 									className='hover:underline focus:underline'
 								>
 									{m.label}
@@ -99,34 +166,23 @@ export default function GameDetailsPage() {
 					</div>
 				</Section>
 			</div>
-			{followingScore && followingScore.length > 0 && (
-				<Section title='Seguindo'>
+			{groupScore && groupScore.length > 0 && (
+				<Section
+					title={
+						groupType === 'following' ? 'Seguindo' : 'Mesa'
+					}
+				>
 					<div className='flex gap-6'>
 						<div className='flex flex-col gap-2 items-start justify-start'>
+							<small className='text-muted-foreground'>
+								({groupScore.length}{' '}
+								{groupScore.length > 1 ? 'votos' : 'voto'})
+							</small>
 							<Stats
-								values={followingScore.map((s) => s.value)}
+								values={groupScore.map((s) => s.value)}
 							/>
 						</div>
-						<Table className='flex-grow'>
-							<TableHeader>
-								<TableHead>Usuário</TableHead>
-								<TableHead className='text-center'>
-									Nota
-								</TableHead>
-							</TableHeader>
-							<TableBody>
-								{followingScore.map((fs) => (
-									<TableRow key={fs.user.id}>
-										<TableCell className='p-1'>
-											{fs.user.name}
-										</TableCell>
-										<TableCell className='p-1 text-center'>
-											<ScoreDisplay score={fs.value} />
-										</TableCell>
-									</TableRow>
-								))}
-							</TableBody>
-						</Table>
+						<GroupTable groupScore={groupScore} />
 					</div>
 				</Section>
 			)}

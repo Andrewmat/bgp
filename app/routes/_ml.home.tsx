@@ -1,10 +1,17 @@
 import {
+	LinksFunction,
 	LoaderFunctionArgs,
 	MetaFunction,
 	json,
 } from '@remix-run/node'
 import {useLoaderData} from '@remix-run/react'
 import {ScoreGame, Scores} from '~/components/Scores'
+import {
+	Card,
+	CardContent,
+	CardHeader,
+	CardTitle,
+} from '~/components/ui/card'
 import {getGameId} from '~/lib/bgg'
 import {getScoresByUser} from '~/lib/db/score.server'
 import {assertAuthenticated} from '~/lib/login/auth.server'
@@ -17,6 +24,13 @@ export const meta: MetaFunction = () => {
 		},
 	]
 }
+
+export const links: LinksFunction = () => [
+	{
+		rel: 'dns-prefetch',
+		href: 'https://cf.geekdo-images.com/',
+	},
+]
 
 const PAGE_SIZE = 12
 
@@ -48,13 +62,17 @@ export async function loader({
 export default function HomePage() {
 	const {scores, scorePage} = useLoaderData<typeof loader>()
 	return (
-		<div className='flex flex-col gap-3'>
-			<h2 className='text-xl'>Notas</h2>
-			<Scores
-				scorePage={scorePage}
-				scores={scores as ScoreGame[]}
-				canEditScore
-			/>
-		</div>
+		<Card>
+			<CardHeader>
+				<CardTitle>Home</CardTitle>
+			</CardHeader>
+			<CardContent>
+				<Scores
+					scorePage={scorePage}
+					scores={scores as ScoreGame[]}
+					canEditScore
+				/>
+			</CardContent>
+		</Card>
 	)
 }

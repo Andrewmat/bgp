@@ -34,7 +34,11 @@ export function GameHeader(
 			<CardHeader className='flex flex-col gap-2 sm:flex-row sm:justify-between'>
 				<div className='flex gap-3'>
 					<Avatar className='h-20 w-20'>
-						<AvatarImage src={game.image} />
+						<AvatarImage
+							src={game.thumbnail}
+							height='80'
+							width='80'
+						/>
 						<AvatarFallback>{game.name}</AvatarFallback>
 					</Avatar>
 					<CardTitle>
@@ -61,10 +65,16 @@ export function GameHeader(
 					</CardTitle>
 					{game.stats && (
 						<div className='flex flex-col gap-1 justify-center items-end'>
-							<ScoreDisplay score={game.stats.average} />
-							<ComplexityDisplay
-								complexity={game.stats.averageWeight}
-							/>
+							<TooltipProvider>
+								<ScoreDisplay
+									score={game.stats.average}
+									tooltipContent={`Nota do BGG: ${game.stats.average.toFixed(2)}`}
+								/>
+								<ComplexityDisplay
+									complexity={game.stats.averageWeight}
+									tooltipContent={`Complexidade do BGG: ${game.stats.averageWeight.toFixed(2)}`}
+								/>
+							</TooltipProvider>
 						</div>
 					)}
 				</div>

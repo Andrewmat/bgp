@@ -27,6 +27,10 @@ export const links: LinksFunction = () => [
 		rel: 'stylesheet',
 		href: 'https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,500;0,6..12,700;1,6..12,300;1,6..12,500;1,6..12,700&display=swap',
 	},
+	{
+		rel: 'dns-prefetch',
+		href: 'https://cf.geekdo-images.com/',
+	},
 ]
 
 export const meta: MetaFunction = () => {
