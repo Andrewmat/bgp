@@ -3,8 +3,7 @@ import {
 	LoaderFunctionArgs,
 	json,
 } from '@remix-run/node'
-import {Form, useLoaderData} from '@remix-run/react'
-import {Button} from '~/components/ui/button'
+import {useLoaderData} from '@remix-run/react'
 import {BggBoardgame} from '~/lib/bgg'
 import {getFollowing} from '~/lib/db/follow.server'
 import {
@@ -19,8 +18,6 @@ import {
 	unsetOnSession,
 } from '~/lib/login/session.server'
 import {GameCard} from './GameCard'
-import {withUser} from '~/lib/remix/wrapUser'
-import {Trash2Icon} from 'lucide-react'
 import {TableManager} from '../../components/FormTableManager'
 import {
 	Card,

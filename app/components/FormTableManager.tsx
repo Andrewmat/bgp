@@ -7,7 +7,6 @@ import {ShellIcon, Trash2Icon} from 'lucide-react'
 import {
 	ComponentPropsWithoutRef,
 	useId,
-	useRef,
 	useState,
 } from 'react'
 import {Button} from '~/components/ui/button'
