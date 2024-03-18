@@ -111,8 +111,8 @@ export async function getScoresTable({
 		where: {userId: {in: table}},
 		_avg: {value: true},
 		orderBy: [
-			{_count: {userId: 'desc'}},
 			{_avg: {value: 'desc'}},
+			{_count: {userId: 'desc'}},
 		],
 		take,
 		skip,
