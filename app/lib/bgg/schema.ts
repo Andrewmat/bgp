@@ -98,6 +98,15 @@ type Poll = {
 	  }
 )
 
+export type Rank = {
+	[type]: 'subtype' | 'family'
+	[id]: string
+	[name]: string
+	[friendlyname]: string
+	[value]: string
+	[bayersaverage]: string
+}
+
 type Statistics = {
 	ratings: {
 		usersrated: number
@@ -113,14 +122,7 @@ type Statistics = {
 		numweights: number
 		averageweight: number
 		ranks: {
-			rank: {
-				[type]: 'subtype' | 'family'
-				[id]: string
-				[name]: string
-				[friendlyname]: string
-				[value]: string
-				[bayersaverage]: string
-			}[]
+			rank?: Rank | Rank[]
 		}
 	}
 }
@@ -132,6 +134,7 @@ export type BggSchemaPollResultNumPlayers = {
 	}[]
 	[numplayers]: string
 }
+
 export type BggSchemaPollResultLng = {
 	result: {
 		[level]: string

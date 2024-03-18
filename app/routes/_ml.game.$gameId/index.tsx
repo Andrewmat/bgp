@@ -135,7 +135,7 @@ export default function GameDetailsPage() {
 								className='underline'
 								target='_blank'
 								rel='noreferrer'
-								to={`https://boardgamegeek.com/browse/boardgame?${new URLSearchParams(
+								to={`https://boardgamegeek.com/${rank.name ? `${rank.name}/` : '/'}browse/boardgame?${new URLSearchParams(
 									[
 										['sort', 'rank'],
 										['rankobjecttype', rank.type],

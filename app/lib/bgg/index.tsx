@@ -7,6 +7,7 @@ import {
 	type BggSchemaPollResultNumPlayers,
 	text,
 	BggSchemaBoardgameError,
+	Rank,
 } from './schema'
 
 const xmlParser = new XMLParser({
@@ -187,6 +188,23 @@ function adaptBoardGame(
 	function adaptStats(
 		stats: NonNullable<BggSchemaBoardgame['statistics']>,
 	): BggBoardgame['stats'] {
+		function adaptRank(rank: Rank) {
+			return {
+				id: rank._id,
+				type: rank._type,
+				name: rank._name,
+				friendlyName: rank._friendlyname,
+				value: rank._value,
+				bayersAverage: rank._bayersaverage,
+			}
+		}
+
+		const ranks = Array.isArray(stats.ratings.ranks.rank)
+			? stats.ratings.ranks.rank
+			: stats.ratings.ranks.rank != null
+				? [stats.ratings.ranks.rank]
+				: []
+
 		return {
 			average: stats.ratings.average,
 			averageWeight: stats.ratings.averageweight,
@@ -194,14 +212,7 @@ function adaptBoardGame(
 			numWeight: stats.ratings.numweights,
 			stdDev: stats.ratings.stddev,
 			usersRated: stats.ratings.usersrated,
-			ranks: stats.ratings.ranks.rank.map((rank) => ({
-				id: rank._id,
-				type: rank._type,
-				name: rank._name,
-				friendlyName: rank._friendlyname,
-				value: rank._value,
-				bayersAverage: rank._bayersaverage,
-			})),
+			ranks: ranks.map((rank) => adaptRank(rank)),
 		}
 	}
 	return {
