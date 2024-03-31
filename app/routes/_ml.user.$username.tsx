@@ -4,6 +4,8 @@ import {
 	json,
 } from '@remix-run/node'
 import {
+	Link,
+	NavLink,
 	Outlet,
 	isRouteErrorResponse,
 	useLoaderData,
@@ -31,6 +33,8 @@ import {
 	getSessionUser,
 } from '~/lib/login/auth.server'
 import notFoundImage from '~/assets/undraw_empty.svg'
+import {Button} from '~/components/ui/button'
+import NavButton from '~/components/NavButton'
 
 export async function loader({
 	params,
@@ -98,10 +102,12 @@ export default function UserPage() {
 	return (
 		<Card>
 			<CardHeader className='flex justify-between'>
-				<div>
-					<CardTitle>{userFromPage.name}</CardTitle>
-					<small>{userFromPage.username}</small>
-				</div>
+				<Link to={`/user/${userFromPage.username}`}>
+					<div>
+						<CardTitle>{userFromPage.name}</CardTitle>
+						<small>{userFromPage.username}</small>
+					</div>
+				</Link>
 				{sessionUser &&
 					sessionUser.id !== userFromPage.id && (
 						<TooltipProvider>
@@ -113,7 +119,16 @@ export default function UserPage() {
 					)}
 			</CardHeader>
 			<CardContent>
-				<Outlet />
+				<div className='flex flex-col gap-6'>
+					<nav className='flex gap-3'>
+						<NavButton
+							to={`/user/${userFromPage.username}/follows`}
+						>
+							Follows
+						</NavButton>
+					</nav>
+					<Outlet />
+				</div>
 			</CardContent>
 		</Card>
 	)

@@ -33,6 +33,7 @@ import {getSessionUser} from '~/lib/login/auth.server'
 import {cn} from '~/lib/utils'
 import logo from '~/assets/logo.webp'
 import poweredByBgg from '~/assets/powered-by-bgg.webp'
+import NavButton from '~/components/NavButton'
 
 export async function loader({
 	request,
@@ -183,29 +184,6 @@ function ProgressLoading({totalTime}: {totalTime: number}) {
 				value={progress}
 			/>
 		)
-	)
-}
-
-function NavButton({
-	to,
-	children,
-}: {
-	to: NavLinkProps['to']
-	children: ButtonProps['children']
-}) {
-	return (
-		<NavLink
-			to={to}
-			className={({isActive, isPending}) =>
-				buttonVariants({
-					variant:
-						isActive || isPending ? 'secondary' : 'link',
-					className: isPending ? 'opacity-60' : undefined,
-				})
-			}
-		>
-			{children}
-		</NavLink>
 	)
 }
 
