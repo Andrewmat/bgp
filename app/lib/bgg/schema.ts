@@ -86,7 +86,9 @@ type Poll = {
 } & (
 	| {
 			[name]: 'suggested_numplayers'
-			results: BggSchemaPollResultNumPlayers[]
+			results:
+				| BggSchemaPollResultNumPlayers
+				| BggSchemaPollResultNumPlayers[]
 	  }
 	| {
 			[name]: 'language_dependence'

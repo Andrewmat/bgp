@@ -5,7 +5,6 @@ import {
 } from '@remix-run/node'
 import {
 	Link,
-	NavLink,
 	Outlet,
 	isRouteErrorResponse,
 	useLoaderData,
@@ -33,7 +32,6 @@ import {
 	getSessionUser,
 } from '~/lib/login/auth.server'
 import notFoundImage from '~/assets/undraw_empty.svg'
-import {Button} from '~/components/ui/button'
 import NavButton from '~/components/NavButton'
 
 export async function loader({

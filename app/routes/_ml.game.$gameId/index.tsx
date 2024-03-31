@@ -149,22 +149,24 @@ export default function GameDetailsPage() {
 						</div>
 					))}
 				</Section>
-				<Section title='Mecânicas'>
-					<div className='text-muted-foreground'>
-						{game.mechanics.map((m) => (
-							<div key={m.id}>
-								<Link
-									to={`https://boardgamegeek.com/boardgamemechanic/${m.id}`}
-									rel='noreferrer'
-									target='_blank'
-									className='hover:underline focus:underline'
-								>
-									{m.label}
-								</Link>
-							</div>
-						))}
-					</div>
-				</Section>
+				{game.mechanics.length > 0 && (
+					<Section title='Mecânicas'>
+						<div className='text-muted-foreground'>
+							{game.mechanics.map((m) => (
+								<div key={m.id}>
+									<Link
+										to={`https://boardgamegeek.com/boardgamemechanic/${m.id}`}
+										rel='noreferrer'
+										target='_blank'
+										className='hover:underline focus:underline'
+									>
+										{m.label}
+									</Link>
+								</div>
+							))}
+						</div>
+					</Section>
+				)}
 			</div>
 			{groupScore && groupScore.length > 0 && (
 				<Section

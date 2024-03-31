@@ -178,9 +178,13 @@ function adaptBoardGame(
 	const hasBGA = family.some(
 		(f) => f?._objectid === FAMILY_BGA_ID,
 	)
-	const mechanics = Array.isArray(game.boardgamemechanic)
-		? game.boardgamemechanic
-		: [game.boardgamemechanic]
+
+	const mechanics =
+		typeof game.boardgamemechanic === 'undefined'
+			? []
+			: Array.isArray(game.boardgamemechanic)
+				? game.boardgamemechanic
+				: [game.boardgamemechanic]
 	const stats = game.statistics?.ratings
 		? adaptStats(game.statistics)
 		: undefined
@@ -248,7 +252,10 @@ function adaptBoardGame(
 				{_name: 'suggested_numplayers'}
 			>
 			if (!poll) return []
-			return adaptNumPlayerPollResults(poll.results)
+			const pollResults = Array.isArray(poll.results)
+				? poll.results
+				: [poll.results]
+			return adaptNumPlayerPollResults(pollResults)
 		})(),
 	}
 }

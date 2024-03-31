@@ -2,8 +2,6 @@ import {LoaderFunctionArgs} from '@remix-run/node'
 import {
 	Form,
 	Link,
-	NavLink,
-	NavLinkProps,
 	Outlet,
 	json,
 	useLoaderData,
@@ -18,10 +16,7 @@ import {
 	AvatarFallback,
 	AvatarImage,
 } from '~/components/ui/avatar'
-import {
-	ButtonProps,
-	buttonVariants,
-} from '~/components/ui/button'
+import {buttonVariants} from '~/components/ui/button'
 import {
 	DropdownMenu,
 	DropdownMenuContent,
