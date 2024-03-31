@@ -17,10 +17,7 @@ import {ResultUser} from './ResultUser'
 import {ResultGame} from './ResultGame'
 import {DrawingWrapper} from './DrawingWrapper'
 import Pagination from '~/components/Pagination'
-import {
-	getScoresByUser,
-	getScoresSearch,
-} from '~/lib/db/score.server'
+import {getScoresSearch} from '~/lib/db/score.server'
 
 export const meta: MetaFunction<typeof loader> = ({
 	data,

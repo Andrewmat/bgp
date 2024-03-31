@@ -6,12 +6,7 @@ import {
 import {useEffect, useId, useState} from 'react'
 import {Input} from './ui/input'
 import {Button} from './ui/button'
-import {
-	HelpCircle,
-	HelpCircleIcon,
-	Search,
-	Shell,
-} from 'lucide-react'
+import {HelpCircleIcon, Search, Shell} from 'lucide-react'
 import {
 	Select,
 	SelectContent,
