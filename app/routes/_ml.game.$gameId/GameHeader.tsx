@@ -1,5 +1,10 @@
-import {Link} from '@remix-run/react'
-import {ExternalLink} from 'lucide-react'
+import {Link, useFetcher} from '@remix-run/react'
+import {
+	ExternalLink,
+	MegaphoneIcon,
+	MegaphoneOffIcon,
+	MoreVerticalIcon,
+} from 'lucide-react'
 import {
 	Avatar,
 	AvatarFallback,
@@ -18,16 +23,25 @@ import {
 	ComplexityDisplay,
 	ScoreDisplay,
 } from '~/components/DiceScore'
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from '~/components/ui/dropdown-menu'
+import {Button} from '~/components/ui/button'
+import {action} from '../game.$gameId.relation'
 
 export function GameHeader(
 	props: {
 		game: BggBoardgame
+		isIgnored: boolean
 	} & (
-		| {showEvaluation: true; score: number | undefined}
-		| {showEvaluation: false}
+		| {showActions: true; score: number | undefined}
+		| {showActions: false}
 	),
 ) {
-	const {game, showEvaluation} = props
+	const {game, showActions, isIgnored} = props
 
 	return (
 		<>
@@ -78,17 +92,76 @@ export function GameHeader(
 						</div>
 					)}
 				</div>
-				<div className='w-[260px] md:w-[300px]'>
-					{showEvaluation && (
-						<EvaluationForm
-							gameId={game.id}
-							score={props.score}
-							className='flex-row-reverse'
-						/>
+				<div className='flex gap-2 items-center'>
+					<div className='w-[260px] md:w-[300px]'>
+						{showActions && (
+							<EvaluationForm
+								gameId={game.id}
+								score={props.score}
+								className='flex-row-reverse'
+							/>
+						)}
+					</div>
+					{showActions && (
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button variant='ghost' className='px-2'>
+									<MoreVerticalIcon />
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent>
+								<DropdownMenuItem>
+									<IgnoreItem
+										gameId={game.id}
+										isIgnored={isIgnored}
+									/>
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
 					)}
 				</div>
 			</CardHeader>
 			<></>
 		</>
+	)
+}
+
+function IgnoreItem({
+	gameId,
+	isIgnored: loaderIsIgnored,
+}: {
+	gameId: string
+	isIgnored: boolean
+}) {
+	const fetcher = useFetcher<typeof action>()
+	const isIgnored = fetcher.data?.ignored ?? loaderIsIgnored
+	return (
+		<fetcher.Form
+			action={`/game/${gameId}/relation`}
+			method='POST'
+		>
+			<input type='hidden' name='intent' value='ignore' />
+			<input
+				type='hidden'
+				name='value'
+				value={isIgnored ? 'false' : 'true'}
+			/>
+			<button
+				type='submit'
+				className='appearance-none w-full flex items-center gap-2'
+			>
+				{isIgnored ? (
+					<>
+						<MegaphoneIcon />
+						Remover silêncio
+					</>
+				) : (
+					<>
+						<MegaphoneOffIcon />
+						Silenciar jogo
+					</>
+				)}
+			</button>
+		</fetcher.Form>
 	)
 }

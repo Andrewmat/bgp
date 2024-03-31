@@ -122,6 +122,22 @@ export async function getRecommendedToRate({
 		followedById: userId,
 	})
 
+	const skippedGames = await Promise.all([
+		db.score.findMany({
+			where: {userId},
+			select: {gameId: true},
+		}),
+		db.gameUser.findMany({
+			where: {userId, ignored: true},
+			select: {gameId: true},
+		}),
+	]).then(([alreadyVoted, ignored]) =>
+		removeDuplicates([
+			...alreadyVoted.map(selectGameId),
+			...ignored.map(selectGameId),
+		]),
+	)
+
 	const gameIds = await db.score.groupBy({
 		by: 'gameId',
 		skip,
@@ -129,13 +145,7 @@ export async function getRecommendedToRate({
 		where: {userId: {in: following.map((f) => f.id)}},
 		orderBy: {_avg: {value: 'desc'}},
 		having: {
-			gameId: {
-				notIn: (
-					await db.score.findMany({
-						where: {userId},
-					})
-				).map((score) => score.gameId),
-			},
+			gameId: {notIn: skippedGames},
 		},
 	})
 
@@ -143,14 +153,18 @@ export async function getRecommendedToRate({
 		return []
 	}
 
-	const gamesToRate = await getGamesListId(
-		gameIds.map((g) => g.gameId),
+	const games = await getGamesListId(
+		gameIds.map(selectGameId),
 	)
 
-	return gamesToRate.map((game) => ({
+	return games.map((game) => ({
 		score: undefined,
 		game,
 	}))
+}
+
+function removeDuplicates<T>(arr: T[]) {
+	return Array.from(new Set(arr))
 }
 
 export type ScoreTableGame = {
@@ -189,7 +203,7 @@ export async function getScoresTable({
 	if (resultScores.length === 0) {
 		return []
 	}
-	const gameIds = resultScores.map((g) => g.gameId)
+	const gameIds = resultScores.map(selectGameId)
 	const resultGames = await getGamesListId(gameIds)
 	const resultUsers = await db.score.findMany({
 		where: {
@@ -216,3 +230,5 @@ export async function getScoresTable({
 			})),
 	}))
 }
+
+const selectGameId = (v: {gameId: string}) => v.gameId

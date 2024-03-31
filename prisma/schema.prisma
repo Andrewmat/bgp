@@ -18,11 +18,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   discordId String?
-  Review    Review[]
   Score     Score[]
 
-  followedBy Follows[] @relation("followedBy")
-  following  Follows[] @relation("following")
+  followedBy Follows[]  @relation("followedBy")
+  following  Follows[]  @relation("following")
+  GameUser   GameUser[]
 }
 
 model Follows {
@@ -34,18 +34,6 @@ model Follows {
   @@id([followingId, followedById])
 }
 
-model Review {
-  id        String   @id @default(uuid())
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-  gameId    String
-  content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([userId, gameId])
-}
-
 model Score {
   id        String   @id @default(uuid())
   user      User     @relation(fields: [userId], references: [id])
@@ -54,6 +42,19 @@ model Score {
   value     Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  review    String?
 
   @@unique([userId, gameId])
+  @@index([gameId])
+}
+
+model GameUser {
+  user       User    @relation(fields: [userId], references: [id])
+  userId     String
+  gameId     String
+  ignored    Boolean
+  bookmarked Boolean
+
+  @@id([userId, gameId])
+  @@index([gameId])
 }

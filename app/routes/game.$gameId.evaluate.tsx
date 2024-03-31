@@ -10,8 +10,8 @@ import {
 } from '~/lib/db/score.server'
 import {getSessionUser} from '~/lib/login/auth.server'
 
-export async function loader() {
-	return redirect('/home')
+export async function loader({params}: LoaderFunctionArgs) {
+	return redirect(`/game/${params.gameId}`)
 }
 
 export async function action({

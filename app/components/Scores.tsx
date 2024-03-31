@@ -13,28 +13,33 @@ import {
 } from './ui/avatar'
 import {ScoreDisplay} from './DiceScore'
 import Pagination from './Pagination'
-import {EvaluationForm} from './EvaluationForm'
 import {TooltipProvider} from './ui/tooltip'
 import {Skeleton} from './ui/skeleton'
+import {ScoreGame} from '~/lib/score.type'
+import {ReactElement, ReactNode, cloneElement} from 'react'
+import {Alert} from './ui/alert'
 
-export type ScoreGame = {
-	score: number | undefined
-	game: BggBoardgame
+export type ScoresProps = {
+	page: number
+	pageSize?: number
+	pageParam?: string
+	scores: ScoreGame[]
+	empty?: ReactNode
+
+	footer?: ReactElement<{
+		score: number | undefined
+		game: BggBoardgame
+	}>
 }
 
 export function Scores({
 	scores,
 	page,
-	canEditScore = false,
 	pageSize = 12,
 	pageParam = 'score_page',
-}: {
-	scores: ScoreGame[]
-	page: number
-	canEditScore?: boolean
-	pageSize?: number
-	pageParam?: string
-}) {
+	footer,
+	empty = 'Nenhuma nota encontrada',
+}: ScoresProps) {
 	return (
 		<>
 			{scores.length > 0 ? (
@@ -42,15 +47,27 @@ export function Scores({
 					{scores.map((s) => (
 						<li key={s.game.id}>
 							<GameCard
-								score={s.score}
 								game={s.game}
-								canEditScore={canEditScore}
+								footer={
+									footer ? (
+										cloneElement(footer, {
+											score: s.score,
+											game: s.game,
+										})
+									) : s.score ? (
+										<TooltipProvider>
+											<ScoreDisplay score={s.score} />
+										</TooltipProvider>
+									) : null
+								}
 							/>
 						</li>
 					))}
 				</ul>
 			) : (
-				<div>Não encontramos nenhuma nota</div>
+				<div className='p-6 pt-0'>
+					<Alert variant='destructive'>{empty}</Alert>
+				</div>
 			)}
 			<div className='mt-2'>
 				<Pagination
@@ -60,48 +77,6 @@ export function Scores({
 				/>
 			</div>
 		</>
-	)
-}
-
-type GameCardProps = {
-	game: BggBoardgame
-	score: number | undefined
-	canEditScore?: boolean
-}
-
-export function GameCard({
-	game,
-	score,
-	canEditScore,
-}: GameCardProps) {
-	return (
-		<Card className='border-none border-r-0'>
-			<CardHeader>
-				<Link
-					to={`/game/${game.id}`}
-					className='flex gap-2 items-center hover:underline focus:underline'
-				>
-					<Avatar>
-						<AvatarImage
-							src={game.thumbnail}
-							height='40'
-							width='40'
-						/>
-						<AvatarFallback>{game.name}</AvatarFallback>
-					</Avatar>
-					<CardTitle>{game.name}</CardTitle>
-				</Link>
-			</CardHeader>
-			<CardFooter>
-				{canEditScore || typeof score === 'undefined' ? (
-					<EvaluationForm gameId={game.id} score={score} />
-				) : (
-					<TooltipProvider>
-						<ScoreDisplay score={score} />
-					</TooltipProvider>
-				)}
-			</CardFooter>
-		</Card>
 	)
 }
 
@@ -122,5 +97,34 @@ export function ScoresFallback({
 				<Skeleton className='w-[64px] h-[50px]' />
 			</div>
 		</div>
+	)
+}
+
+type GameCardProps = {
+	game: BggBoardgame
+	footer: ReactNode
+}
+
+export function GameCard({game, footer}: GameCardProps) {
+	return (
+		<Card className='border-none border-r-0'>
+			<CardHeader>
+				<Link
+					to={`/game/${game.id}`}
+					className='flex gap-2 items-center hover:underline focus:underline'
+				>
+					<Avatar>
+						<AvatarImage
+							src={game.thumbnail}
+							height='40'
+							width='40'
+						/>
+						<AvatarFallback>{game.name}</AvatarFallback>
+					</Avatar>
+					<CardTitle>{game.name}</CardTitle>
+				</Link>
+			</CardHeader>
+			<CardFooter>{footer}</CardFooter>
+		</Card>
 	)
 }

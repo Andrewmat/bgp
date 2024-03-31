@@ -27,6 +27,7 @@ import {
 import {getFollowing} from '~/lib/db/follow.server'
 import {getOnSession} from '~/lib/login/session.server'
 import {GroupTable} from './GroupTable'
+import {getIsIgnored} from '~/lib/db/gameuser.server'
 
 export const meta: MetaFunction<typeof loader> = ({
 	data,
@@ -98,19 +99,32 @@ export const loader = async ({
 		groupType,
 		groupScore,
 		user,
+		isIgnored: user
+			? await getIsIgnored({
+					userId: user.id,
+					gameId: game.id,
+				})
+			: false,
 	})
 }
 
 export default function GameDetailsPage() {
-	const {game, score, user, groupScore, groupType} =
-		useLoaderData<typeof loader>()
+	const {
+		game,
+		score,
+		user,
+		groupScore,
+		groupType,
+		isIgnored,
+	} = useLoaderData<typeof loader>()
 
 	return (
 		<Card className='flex flex-col gap-2 pb-6'>
 			<GameHeader
 				game={game as BggBoardgame}
 				score={score}
-				showEvaluation={Boolean(user)}
+				showActions={Boolean(user)}
+				isIgnored={isIgnored}
 			/>
 
 			<div className='flex flex-col gap-4'>

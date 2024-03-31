@@ -4,25 +4,33 @@ import {
 	MetaFunction,
 	defer,
 } from '@remix-run/node'
-import {Await, useLoaderData} from '@remix-run/react'
-import React, {Suspense} from 'react'
 import {
-	ScoreGame,
-	Scores,
-	ScoresFallback,
-} from '~/components/Scores'
+	Await,
+	useFetcher,
+	useLoaderData,
+} from '@remix-run/react'
+import {MegaphoneOffIcon} from 'lucide-react'
+import React, {Suspense} from 'react'
+import {EvaluationForm} from '~/components/EvaluationForm'
+import {Scores, ScoresFallback} from '~/components/Scores'
 import {
 	Card,
 	CardContent,
 	CardHeader,
 	CardTitle,
 } from '~/components/ui/card'
-import {getGamesListId} from '~/lib/bgg'
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from '~/components/ui/tooltip'
+import {BggBoardgame, getGamesListId} from '~/lib/bgg'
 import {
 	getRecommendedToRate,
 	getScoresByUser,
 } from '~/lib/db/score.server'
 import {assertAuthenticated} from '~/lib/login/auth.server'
+import {ScoreGame} from '~/lib/score.type'
 
 export const meta: MetaFunction = () => {
 	return [
@@ -40,7 +48,22 @@ export const links: LinksFunction = () => [
 	},
 ]
 
-const PAGE_SIZE = 6
+// export function shouldRevalidate({
+// 	formAction,
+// 	formMethod,
+// }: ShouldRevalidateFunctionArgs) {
+// 	// in evaluation, do not refresh path
+// 	if (formMethod === 'POST' && formAction) {
+// 		const matchEvaluate = matchPath(
+// 			'game/:gameId/evaluate',
+// 			formAction,
+// 		)
+// 		if (matchEvaluate?.params.gameId) {
+// 			return false
+// 		}
+// 	}
+// 	return true
+// }
 
 export async function loader({
 	request,
@@ -59,8 +82,8 @@ export async function loader({
 		own: getOwnGames(user.id, ownPage),
 		recommendations: getRecommendedToRate({
 			userId: user.id,
-			skip: (recommendationPage - 1) * PAGE_SIZE,
-			take: PAGE_SIZE,
+			skip: (recommendationPage - 1) * 6,
+			take: 6,
 		}),
 	})
 }
@@ -75,42 +98,78 @@ export default function HomePage() {
 	return (
 		<Card>
 			<CardContent>
-				<Section title='Recomendações'>
-					<Suspense
-						fallback={<ScoresFallback pageSize={5} />}
-					>
-						<Await resolve={recommendations}>
-							{(recommendationsResolved) => (
-								<Scores
-									page={recommendationPage}
-									pageSize={PAGE_SIZE}
-									scores={
-										recommendationsResolved as ScoreGame[]
-									}
-									canEditScore
-									pageParam='rec_page'
-								/>
-							)}
-						</Await>
-					</Suspense>
-				</Section>
-				<Section title='Seus jogos'>
-					<Suspense
-						fallback={<ScoresFallback pageSize={5} />}
-					>
-						<Await resolve={own}>
-							{(score) => (
-								<Scores
-									page={ownPage}
-									pageSize={PAGE_SIZE}
-									scores={score as ScoreGame[]}
-									canEditScore
-									pageParam='score_page'
-								/>
-							)}
-						</Await>
-					</Suspense>
-				</Section>
+				<Suspense
+					fallback={
+						<Section
+							title='Recomendações'
+							subtitle='Alguns jogos para você votar'
+						>
+							<ScoresFallback pageSize={5} />
+						</Section>
+					}
+				>
+					<Await resolve={recommendations}>
+						{(recommendationsResolved) =>
+							recommendationsResolved.length > 0 && (
+								<Section
+									title='Recomendações'
+									subtitle='Alguns jogos para você votar'
+								>
+									<Scores
+										page={recommendationPage}
+										pageSize={6}
+										scores={
+											recommendationsResolved as ScoreGame[]
+										}
+										pageParam='rec_page'
+										empty='Não conseguimos te recomendar nada para votar'
+										footer={
+											// Component is injected with missing props
+											// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+											// @ts-expect-error
+											<EvaluationFormRecommendation />
+										}
+									/>
+								</Section>
+							)
+						}
+					</Await>
+				</Suspense>
+
+				<Suspense
+					fallback={
+						<Section
+							title='Seus jogos'
+							subtitle='Os jogos que você já votou'
+						>
+							<ScoresFallback pageSize={5} />
+						</Section>
+					}
+				>
+					<Await resolve={own}>
+						{(ownResolved) =>
+							ownResolved.length > 0 && (
+								<Section
+									title='Seus jogos'
+									subtitle='Os jogos que você já votou'
+								>
+									<Scores
+										page={ownPage}
+										pageSize={12}
+										scores={ownResolved as ScoreGame[]}
+										pageParam='score_page'
+										footer={
+											// Component is injected with missing props
+											// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+											// @ts-expect-error
+											<EvaluationFormOwn />
+										}
+									/>
+								</Section>
+							)
+						}
+					</Await>
+				</Suspense>
 			</CardContent>
 		</Card>
 	)
@@ -119,18 +178,73 @@ export default function HomePage() {
 function Section({
 	children,
 	title,
+	subtitle,
 }: {
 	children: React.ReactNode
 	title: React.ReactNode
+	subtitle?: React.ReactNode
 }) {
 	return (
 		<>
 			<CardHeader>
 				<CardTitle>{title}</CardTitle>
+				{subtitle && (
+					<span className='text-md text-muted-foreground'>
+						{subtitle}
+					</span>
+				)}
 			</CardHeader>
 			<article>{children}</article>
 		</>
 	)
+}
+
+function EvaluationFormRecommendation({
+	game,
+	score,
+}: {
+	game: BggBoardgame
+	score: number | undefined
+}) {
+	const fetcher = useFetcher()
+	return (
+		<EvaluationForm
+			gameId={game.id}
+			score={score}
+			side={
+				<fetcher.Form
+					action={`/game/${game.id}/relation`}
+					method='POST'
+					className='flex items-center justify-center w-full h-full'
+				>
+					<input
+						type='hidden'
+						name='intent'
+						value='ignore'
+					/>
+					<input type='hidden' name='value' value='true' />
+					<Tooltip>
+						<TooltipTrigger type='submit'>
+							<MegaphoneOffIcon className='stroke-muted-foreground hover:stroke-destructive-foreground hover:fill-destructive focus-visible:stroke-destructive-foreground focus-visible:fill-destructive' />
+						</TooltipTrigger>
+						<TooltipContent>
+							Silenciar recomendação
+						</TooltipContent>
+					</Tooltip>
+				</fetcher.Form>
+			}
+		/>
+	)
+}
+
+function EvaluationFormOwn({
+	game,
+	score,
+}: {
+	game: BggBoardgame
+	score: number | undefined
+}) {
+	return <EvaluationForm gameId={game.id} score={score} />
 }
 
 async function getOwnGames(
@@ -139,9 +253,13 @@ async function getOwnGames(
 ): Promise<ScoreGame[]> {
 	const scores = await getScoresByUser({
 		userId: userId,
-		skip: (scorePage - 1) * PAGE_SIZE,
-		take: PAGE_SIZE,
+		skip: (scorePage - 1) * 12,
+		take: 12,
 	})
+
+	if (scores.length === 0) {
+		return []
+	}
 
 	const games = await getGamesListId(
 		scores.map((s) => s.gameId),

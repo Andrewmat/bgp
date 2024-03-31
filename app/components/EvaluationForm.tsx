@@ -1,6 +1,6 @@
 import {useFetcher, useLocation} from '@remix-run/react'
 import {CheckIcon, StarIcon, Trash2Icon} from 'lucide-react'
-import {useEffect, useState} from 'react'
+import {ReactNode, useEffect, useState} from 'react'
 import {toast} from 'sonner'
 import {
 	Tooltip,
@@ -15,11 +15,13 @@ export function EvaluationForm({
 	gameId,
 	score,
 	hiddenTrashClassName = 'invisible',
+	side,
 }: {
 	gameId: string
 	score: number | undefined
 	className?: string
 	hiddenTrashClassName?: 'hidden' | 'invisible'
+	side?: ReactNode
 }) {
 	const [hover, setHover] = useState<number>()
 	const selected = score ? score : 0
@@ -96,29 +98,31 @@ export function EvaluationForm({
 							</SimpleTooltip>
 						</fetcher.Form>
 					))}
-
-					<fetcher.Form
-						method='POST'
-						action={`/game/${gameId}/evaluate`}
-						className={cn(
-							'col-start-6 row-start-1 row-end-3 flex items-center',
-							score == null
-								? hiddenTrashClassName
-								: 'animate-in',
-						)}
-					>
-						<input
-							type='hidden'
-							name='method'
-							value='delete'
-						/>
-						<SimpleTooltip tooltip={<p>Deletar nota</p>}>
-							<Trash2Icon
-								size='100%'
-								className='fill-muted stroke-muted-foreground hover:fill-destructive hover:stroke-destructive-foreground focus-visible:fill-destructive focus-visible:stroke-destructive-foreground'
+					{side ? (
+						<div className='col-start-6 row-start-1 row-end-3'>
+							{side}
+						</div>
+					) : (
+						<fetcher.Form
+							method='POST'
+							action={`/game/${gameId}/evaluate`}
+							className={cn(
+								'col-start-6 row-start-1 row-end-3 flex items-center justify-center',
+								score == null
+									? hiddenTrashClassName
+									: 'animate-in',
+							)}
+						>
+							<input
+								type='hidden'
+								name='method'
+								value='delete'
 							/>
-						</SimpleTooltip>
-					</fetcher.Form>
+							<SimpleTooltip tooltip={<p>Deletar nota</p>}>
+								<Trash2Icon className='fill-muted stroke-muted-foreground hover:fill-destructive hover:stroke-destructive-foreground focus-visible:fill-destructive focus-visible:stroke-destructive-foreground' />
+							</SimpleTooltip>
+						</fetcher.Form>
+					)}
 				</div>
 			</TooltipProvider>
 		</div>
