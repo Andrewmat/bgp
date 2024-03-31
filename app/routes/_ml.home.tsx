@@ -2,18 +2,26 @@ import {
 	LinksFunction,
 	LoaderFunctionArgs,
 	MetaFunction,
-	json,
+	defer,
 } from '@remix-run/node'
-import {useLoaderData} from '@remix-run/react'
-import {ScoreGame, Scores} from '~/components/Scores'
+import {Await, useLoaderData} from '@remix-run/react'
+import React, {Suspense} from 'react'
+import {
+	ScoreGame,
+	Scores,
+	ScoresFallback,
+} from '~/components/Scores'
 import {
 	Card,
 	CardContent,
 	CardHeader,
 	CardTitle,
 } from '~/components/ui/card'
-import {getGameId} from '~/lib/bgg'
-import {getScoresByUser} from '~/lib/db/score.server'
+import {getGamesListId} from '~/lib/bgg'
+import {
+	getRecommendedToRate,
+	getScoresByUser,
+} from '~/lib/db/score.server'
 import {assertAuthenticated} from '~/lib/login/auth.server'
 
 export const meta: MetaFunction = () => {
@@ -32,7 +40,7 @@ export const links: LinksFunction = () => [
 	},
 ]
 
-const PAGE_SIZE = 12
+const PAGE_SIZE = 6
 
 export async function loader({
 	request,
@@ -40,39 +48,107 @@ export async function loader({
 	const user = await assertAuthenticated(request)
 	const searchParams = new URL(request.url).searchParams
 
-	const scorePage =
+	const ownPage =
 		Number(searchParams.get('score_page')) || 1
-	const rawScores = await getScoresByUser({
-		userId: user.id,
-		skip: (scorePage - 1) * PAGE_SIZE,
-		take: PAGE_SIZE,
-	})
-	const games = await Promise.all(
-		rawScores.map((score) => getGameId(score.gameId)),
-	)
-	return json({
-		scorePage,
-		scores: rawScores.map((s) => ({
-			score: s.value,
-			game: games.find((g) => g.id === s.gameId)!,
-		})),
+	const recommendationPage =
+		Number(searchParams.get('rec_page')) || 1
+
+	return defer({
+		ownPage,
+		recommendationPage,
+		own: getOwnGames(user.id, ownPage),
+		recommendations: getRecommendedToRate({
+			userId: user.id,
+			skip: (recommendationPage - 1) * PAGE_SIZE,
+			take: PAGE_SIZE,
+		}),
 	})
 }
 
 export default function HomePage() {
-	const {scores, scorePage} = useLoaderData<typeof loader>()
+	const {
+		recommendationPage,
+		ownPage,
+		own,
+		recommendations,
+	} = useLoaderData<typeof loader>()
 	return (
 		<Card>
-			<CardHeader>
-				<CardTitle>Home</CardTitle>
-			</CardHeader>
 			<CardContent>
-				<Scores
-					scorePage={scorePage}
-					scores={scores as ScoreGame[]}
-					canEditScore
-				/>
+				<Section title='Recomendações'>
+					<Suspense
+						fallback={<ScoresFallback pageSize={5} />}
+					>
+						<Await resolve={recommendations}>
+							{(recommendationsResolved) => (
+								<Scores
+									page={recommendationPage}
+									pageSize={PAGE_SIZE}
+									scores={
+										recommendationsResolved as ScoreGame[]
+									}
+									canEditScore
+									pageParam='rec_page'
+								/>
+							)}
+						</Await>
+					</Suspense>
+				</Section>
+				<Section title='Seus jogos'>
+					<Suspense
+						fallback={<ScoresFallback pageSize={5} />}
+					>
+						<Await resolve={own}>
+							{(score) => (
+								<Scores
+									page={ownPage}
+									pageSize={PAGE_SIZE}
+									scores={score as ScoreGame[]}
+									canEditScore
+									pageParam='score_page'
+								/>
+							)}
+						</Await>
+					</Suspense>
+				</Section>
 			</CardContent>
 		</Card>
 	)
+}
+
+function Section({
+	children,
+	title,
+}: {
+	children: React.ReactNode
+	title: React.ReactNode
+}) {
+	return (
+		<>
+			<CardHeader>
+				<CardTitle>{title}</CardTitle>
+			</CardHeader>
+			<article>{children}</article>
+		</>
+	)
+}
+
+async function getOwnGames(
+	userId: string,
+	scorePage: number,
+): Promise<ScoreGame[]> {
+	const scores = await getScoresByUser({
+		userId: userId,
+		skip: (scorePage - 1) * PAGE_SIZE,
+		take: PAGE_SIZE,
+	})
+
+	const games = await getGamesListId(
+		scores.map((s) => s.gameId),
+	)
+
+	return games.map((game) => ({
+		game,
+		score: scores.find((s) => s.gameId)!.value,
+	}))
 }

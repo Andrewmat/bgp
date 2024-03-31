@@ -43,7 +43,7 @@ export default function UserScores() {
 	const {scores, scorePage} = useLoaderData<typeof loader>()
 	return (
 		<Scores
-			scorePage={scorePage}
+			page={scorePage}
 			scores={
 				scores as {score: number; game: BggBoardgame}[]
 			}

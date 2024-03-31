@@ -15,22 +15,25 @@ import {ScoreDisplay} from './DiceScore'
 import Pagination from './Pagination'
 import {EvaluationForm} from './EvaluationForm'
 import {TooltipProvider} from './ui/tooltip'
+import {Skeleton} from './ui/skeleton'
 
 export type ScoreGame = {
-	score: number
+	score: number | undefined
 	game: BggBoardgame
 }
 
-const PAGE_SIZE = 12
-
 export function Scores({
 	scores,
-	scorePage,
+	page,
 	canEditScore = false,
+	pageSize = 12,
+	pageParam = 'score_page',
 }: {
 	scores: ScoreGame[]
-	scorePage: number
+	page: number
 	canEditScore?: boolean
+	pageSize?: number
+	pageParam?: string
 }) {
 	return (
 		<>
@@ -51,9 +54,9 @@ export function Scores({
 			)}
 			<div className='mt-2'>
 				<Pagination
-					hasNext={scores.length === PAGE_SIZE}
-					page={scorePage}
-					searchParam='score_page'
+					hasNext={scores.length === pageSize}
+					page={page}
+					searchParam={pageParam}
 				/>
 			</div>
 		</>
@@ -62,7 +65,7 @@ export function Scores({
 
 type GameCardProps = {
 	game: BggBoardgame
-	score: number
+	score: number | undefined
 	canEditScore?: boolean
 }
 
@@ -90,7 +93,7 @@ export function GameCard({
 				</Link>
 			</CardHeader>
 			<CardFooter>
-				{canEditScore ? (
+				{canEditScore || typeof score === 'undefined' ? (
 					<EvaluationForm gameId={game.id} score={score} />
 				) : (
 					<TooltipProvider>
@@ -99,5 +102,25 @@ export function GameCard({
 				)}
 			</CardFooter>
 		</Card>
+	)
+}
+
+export function ScoresFallback({
+	pageSize = 11,
+}: {
+	pageSize?: number
+}) {
+	return (
+		<div className='flex flex-col gap-6'>
+			<div className='grid grid-cols-1 gap-2 list-none sm:grid-cols-2 lg:grid-cols-3 lg:gap-3'>
+				{Array.from({length: pageSize}).map((_, i) => (
+					<Skeleton key={i} className='h-[160px]' />
+				))}
+			</div>
+			<div className='flex justify-center gap-2'>
+				<Skeleton className='w-[64px] h-[50px]' />
+				<Skeleton className='w-[64px] h-[50px]' />
+			</div>
+		</div>
 	)
 }

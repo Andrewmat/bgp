@@ -1,4 +1,5 @@
 import {BggBoardgame, getGamesListId} from '../bgg'
+import {getFollowing} from './follow.server'
 import {db} from './singleton.server'
 
 export async function upsertScore({
@@ -82,6 +83,50 @@ export async function getScoresGroup({
 		take: 12,
 		orderBy: {value: 'desc'},
 	})
+}
+
+export async function getRecommendedToRate({
+	userId,
+	skip = 0,
+	take = 12,
+}: {
+	userId: string
+	skip?: number
+	take?: number
+}) {
+	const following = await getFollowing({
+		followedById: userId,
+	})
+
+	const gameIds = await db.score.groupBy({
+		by: 'gameId',
+		skip,
+		take,
+		where: {userId: {in: following.map((f) => f.id)}},
+		orderBy: {_avg: {value: 'desc'}},
+		having: {
+			gameId: {
+				notIn: (
+					await db.score.findMany({
+						where: {userId},
+					})
+				).map((score) => score.gameId),
+			},
+		},
+	})
+
+	if (gameIds == undefined || gameIds.length === 0) {
+		return []
+	}
+
+	const gamesToRate = await getGamesListId(
+		gameIds.map((g) => g.gameId),
+	)
+
+	return gamesToRate.map((game) => ({
+		score: undefined,
+		game,
+	}))
 }
 
 export type ScoreTableGame = {
