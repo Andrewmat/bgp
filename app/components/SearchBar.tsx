@@ -6,7 +6,12 @@ import {
 import {useEffect, useId, useState} from 'react'
 import {Input} from './ui/input'
 import {Button} from './ui/button'
-import {Search, Shell} from 'lucide-react'
+import {
+	HelpCircle,
+	HelpCircleIcon,
+	Search,
+	Shell,
+} from 'lucide-react'
 import {
 	Select,
 	SelectContent,
@@ -14,12 +19,21 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from './ui/select'
+import {Checkbox} from './ui/checkbox'
+import {Label} from './ui/label'
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from './ui/tooltip'
 
 export function SearchBar() {
 	const id = useId()
 	const [searchParams] = useSearchParams()
 	const term = searchParams.get('q')
 	const entity = searchParams.get('e')
+	const exact = searchParams.get('exact') === 'true'
 	const [placeholder, setPlaceholder] = useState('')
 	useEffect(() => {
 		setPlaceholder(getPlaceholderGame())
@@ -40,7 +54,7 @@ export function SearchBar() {
 					</label>
 					<Select defaultValue={entity ?? 'game'} name='e'>
 						<SelectTrigger
-							className='flex-grow basis-0 rounded-r-none'
+							className='flex-grow basis-0 rounded-r-none border-r-0'
 							id={`trigger-${id}`}
 						>
 							<SelectValue />
@@ -62,8 +76,31 @@ export function SearchBar() {
 						className='rounded-none flex-grow-[3] basis-0'
 						minLength={3}
 					/>
-					<input type='hidden' name='exact' value='false' />
+					<div className='absolute h-full top-0 right-3 flex items-center gap-2'>
+						<Checkbox
+							id={`exact-${id}`}
+							name='exact'
+							value='true'
+							defaultChecked={exact}
+						/>
+						<Label htmlFor={`exact-${id}`}>Exata</Label>
+						<TooltipProvider>
+							<Tooltip>
+								<TooltipTrigger>
+									<HelpCircleIcon
+										size='1em'
+										className='stroke-muted-foreground hover:stroke-foreground focus-visible:stroke-foreground'
+									/>
+								</TooltipTrigger>
+								<TooltipContent>
+									Filtrar resultados exatamente iguais ao
+									texto do campo
+								</TooltipContent>
+							</Tooltip>
+						</TooltipProvider>
+					</div>
 				</div>
+
 				<Button
 					type='submit'
 					className='rounded-l-none'

@@ -65,6 +65,30 @@ export function getScoresByUser({
 	})
 }
 
+export function getScoresSearch({
+	userId,
+	gameIds,
+	skip = 0,
+	take = 12,
+}: {
+	userId: string
+	gameIds: string[]
+	skip?: number
+	take?: number
+}) {
+	return db.score.findMany({
+		where: {userId, gameId: {in: gameIds}},
+		select: {
+			gameId: true,
+			value: true,
+			updatedAt: true,
+		},
+		skip,
+		take,
+		orderBy: {value: 'desc'},
+	})
+}
+
 export async function getScoresGroup({
 	gameId,
 	userIds,

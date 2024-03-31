@@ -17,6 +17,10 @@ import {ResultUser} from './ResultUser'
 import {ResultGame} from './ResultGame'
 import {DrawingWrapper} from './DrawingWrapper'
 import Pagination from '~/components/Pagination'
+import {
+	getScoresByUser,
+	getScoresSearch,
+} from '~/lib/db/score.server'
 
 export const meta: MetaFunction<typeof loader> = ({
 	data,
@@ -67,6 +71,7 @@ export async function loader({
 				user,
 				page,
 				errorMessage: null,
+				scores: null,
 			} as const)
 		} catch (e) {
 			return json({
@@ -75,6 +80,7 @@ export async function loader({
 				user: null,
 				results: null,
 				page,
+				scores: null,
 				errorMessage:
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					(e as any)?.message ??
@@ -90,6 +96,7 @@ export async function loader({
 			results: null,
 			page,
 			errorMessage: null,
+			scores: null,
 		} as const)
 	}
 
@@ -98,6 +105,7 @@ export async function loader({
 			term,
 			entity,
 			results: null,
+			scores: null,
 			user,
 			page,
 			errorMessage:
@@ -114,6 +122,12 @@ export async function loader({
 			term,
 			entity,
 			results,
+			scores: user
+				? await getScoresSearch({
+						userId: user.id,
+						gameIds: results.map((r) => r.id),
+					})
+				: null,
 			user,
 			page,
 			errorMessage: null,
@@ -122,9 +136,10 @@ export async function loader({
 		return json({
 			term,
 			entity,
+			page,
 			user: null,
 			results: null,
-			page,
+			scores: null,
 			errorMessage:
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				(e as any)?.message ??
@@ -134,8 +149,15 @@ export async function loader({
 }
 
 export default function SearchPage() {
-	const {entity, results, term, errorMessage, user, page} =
-		useLoaderData<typeof loader>()
+	const {
+		entity,
+		results,
+		term,
+		errorMessage,
+		user,
+		page,
+		scores,
+	} = useLoaderData<typeof loader>()
 
 	return (
 		<div className='flex-grow flex flex-col gap-6'>
@@ -170,9 +192,17 @@ export default function SearchPage() {
 														/>
 													</li>
 												))
-											: results.map((g) => (
-													<li key={g.id}>
-														<ResultGame game={g} />
+											: results.map((game) => (
+													<li key={game.id}>
+														<ResultGame
+															game={game}
+															score={
+																scores?.find(
+																	(s) =>
+																		s.gameId === game.id,
+																)?.value
+															}
+														/>
 													</li>
 												))}
 									</ul>

@@ -3,11 +3,14 @@ import {ExternalLink} from 'lucide-react'
 import {BggSearchResult} from '~/lib/bgg'
 import {Card} from '~/components/ui/card'
 import {cn} from '~/lib/utils'
+import {ScoreDisplay} from '~/components/DiceScore'
 
 export function ResultGame({
 	game,
+	score,
 }: {
 	game: BggSearchResult
+	score: number | undefined
 }) {
 	return (
 		<div className='relative'>
@@ -21,11 +24,18 @@ export function ResultGame({
 				)}
 			>
 				<Card className='p-5 h-full'>
-					{game.name} (
-					<em>
-						<small>{game.yearPublished}</small>
-					</em>
-					)
+					<div>
+						{game.name} (
+						<em>
+							<small>{game.yearPublished}</small>
+						</em>
+						)
+					</div>
+					{score && (
+						<div>
+							<ScoreDisplay score={score} />
+						</div>
+					)}
 				</Card>
 			</Link>
 			<Link
