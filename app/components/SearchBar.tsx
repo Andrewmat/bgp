@@ -81,7 +81,7 @@ export function SearchBar() {
 						<Label htmlFor={`exact-${id}`}>Exata</Label>
 						<TooltipProvider>
 							<Tooltip>
-								<TooltipTrigger>
+								<TooltipTrigger type='button'>
 									<HelpCircleIcon
 										size='1em'
 										className='stroke-muted-foreground hover:stroke-foreground focus-visible:stroke-foreground'
