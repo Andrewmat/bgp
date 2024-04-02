@@ -44,7 +44,7 @@ export interface BggSchemaBoardgame {
 	boardgameexpansion: SimpleObject
 	boardgameimplementation: SimpleObject
 	boardgameversion: SimpleObject
-	boardgamefamily: SimpleObject
+	boardgamefamily: SimpleObject | undefined
 	boardgamemechanic: SimpleObject
 	boardgameartist: SimpleObject
 	boardgamedesigner: SimpleObject

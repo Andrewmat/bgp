@@ -172,9 +172,12 @@ const FAMILY_BGA_ID = '70360'
 function adaptBoardGame(
 	game: BggSchemaBoardgame,
 ): BggBoardgame {
-	const family = Array.isArray(game.boardgamefamily)
-		? game.boardgamefamily
-		: [game.boardgamefamily]
+	const family =
+		game.boardgamefamily == undefined
+			? []
+			: Array.isArray(game.boardgamefamily)
+				? game.boardgamefamily
+				: [game.boardgamefamily]
 	const hasBGA = family.some(
 		(f) => f._objectid === FAMILY_BGA_ID,
 	)
