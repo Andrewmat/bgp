@@ -51,7 +51,7 @@ export async function searchUsers(
 	})
 	return result.map((r) => ({
 		...r,
-		following: r.following.length > 0,
+		following: r.following?.length > 0,
 	}))
 }
 

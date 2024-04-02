@@ -47,6 +47,10 @@ module.exports = {
 		// https://github.com/typescript-eslint/typescript-eslint/issues/5323
 		'@typescript-eslint/restrict-template-expressions':
 			'off',
+
+		// Too many bugs have been introduced by this
+		// it resolves nothing to remove ?.
+		'@typescript-eslint/no-unnecessary-condition': 'off',
 	},
 
 	overrides: [
