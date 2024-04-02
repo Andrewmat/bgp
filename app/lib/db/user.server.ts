@@ -19,10 +19,10 @@ export async function getUserByUsername(username: string) {
 
 export async function searchUsers(
 	term: string,
-	exact: boolean = false,
+	exact = false,
 	followedById: string | undefined = undefined,
-	skip: number = 0,
-	take: number = 12,
+	skip = 0,
+	take = 12,
 ) {
 	const search = exact ? {equals: term} : {contains: term}
 	const result = await db.user.findMany({
@@ -51,7 +51,7 @@ export async function searchUsers(
 	})
 	return result.map((r) => ({
 		...r,
-		following: r.following?.length > 0,
+		following: r.following.length > 0,
 	}))
 }
 

@@ -80,10 +80,10 @@ export function EvaluationForm({
 									className={cn(
 										'appearance-none focus-visible:ring focus-visible:outline-none',
 									)}
-									onMouseOver={() => setHover(i + 1)}
-									onFocus={() => setHover(i + 1)}
-									onMouseOut={() => setHover(undefined)}
-									onBlur={() => setHover(undefined)}
+									onMouseOver={() => { setHover(i + 1); }}
+									onFocus={() => { setHover(i + 1); }}
+									onMouseOut={() => { setHover(undefined); }}
+									onBlur={() => { setHover(undefined); }}
 								>
 									<StarIcon
 										className={cn(

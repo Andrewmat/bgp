@@ -80,7 +80,7 @@ export function TableManager({
 						<CheckboxUser
 							key={gu.id}
 							to={`/user/${gu.username}`}
-							defaultChecked={table?.some(
+							defaultChecked={table.some(
 								(t) => t.id === gu.id,
 							)}
 							value={gu.id}

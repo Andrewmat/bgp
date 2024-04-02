@@ -61,12 +61,12 @@ export function DefaultSuggestion({
 	return (
 		<>
 			<span className='inline-flex items-center gap-2'>
-				<ThumbsUpIcon size='1em' /> {bestSugs?.at(0)}{' '}
-				&mdash; {recommendedSugs?.at(-1)} jogadores
+				<ThumbsUpIcon size='1em' /> {bestSugs.at(0)}{' '}
+				&mdash; {recommendedSugs.at(-1)} jogadores
 			</span>
 			<span className='inline-flex items-center gap-2'>
-				<HeartIcon size='1em' /> {recommendedSugs?.at(0)}{' '}
-				&mdash; {recommendedSugs?.at(-1)} jogadores
+				<HeartIcon size='1em' /> {recommendedSugs.at(0)}{' '}
+				&mdash; {recommendedSugs.at(-1)} jogadores
 			</span>
 		</>
 	)

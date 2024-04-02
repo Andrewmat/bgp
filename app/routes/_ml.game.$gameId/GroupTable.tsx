@@ -10,7 +10,7 @@ import {
 import {ScoreDisplay} from '~/components/DiceScore'
 import {TooltipProvider} from '~/components/ui/tooltip'
 
-type BasicUser = {
+interface BasicUser {
 	id: string
 	name: string
 	username: string

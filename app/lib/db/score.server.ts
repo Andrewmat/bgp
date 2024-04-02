@@ -138,24 +138,38 @@ export async function getRecommendedToRate({
 		]),
 	)
 
-	const gameIds = await db.score.groupBy({
-		by: 'gameId',
-		skip,
-		take,
-		where: {userId: {in: following.map((f) => f.id)}},
-		orderBy: {_avg: {value: 'desc'}},
-		having: {
-			gameId: {notIn: skippedGames},
-		},
-	})
+	let gameIds = (
+		await db.score.groupBy({
+			by: 'gameId',
+			skip,
+			take,
+			where: {userId: {in: following.map((f) => f.id)}},
+			orderBy: {_avg: {value: 'desc'}},
+			having: {
+				gameId: {notIn: skippedGames},
+			},
+		})
+	).map(selectGameId)
 
-	if (gameIds == undefined || gameIds.length === 0) {
-		return []
+	if (gameIds.length === 0) {
+		gameIds = (
+			await db.score.groupBy({
+				by: 'gameId',
+				skip,
+				take,
+				orderBy: {_avg: {value: 'desc'}},
+				having: {
+					gameId: {notIn: skippedGames},
+				},
+			})
+		).map(selectGameId)
+
+		if (gameIds.length === 0) {
+			return []
+		}
 	}
 
-	const games = await getGamesListId(
-		gameIds.map(selectGameId),
-	)
+	const games = await getGamesListId(gameIds)
 
 	return games.map((game) => ({
 		score: undefined,
@@ -167,7 +181,7 @@ function removeDuplicates<T>(arr: T[]) {
 	return Array.from(new Set(arr))
 }
 
-export type ScoreTableGame = {
+export interface ScoreTableGame {
 	game: BggBoardgame
 	avgValue: number | null
 	table: {

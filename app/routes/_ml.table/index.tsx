@@ -93,13 +93,11 @@ export default function TablePage() {
 				<CardTitle>Mesa</CardTitle>
 			</CardHeader>
 			<CardContent className='flex flex-col gap-2'>
-				{user && (
-					<TableManager
-						user={user}
-						group={following}
-						table={table ?? []}
-					/>
-				)}
+				<TableManager
+					user={user}
+					group={following}
+					table={table ?? []}
+				/>
 
 				{table && (
 					<>
@@ -111,7 +109,7 @@ export default function TablePage() {
 										game={s.game as BggBoardgame}
 										tableScore={s.table}
 										table={table}
-										sessionUserId={user?.id ?? null}
+										sessionUserId={user.id}
 									/>
 								</div>
 							))}

@@ -44,7 +44,7 @@ function createAuthenticator() {
 		const paramOutput = new URLSearchParams()
 		paramOutput.set(
 			'error',
-			paramInput.get('errorMessage') || 'true',
+			paramInput.get('errorMessage') ?? 'true',
 		)
 		return authenticator.authenticate('discord', request, {
 			successRedirect: redirectTo,

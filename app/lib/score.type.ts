@@ -1,6 +1,6 @@
 import {BggBoardgame} from './bgg'
 
-export type ScoreGame = {
+export interface ScoreGame {
 	score: number | undefined
 	game: BggBoardgame
 }

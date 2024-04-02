@@ -22,7 +22,7 @@ const id = attr('id')
 const friendlyname = attr('friendlyname')
 const bayersaverage = attr('bayersaverage')
 
-export type BggSchemaBoardgame = {
+export interface BggSchemaBoardgame {
 	[objectid]: string
 	name: BoardgameName | BoardgameName[]
 	yearpublished: number
@@ -53,11 +53,11 @@ export type BggSchemaBoardgame = {
 	statistics?: Statistics
 }
 
-export type BggSchemaBoardgameError = {
+export interface BggSchemaBoardgameError {
 	error: {[message]: string}
 }
 
-export type BggSchemaSearchResult = {
+export interface BggSchemaSearchResult {
 	name:
 		| string
 		| {
@@ -68,13 +68,13 @@ export type BggSchemaSearchResult = {
 	[objectid]: string
 }
 
-type SimpleObjectUnit = {
+interface SimpleObjectUnit {
 	[text]: string
 	[objectid]: string
 }
 type SimpleObject = SimpleObjectUnit | SimpleObjectUnit[]
 
-type BoardgameName = {
+interface BoardgameName {
 	[text]: string
 	[primary]?: 'true' | 'false'
 	[sortindex]: string
@@ -100,7 +100,7 @@ type Poll = {
 	  }
 )
 
-export type Rank = {
+export interface Rank {
 	[type]: 'subtype' | 'family'
 	[id]: string
 	[name]: string
@@ -109,7 +109,7 @@ export type Rank = {
 	[bayersaverage]: string
 }
 
-type Statistics = {
+interface Statistics {
 	ratings: {
 		usersrated: number
 		average: number
@@ -129,7 +129,7 @@ type Statistics = {
 	}
 }
 
-export type BggSchemaPollResultNumPlayers = {
+export interface BggSchemaPollResultNumPlayers {
 	result: {
 		[value]: 'Best' | 'Recommended' | 'Not Recommended'
 		[numvotes]: string
@@ -137,14 +137,14 @@ export type BggSchemaPollResultNumPlayers = {
 	[numplayers]: string
 }
 
-export type BggSchemaPollResultLng = {
+export interface BggSchemaPollResultLng {
 	result: {
 		[level]: string
 		[value]: string
 		[numvotes]: string
 	}[]
 }
-export type BggSchemaPollResultAge = {
+export interface BggSchemaPollResultAge {
 	result: {
 		[value]: string
 		[numvotes]: string

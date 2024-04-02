@@ -8,6 +8,7 @@
 module.exports = {
 	root: true,
 	parserOptions: {
+		project: 'tsconfig.json',
 		ecmaVersion: 'latest',
 		sourceType: 'module',
 		ecmaFeatures: {
@@ -21,13 +22,31 @@ module.exports = {
 	},
 
 	// Base config
-	extends: ['eslint:recommended'],
+	extends: [
+		'eslint:recommended',
+		'plugin:@typescript-eslint/strict-type-checked',
+		'plugin:@typescript-eslint/stylistic-type-checked',
+	],
 	rules: {
 		// prettier has some issues with tabs
 		'no-mixed-spaces-and-tabs': 'off',
 
 		// eslint has some trouble with prettier semi: false
 		'no-extra-semi': 'off',
+
+		// throw responses
+		'@typescript-eslint/no-throw-literal': 'off',
+
+		// it's easier to make some functions async even if they do not use await
+		'@typescript-eslint/require-await': 'off',
+
+		// it is forbidden but sometimes it makes sense
+		'@typescript-eslint/no-non-null-assertion': 'off',
+
+		// it is used by URLSearchParams
+		// https://github.com/typescript-eslint/typescript-eslint/issues/5323
+		'@typescript-eslint/restrict-template-expressions':
+			'off',
 	},
 
 	overrides: [

@@ -19,7 +19,7 @@ import {ScoreGame} from '~/lib/score.type'
 import {ReactElement, ReactNode, cloneElement} from 'react'
 import {Alert} from './ui/alert'
 
-export type ScoresProps = {
+export interface ScoresProps {
 	page: number
 	pageSize?: number
 	pageParam?: string
@@ -48,6 +48,7 @@ export function Scores({
 						<li key={s.game.id}>
 							<GameCard
 								game={s.game}
+								value={s}
 								footer={
 									footer ? (
 										cloneElement(footer, {
@@ -100,7 +101,7 @@ export function ScoresFallback({
 	)
 }
 
-type GameCardProps = {
+interface GameCardProps {
 	game: BggBoardgame
 	footer: ReactNode
 }

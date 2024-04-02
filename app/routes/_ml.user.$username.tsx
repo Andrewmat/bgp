@@ -111,7 +111,7 @@ export default function UserPage() {
 						<TooltipProvider>
 							<FollowButton
 								username={userFromPage.username}
-								following={isFollowing || false}
+								following={isFollowing ?? false}
 							/>
 						</TooltipProvider>
 					)}

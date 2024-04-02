@@ -1,7 +1,7 @@
 import {getGamesListId} from '../bgg'
 import {db} from './singleton.server'
 
-type GameUser = {userId: string; gameId: string}
+interface GameUser {userId: string; gameId: string}
 
 export function ignore({userId, gameId}: GameUser) {
 	return upsertGameRelation({userId, gameId, ignored: true})

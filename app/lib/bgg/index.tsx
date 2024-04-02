@@ -102,7 +102,7 @@ export async function getGamesListId(gameIds: string[]) {
 		: [adaptBoardGame(result.boardgames.boardgame)]
 }
 
-export type BggSearchResult = {
+export interface BggSearchResult {
 	id: string
 	name: string
 	yearPublished: number
@@ -110,7 +110,7 @@ export type BggSearchResult = {
 
 export async function searchGames(
 	term: string,
-	exact: boolean = false,
+	exact = false,
 ): Promise<BggSearchResult[]> {
 	if (term.length < 3) {
 		throw new Error('Term should have 3 or more characters')
@@ -176,7 +176,7 @@ function adaptBoardGame(
 		? game.boardgamefamily
 		: [game.boardgamefamily]
 	const hasBGA = family.some(
-		(f) => f?._objectid === FAMILY_BGA_ID,
+		(f) => f._objectid === FAMILY_BGA_ID,
 	)
 
 	const mechanics =
@@ -251,6 +251,7 @@ function adaptBoardGame(
 				(typeof game.poll)[number],
 				{_name: 'suggested_numplayers'}
 			>
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 			if (!poll) return []
 			const pollResults = Array.isArray(poll.results)
 				? poll.results

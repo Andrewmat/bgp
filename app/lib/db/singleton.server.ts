@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment */
 import {PrismaClient} from '@prisma/client'
 
 const singleton = <Value>(
 	name: string,
 	valueFactory: () => Value,
 ): Value => {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const g = global as any
 	g.__singletons ??= {}
 	g.__singletons[name] ??= valueFactory()

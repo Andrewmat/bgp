@@ -79,8 +79,7 @@ export async function loader({
 				page,
 				scores: null,
 				errorMessage:
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any
-					(e as any)?.message ??
+					(e as Error | undefined)?.message ??
 					'Houve um erro ao fazer pesquisa',
 			} as const)
 		}
@@ -138,8 +137,7 @@ export async function loader({
 			results: null,
 			scores: null,
 			errorMessage:
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				(e as any)?.message ??
+				(e as Error | undefined)?.message ??
 				'Houve um erro ao fazer pesquisa',
 		} as const)
 	}
@@ -230,7 +228,7 @@ export default function SearchPage() {
 				<Pagination
 					hasNext={
 						results?.length
-							? results?.length === PAGE_SIZE
+							? results.length === PAGE_SIZE
 							: false
 					}
 					page={page}

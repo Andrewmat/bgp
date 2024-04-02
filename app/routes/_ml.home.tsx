@@ -267,6 +267,7 @@ async function getOwnGames(
 
 	return games.map((game) => ({
 		game,
-		score: scores.find((s) => s.gameId)!.value,
+		score: scores.find((score) => score.gameId === game.id)!
+			.value,
 	}))
 }

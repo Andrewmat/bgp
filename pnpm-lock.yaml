@@ -128,7 +128,7 @@ devDependencies:
     specifier: ^18.2.7
     version: 18.2.18
   '@typescript-eslint/eslint-plugin':
-    specifier: ^6.7.4
+    specifier: ^6.18.1
     version: 6.18.1(@typescript-eslint/parser@6.21.0)(eslint@8.56.0)(typescript@5.3.3)
   autoprefixer:
     specifier: ^10.4.16
