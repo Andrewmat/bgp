@@ -48,7 +48,6 @@ export function Scores({
 						<li key={s.game.id}>
 							<GameCard
 								game={s.game}
-								value={s}
 								footer={
 									footer ? (
 										cloneElement(footer, {

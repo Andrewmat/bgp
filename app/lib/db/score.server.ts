@@ -47,10 +47,12 @@ export function getScoresByUser({
 	userId,
 	skip = 0,
 	take = 12,
+	orderBy = 'value',
 }: {
 	userId: string
 	skip?: number
 	take?: number
+	orderBy?: 'value' | 'updatedAt'
 }) {
 	return db.score.findMany({
 		where: {userId},
@@ -61,7 +63,7 @@ export function getScoresByUser({
 		},
 		skip,
 		take,
-		orderBy: {value: 'desc'},
+		orderBy: {[orderBy]: 'desc'},
 	})
 }
 

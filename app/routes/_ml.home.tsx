@@ -75,11 +75,16 @@ export async function loader({
 		Number(searchParams.get('score_page')) || 1
 	const recommendationPage =
 		Number(searchParams.get('rec_page')) || 1
+	const orderByParam = searchParams.get('order_by')
 
 	return defer({
 		ownPage,
 		recommendationPage,
-		own: getOwnGames(user.id, ownPage),
+		own: getOwnGames(
+			user.id,
+			ownPage,
+			orderByParam === 'updatedAt' ? 'updatedAt' : 'value',
+		),
 		recommendations: getRecommendedToRate({
 			userId: user.id,
 			skip: (recommendationPage - 1) * 6,
@@ -250,11 +255,13 @@ function EvaluationFormOwn({
 async function getOwnGames(
 	userId: string,
 	scorePage: number,
+	orderBy: 'updatedAt' | 'value',
 ): Promise<ScoreGame[]> {
 	const scores = await getScoresByUser({
 		userId: userId,
 		skip: (scorePage - 1) * 12,
 		take: 12,
+		orderBy,
 	})
 
 	if (scores.length === 0) {

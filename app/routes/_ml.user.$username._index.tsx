@@ -22,10 +22,14 @@ export async function loader({
 
 	const scorePage =
 		Number(searchParams.get('score_page')) || 1
+	const orderByParam = searchParams.get('order_by')
+
 	const rawScores = await getScoresByUser({
 		userId: user.id,
 		skip: (scorePage - 1) * PAGE_SIZE,
 		take: PAGE_SIZE,
+		orderBy:
+			orderByParam === 'updatedAt' ? 'updatedAt' : 'value',
 	})
 	const games = await Promise.all(
 		rawScores.map((score) => getGameId(score.gameId)),
