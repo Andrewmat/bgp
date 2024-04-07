@@ -55,7 +55,6 @@ export async function getScoresByUser({
 	take?: number
 	orderBy?: 'value' | 'updatedAt'
 }) {
-	console.log({orderBy})
 	const [result, count] = await db.$transaction([
 		db.score.findMany({
 			where: {userId},
