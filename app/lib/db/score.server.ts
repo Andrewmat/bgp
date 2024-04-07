@@ -1,6 +1,5 @@
 import {BggBoardgame, getGamesListId} from '../bgg'
 import {getFollowing} from './follow.server'
-import {ScoreGame} from './score.type'
 import {db} from './singleton.server'
 
 export async function upsertScore({
