@@ -39,7 +39,7 @@ export default function IndexPage() {
 				Board Game Planilha
 			</h1>
 			<h2 className='text-2xl mt-8'>
-				Otimize sua decisão de jogos
+				Otimize sua decisão de jogos!
 			</h2>
 			<div className='flex justify-center gap-10 mt-12'>
 				<SLink

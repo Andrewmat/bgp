@@ -51,6 +51,9 @@ module.exports = {
 		// Too many bugs have been introduced by this
 		// it resolves nothing to remove ?.
 		'@typescript-eslint/no-unnecessary-condition': 'off',
+
+		// it cannot be used by functions that receives promises like db.$transaction
+		'@typescript-eslint/no-floating-promises': 'off',
 	},
 
 	overrides: [

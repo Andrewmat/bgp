@@ -1,4 +1,4 @@
-import {BggBoardgame} from './bgg'
+import {BggBoardgame} from '../bgg'
 
 export interface ScoreGame {
 	score: number | undefined

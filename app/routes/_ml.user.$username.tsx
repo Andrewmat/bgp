@@ -120,6 +120,11 @@ export default function UserPage() {
 				<div className='flex flex-col gap-6'>
 					<nav className='flex gap-3'>
 						<NavButton
+							to={`/user/${userFromPage.username}/games`}
+						>
+							Games
+						</NavButton>
+						<NavButton
 							to={`/user/${userFromPage.username}/follows`}
 						>
 							Follows

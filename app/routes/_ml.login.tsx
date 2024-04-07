@@ -31,6 +31,8 @@ export async function loader({
 
 export default function Login() {
 	const {redirectTo} = useLoaderData<typeof loader>()
+	console.log('process.env.NODE_ENV', process.env.NODE_ENV)
+
 	return (
 		<div className='w-full max-w-md mx-auto'>
 			<Card>

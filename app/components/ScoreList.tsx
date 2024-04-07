@@ -15,9 +15,9 @@ import {ScoreDisplay} from './DiceScore'
 import Pagination from './Pagination'
 import {TooltipProvider} from './ui/tooltip'
 import {Skeleton} from './ui/skeleton'
-import {ScoreGame} from '~/lib/score.type'
 import {ReactElement, ReactNode, cloneElement} from 'react'
 import {Alert} from './ui/alert'
+import {ScoreGame} from '~/lib/db/score.type'
 
 export interface ScoresProps {
 	page: number
@@ -25,6 +25,7 @@ export interface ScoresProps {
 	pageParam?: string
 	scores: ScoreGame[]
 	empty?: ReactNode
+	noPagination?: boolean
 
 	footer?: ReactElement<{
 		score: number | undefined
@@ -32,13 +33,14 @@ export interface ScoresProps {
 	}>
 }
 
-export function Scores({
+export function ScoreList({
 	scores,
 	page,
 	pageSize = 12,
 	pageParam = 'score_page',
 	footer,
 	empty = 'Nenhuma nota encontrada',
+	noPagination = false,
 }: ScoresProps) {
 	return (
 		<>
@@ -69,13 +71,15 @@ export function Scores({
 					<Alert variant='destructive'>{empty}</Alert>
 				</div>
 			)}
-			<div className='mt-2'>
-				<Pagination
-					hasNext={scores.length === pageSize}
-					page={page}
-					searchParam={pageParam}
-				/>
-			</div>
+			{!noPagination && (
+				<div className='mt-2'>
+					<Pagination
+						hasNext={scores.length === pageSize}
+						page={page}
+						searchParam={pageParam}
+					/>
+				</div>
+			)}
 		</>
 	)
 }

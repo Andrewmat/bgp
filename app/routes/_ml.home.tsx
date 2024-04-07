@@ -12,7 +12,10 @@ import {
 import {MegaphoneOffIcon} from 'lucide-react'
 import React, {Suspense} from 'react'
 import {EvaluationForm} from '~/components/EvaluationForm'
-import {Scores, ScoresFallback} from '~/components/Scores'
+import {
+	ScoreList,
+	ScoresFallback,
+} from '~/components/ScoreList'
 import {
 	Card,
 	CardContent,
@@ -30,7 +33,7 @@ import {
 	getScoresByUser,
 } from '~/lib/db/score.server'
 import {assertAuthenticated} from '~/lib/login/auth.server'
-import {ScoreGame} from '~/lib/score.type'
+import {ScoreGame} from '~/lib/db/score.type'
 
 export const meta: MetaFunction = () => {
 	return [
@@ -47,23 +50,6 @@ export const links: LinksFunction = () => [
 		href: 'https://cf.geekdo-images.com/',
 	},
 ]
-
-// export function shouldRevalidate({
-// 	formAction,
-// 	formMethod,
-// }: ShouldRevalidateFunctionArgs) {
-// 	// in evaluation, do not refresh path
-// 	if (formMethod === 'POST' && formAction) {
-// 		const matchEvaluate = matchPath(
-// 			'game/:gameId/evaluate',
-// 			formAction,
-// 		)
-// 		if (matchEvaluate?.params.gameId) {
-// 			return false
-// 		}
-// 	}
-// 	return true
-// }
 
 export async function loader({
 	request,
@@ -120,7 +106,7 @@ export default function HomePage() {
 									title='Recomendações'
 									subtitle='Alguns jogos para você votar'
 								>
-									<Scores
+									<ScoreList
 										page={recommendationPage}
 										pageSize={6}
 										scores={
@@ -158,7 +144,7 @@ export default function HomePage() {
 									title='Seus jogos'
 									subtitle='Os jogos que você já votou'
 								>
-									<Scores
+									<ScoreList
 										page={ownPage}
 										pageSize={12}
 										scores={ownResolved as ScoreGame[]}
@@ -257,7 +243,7 @@ async function getOwnGames(
 	scorePage: number,
 	orderBy: 'updatedAt' | 'value',
 ): Promise<ScoreGame[]> {
-	const scores = await getScoresByUser({
+	const {result: scores} = await getScoresByUser({
 		userId: userId,
 		skip: (scorePage - 1) * 12,
 		take: 12,

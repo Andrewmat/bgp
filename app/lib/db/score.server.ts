@@ -1,5 +1,6 @@
 import {BggBoardgame, getGamesListId} from '../bgg'
 import {getFollowing} from './follow.server'
+import {ScoreGame} from './score.type'
 import {db} from './singleton.server'
 
 export async function upsertScore({
@@ -43,7 +44,7 @@ export function getScoreByUserGame({
 	})
 }
 
-export function getScoresByUser({
+export async function getScoresByUser({
 	userId,
 	skip = 0,
 	take = 12,
@@ -54,17 +55,25 @@ export function getScoresByUser({
 	take?: number
 	orderBy?: 'value' | 'updatedAt'
 }) {
-	return db.score.findMany({
-		where: {userId},
-		select: {
-			gameId: true,
-			value: true,
-			updatedAt: true,
-		},
-		skip,
-		take,
-		orderBy: {[orderBy]: 'desc'},
-	})
+	console.log({orderBy})
+	const [result, count] = await db.$transaction([
+		db.score.findMany({
+			where: {userId},
+			select: {
+				gameId: true,
+				value: true,
+				updatedAt: true,
+			},
+			skip,
+			take,
+			orderBy: {[orderBy]: 'desc'},
+		}),
+		db.score.count({where: {userId}}),
+	])
+	return {
+		result,
+		count,
+	}
 }
 
 export function getScoresSearch({
@@ -179,10 +188,6 @@ export async function getRecommendedToRate({
 	}))
 }
 
-function removeDuplicates<T>(arr: T[]) {
-	return Array.from(new Set(arr))
-}
-
 export interface ScoreTableGame {
 	game: BggBoardgame
 	avgValue: number | null
@@ -248,3 +253,22 @@ export async function getScoresTable({
 }
 
 const selectGameId = (v: {gameId: string}) => v.gameId
+
+function removeDuplicates<T>(arr: T[]) {
+	return Array.from(new Set(arr))
+}
+
+export async function getScoreGame<
+	TScore extends number | undefined,
+>(scores: {value: TScore; gameId: string}[]) {
+	const gameIds = scores.map(selectGameId)
+	if (gameIds.length === 0) {
+		return []
+	}
+	const games = await getGamesListId(gameIds)
+	return games.map((game) => ({
+		game,
+		score: scores.find((score) => score.gameId === game.id)!
+			.value,
+	}))
+}
