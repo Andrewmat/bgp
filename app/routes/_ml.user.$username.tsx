@@ -33,6 +33,7 @@ import {
 } from '~/lib/login/auth.server'
 import notFoundImage from '~/assets/undraw_empty.svg'
 import NavButton from '~/components/NavButton'
+import {Separator} from '~/components/ui/separator'
 
 export async function loader({
 	params,
@@ -122,7 +123,7 @@ export default function UserPage() {
 						<NavButton
 							to={`/user/${userFromPage.username}/games`}
 						>
-							Games
+							Jogos votados
 						</NavButton>
 						<NavButton
 							to={`/user/${userFromPage.username}/follows`}
@@ -130,6 +131,7 @@ export default function UserPage() {
 							Follows
 						</NavButton>
 					</nav>
+					<Separator />
 					<Outlet />
 				</div>
 			</CardContent>

@@ -27,7 +27,8 @@ import {
 import {getFollowing} from '~/lib/db/follow.server'
 import {getOnSession} from '~/lib/login/session.server'
 import {GroupTable} from './GroupTable'
-import {getIsIgnored} from '~/lib/db/gameuser.server'
+import {getGameUser} from '~/lib/db/gameuser.server'
+import {SofaIcon, UserIcon} from 'lucide-react'
 
 export const meta: MetaFunction<typeof loader> = ({
 	data,
@@ -59,18 +60,23 @@ export const loader = async ({
 		'Could not read gameId',
 	)
 	const game = await getGameId(gameId, true)
-	let score: Awaited<
-		ReturnType<typeof getScoreByUserGame>
-	> = null
-	let groupScore: Awaited<
-		ReturnType<typeof getScoresGroup>
-	> | null = null
-	let groupType: 'following' | 'table' | null = null
 
-	if (user?.id) {
-		const table = await getOnSession(request, 'table')
+	if (user?.id == null) {
+		return json({
+			game,
+			user,
+			score: null,
+			tableScore: null,
+			followingScore: null,
+			isIgnored: null,
+			isBookmarked: null,
+		})
+	}
 
-		;[score, groupScore] = await Promise.all([
+	const table = await getOnSession(request, 'table')
+
+	const [score, tableScore, followingScore, relation] =
+		await Promise.all([
 			getScoreByUserGame({
 				gameId,
 				userId: user.id,
@@ -80,31 +86,28 @@ export const loader = async ({
 						gameId,
 						userIds: table.map((t) => t.id),
 					})
-				: getFollowing({followedById: user.id}).then(
-						(following) => {
-							return getScoresGroup({
-								gameId,
-								userIds: following
-									.map((f) => f.id)
-									.concat(user.id),
-							})
-						},
-					),
+				: null,
+			getFollowing({followedById: user.id}).then(
+				(following) => {
+					return getScoresGroup({
+						gameId,
+						userIds: following
+							.map((f) => f.id)
+							.concat(user.id),
+					})
+				},
+			),
+			getGameUser({userId: user.id, gameId: game.id}),
 		])
-		groupType = table ? 'table' : 'following'
-	}
+
 	return json({
 		game,
 		score: score?.value,
-		groupType,
-		groupScore,
+		tableScore,
+		followingScore,
 		user,
-		isIgnored: user
-			? await getIsIgnored({
-					userId: user.id,
-					gameId: game.id,
-				})
-			: false,
+		isIgnored: relation?.ignored,
+		isBookmarked: relation?.bookmarked,
 	})
 }
 
@@ -113,21 +116,23 @@ export default function GameDetailsPage() {
 		game,
 		score,
 		user,
-		groupScore,
-		groupType,
+		tableScore,
+		followingScore,
 		isIgnored,
+		isBookmarked,
 	} = useLoaderData<typeof loader>()
 
 	return (
 		<Card className='flex flex-col gap-2 pb-6'>
 			<GameHeader
 				game={game as BggBoardgame}
-				score={score}
+				score={score ?? undefined}
 				showActions={Boolean(user)}
-				isIgnored={isIgnored}
+				isIgnored={isIgnored ?? false}
+				isBookmarked={isBookmarked ?? false}
 			/>
 
-			<div className='flex flex-col gap-4'>
+			<div className='flex flex-col gap-6'>
 				<Section title='Geral'>
 					<div className='flex flex-row'></div>
 					<RangeInfo
@@ -181,27 +186,61 @@ export default function GameDetailsPage() {
 						</div>
 					</Section>
 				)}
-			</div>
-			{groupScore && groupScore.length > 0 && (
-				<Section
-					title={
-						groupType === 'following' ? 'Seguindo' : 'Mesa'
-					}
-				>
-					<div className='flex gap-6'>
-						<div className='flex flex-col gap-2 items-start justify-start'>
-							<small className='text-muted-foreground'>
-								({groupScore.length}{' '}
-								{groupScore.length > 1 ? 'votos' : 'voto'})
-							</small>
-							<Stats
-								values={groupScore.map((s) => s.value)}
-							/>
+				{followingScore && followingScore.length > 0 && (
+					<Section
+						title={
+							<span className='flex gap-2 items-center'>
+								<UserIcon /> Seguindo
+							</span>
+						}
+					>
+						<div className='flex gap-6'>
+							<div className='flex flex-col gap-2 items-start justify-start'>
+								<small className='text-muted-foreground'>
+									({followingScore.length}{' '}
+									{followingScore.length > 1
+										? 'votos'
+										: 'voto'}
+									)
+								</small>
+								<Stats
+									values={followingScore.map(
+										(s) => s.value,
+									)}
+								/>
+							</div>
+							<div>
+								<GroupTable groupScore={followingScore} />
+							</div>
 						</div>
-						<GroupTable groupScore={groupScore} />
-					</div>
-				</Section>
-			)}
+					</Section>
+				)}
+				{tableScore && tableScore.length > 0 && (
+					<Section
+						title={
+							<span className='flex gap-2 items-center'>
+								<SofaIcon /> Mesa
+							</span>
+						}
+					>
+						<div className='flex gap-6'>
+							<div className='flex flex-col gap-2 items-start justify-start'>
+								<small className='text-muted-foreground'>
+									({tableScore.length}{' '}
+									{tableScore.length > 1 ? 'votos' : 'voto'}
+									)
+								</small>
+								<Stats
+									values={tableScore.map((s) => s.value)}
+								/>
+							</div>
+							<div>
+								<GroupTable groupScore={tableScore} />
+							</div>
+						</div>
+					</Section>
+				)}
+			</div>
 		</Card>
 	)
 }

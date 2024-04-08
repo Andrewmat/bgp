@@ -9,7 +9,7 @@ import {
 export function Stats({
 	values,
 	averageLabel = 'Média',
-	stdDevLabel = 'Variância Padrão',
+	stdDevLabel = 'Desvio Padrão',
 }: {
 	values: number[]
 	averageLabel?: React.ReactNode

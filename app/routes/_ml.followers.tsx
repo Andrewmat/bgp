@@ -31,7 +31,7 @@ export default function FollowersPage() {
 			<CardHeader>
 				<CardTitle>Seguidores</CardTitle>
 			</CardHeader>
-			<CardContent className='pt-6'>
+			<CardContent className='pt-6 flex flex-col gap-6'>
 				<TableManager
 					user={user}
 					group={followers}

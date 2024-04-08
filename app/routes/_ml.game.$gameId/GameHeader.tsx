@@ -1,5 +1,7 @@
 import {Link, useFetcher} from '@remix-run/react'
 import {
+	BookmarkMinusIcon,
+	BookmarkPlusIcon,
 	ExternalLink,
 	MegaphoneIcon,
 	MegaphoneOffIcon,
@@ -36,12 +38,13 @@ export function GameHeader(
 	props: {
 		game: BggBoardgame
 		isIgnored: boolean
+		isBookmarked: boolean
 	} & (
 		| {showActions: true; score: number | undefined}
 		| {showActions: false}
 	),
 ) {
-	const {game, showActions, isIgnored} = props
+	const {game, showActions, isIgnored, isBookmarked} = props
 
 	return (
 		<>
@@ -111,6 +114,12 @@ export function GameHeader(
 							</DropdownMenuTrigger>
 							<DropdownMenuContent>
 								<DropdownMenuItem>
+									<BookmarkItem
+										gameId={game.id}
+										isBookmarked={isBookmarked}
+									/>
+								</DropdownMenuItem>
+								<DropdownMenuItem>
 									<IgnoreItem
 										gameId={game.id}
 										isIgnored={isIgnored}
@@ -159,6 +168,47 @@ function IgnoreItem({
 					<>
 						<MegaphoneOffIcon />
 						Silenciar jogo
+					</>
+				)}
+			</button>
+		</fetcher.Form>
+	)
+}
+
+function BookmarkItem({
+	gameId,
+	isBookmarked: loaderIsBookmarked,
+}: {
+	gameId: string
+	isBookmarked: boolean
+}) {
+	const fetcher = useFetcher<typeof action>()
+	const isBookmarked =
+		fetcher.data?.bookmarked ?? loaderIsBookmarked
+	return (
+		<fetcher.Form
+			action={`/game/${gameId}/relation`}
+			method='POST'
+		>
+			<input type='hidden' name='intent' value='bookmark' />
+			<input
+				type='hidden'
+				name='value'
+				value={isBookmarked ? 'false' : 'true'}
+			/>
+			<button
+				type='submit'
+				className='appearance-none w-full flex items-center gap-2'
+			>
+				{isBookmarked ? (
+					<>
+						<BookmarkMinusIcon />
+						Desmarcar jogo
+					</>
+				) : (
+					<>
+						<BookmarkPlusIcon />
+						Marcar jogo
 					</>
 				)}
 			</button>

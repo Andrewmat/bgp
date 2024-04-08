@@ -54,6 +54,9 @@ module.exports = {
 
 		// it cannot be used by functions that receives promises like db.$transaction
 		'@typescript-eslint/no-floating-promises': 'off',
+
+		// if it is ignored already, why making another comment ignoring it?
+		'@typescript-eslint/ban-ts-comment': 'off',
 	},
 
 	overrides: [

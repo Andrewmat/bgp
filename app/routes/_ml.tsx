@@ -57,11 +57,9 @@ export default function MainLayout() {
 							profileImage={null}
 						>
 							<DropdownMenuItem asChild>
-								<Link to='/following'>Seguindo</Link>
+								<Link to='/games'>Meus jogos</Link>
 							</DropdownMenuItem>
-							<DropdownMenuItem asChild>
-								<Link to='/followers'>Seguidores</Link>
-							</DropdownMenuItem>
+
 							<DropdownMenuItem asChild>
 								<Link to='/table'>Mesa</Link>
 							</DropdownMenuItem>
@@ -88,10 +86,7 @@ export default function MainLayout() {
 						<SearchBar />
 					</div>
 					<nav className='flex gap-2'>
-						<NavButton to='/following'>Seguindo</NavButton>
-						<NavButton to='/followers'>
-							Seguidores
-						</NavButton>
+						<NavButton to='/games'>Meus jogos</NavButton>
 						<NavButton to='/table'>Mesa</NavButton>
 					</nav>
 				</div>
@@ -127,7 +122,7 @@ export default function MainLayout() {
 					by{' '}
 					{/* eslint-disable-next-line react/jsx-no-target-blank */}
 					<Link
-						to='https://boardgameplanilha.xyz/user/andrewmat'
+						to='https://github.com/Andrewmat/'
 						target='_blank'
 						className={cn(
 							buttonVariants({variant: 'link'}),
@@ -211,7 +206,12 @@ function DropdownMenuHeader({
 				<DropdownMenuItem asChild>
 					<Link to='/me'>Meu perfil</Link>
 				</DropdownMenuItem>
-				{children}
+				<DropdownMenuItem asChild>
+					<Link to='/following'>Seguindo</Link>
+				</DropdownMenuItem>
+				<DropdownMenuItem asChild>
+					<Link to='/followers'>Seguidores</Link>
+				</DropdownMenuItem>
 				<DropdownMenuItem asChild>
 					<Link to='/config'>Configurações</Link>
 				</DropdownMenuItem>

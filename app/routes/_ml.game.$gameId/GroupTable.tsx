@@ -40,12 +40,12 @@ export function GroupTable({groupScore}: GroupTableProps) {
 				<TableBody>
 					{groupScore.map((gs) => (
 						<TableRow key={gs.user.id}>
-							<TableCell className='p-1'>
+							<TableCell className='px-3 py-2'>
 								<Link to={`/user/${gs.user.username}`}>
 									{gs.user.name}
 								</Link>
 							</TableCell>
-							<TableCell className='p-1 text-center'>
+							<TableCell className='px-3 py-2 text-center'>
 								<ScoreDisplay score={gs.value} />
 							</TableCell>
 						</TableRow>

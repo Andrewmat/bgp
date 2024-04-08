@@ -40,7 +40,7 @@ export default function FollowingPage() {
 			<CardHeader>
 				<CardTitle>Seguindo</CardTitle>
 			</CardHeader>
-			<CardContent className='pt-6'>
+			<CardContent className='pt-6 flex flex-col gap-6'>
 				<TableManager
 					user={user}
 					group={following}

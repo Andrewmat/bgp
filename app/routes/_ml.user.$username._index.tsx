@@ -8,6 +8,7 @@ import {ScoreList} from '~/components/ScoreList'
 import {ScoreGame} from '~/lib/db/score.type'
 import {Button} from '~/components/ui/button'
 import {CardTitle} from '~/components/ui/card'
+import {ChevronRightIcon} from 'lucide-react'
 
 const pageSize = 6
 
@@ -51,7 +52,7 @@ export default function UserScores() {
 	const {scores, scorePage, username} =
 		useLoaderData<typeof loader>()
 	return (
-		<div>
+		<div className='flex flex-col items-start'>
 			<Button asChild variant='link' className='text-lg'>
 				<Link to={`/user/${username}/games`}>
 					<CardTitle>Jogos votados</CardTitle>
@@ -62,6 +63,16 @@ export default function UserScores() {
 				scores={scores as ScoreGame[]}
 				noPagination
 			/>
+			<Button
+				asChild
+				variant='link'
+				className='self-end flex items-center gap-2'
+			>
+				<Link to={`/user/${username}/games`}>
+					<span>Ver mais</span>
+					<ChevronRightIcon size='1.5em' />
+				</Link>
+			</Button>
 		</div>
 	)
 }

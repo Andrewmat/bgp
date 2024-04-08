@@ -45,10 +45,10 @@ export default function FollowersUserPage() {
 			<Tabs defaultValue='followers'>
 				<TabsList className='grid w-full grid-cols-2'>
 					<TabsTrigger value='followers'>
-						Followers
+						Followers ({followers.length})
 					</TabsTrigger>
 					<TabsTrigger value='following'>
-						Following
+						Following ({following.length})
 					</TabsTrigger>
 				</TabsList>
 				<TabsContent value='followers'>
