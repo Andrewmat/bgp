@@ -17,7 +17,7 @@ export async function loader({
 
 export default function GamesPage() {
 	return (
-		<div className='full-bleed px-10'>
+		<div className='full-bleed max-w-[1600px] mx-auto px-10'>
 			<Card className='flex min-h-full'>
 				<nav className='flex flex-col w-[220px]'>
 					<GameNavLink to='/games/voted'>
