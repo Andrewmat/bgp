@@ -203,12 +203,12 @@ function BookmarkItem({
 				{isBookmarked ? (
 					<>
 						<BookmarkMinusIcon />
-						Desmarcar jogo
+						Remover dos jogos salvos
 					</>
 				) : (
 					<>
 						<BookmarkPlusIcon />
-						Marcar jogo
+						Salvar jogo
 					</>
 				)}
 			</button>

@@ -68,7 +68,7 @@ export function SearchBar() {
 						id={`q-${id}`}
 						placeholder={placeholder}
 						defaultValue={term ?? undefined}
-						className='rounded-none flex-grow-[3] basis-0'
+						className='rounded-none flex-grow-[3] basis-0 pr-[60px] sm:pr-[100px]'
 						minLength={3}
 					/>
 					<div className='absolute h-full top-0 right-3 flex items-center gap-2'>
@@ -78,10 +78,24 @@ export function SearchBar() {
 							value='true'
 							defaultChecked={exact}
 						/>
-						<Label htmlFor={`exact-${id}`}>Exata</Label>
+						<Label
+							className='sm:hidden'
+							htmlFor={`exact-${id}`}
+						>
+							Ex.
+						</Label>
+						<Label
+							className='hidden sm:inline'
+							htmlFor={`exact-${id}`}
+						>
+							Exata
+						</Label>
 						<TooltipProvider>
 							<Tooltip>
-								<TooltipTrigger type='button'>
+								<TooltipTrigger
+									type='button'
+									className='hidden sm:block'
+								>
 									<HelpCircleIcon
 										size='1em'
 										className='stroke-muted-foreground hover:stroke-foreground focus-visible:stroke-foreground'

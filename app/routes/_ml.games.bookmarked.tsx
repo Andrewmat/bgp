@@ -97,8 +97,8 @@ function GameCard({game, score}: ScoreGame) {
 
 		toast.success(
 			bookmarkFetcher.data.bookmarked
-				? 'Jogo marcado com sucesso'
-				: 'Jogo desmarcado com sucesso',
+				? 'Jogo salvo com sucesso'
+				: 'Removidos dos jogos salvos com sucesso',
 		)
 	}, [bookmarkFetcher.data])
 
@@ -145,8 +145,8 @@ function GameCard({game, score}: ScoreGame) {
 								</TooltipTrigger>
 								<TooltipContent>
 									{isBookmarked
-										? 'Desmarcar jogo'
-										: 'Marcar jogo'}
+										? 'Salvar jogo'
+										: 'Remover dos jogos salvos'}
 								</TooltipContent>
 							</Tooltip>
 						</bookmarkFetcher.Form>

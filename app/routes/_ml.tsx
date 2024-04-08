@@ -206,12 +206,7 @@ function DropdownMenuHeader({
 				<DropdownMenuItem asChild>
 					<Link to='/me'>Meu perfil</Link>
 				</DropdownMenuItem>
-				<DropdownMenuItem asChild>
-					<Link to='/following'>Seguindo</Link>
-				</DropdownMenuItem>
-				<DropdownMenuItem asChild>
-					<Link to='/followers'>Seguidores</Link>
-				</DropdownMenuItem>
+				{children}
 				<DropdownMenuItem asChild>
 					<Link to='/config'>Configurações</Link>
 				</DropdownMenuItem>
