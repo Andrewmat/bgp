@@ -53,7 +53,7 @@ export default function UserGameReviewPage() {
 	return (
 		<>
 			<div className='mx-auto mt-6 min-w-[300px] max-w-[60ch] flex flex-col gap-6'>
-				<div className='flex justify-between'>
+				<div className='flex gap-2 justify-between'>
 					<GameLink game={game as BggBoardgame} />
 					<TooltipProvider>
 						<ScoreDisplay score={score} />
