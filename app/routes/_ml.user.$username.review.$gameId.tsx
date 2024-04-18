@@ -73,7 +73,7 @@ export default function UserGameReviewPage() {
 			<Button
 				asChild
 				variant='link'
-				className='inline-block mx-auto'
+				className='mx-auto h-auto whitespace-break-spaces text-center'
 			>
 				<Link to={`/game/${game.id}/review`}>
 					Faça sua análise de {game.name} também

@@ -130,7 +130,7 @@ export default function GameReviewPage() {
 			className='px-6 flex flex-col items-stretch gap-2'
 			method='POST'
 		>
-			<div className='flex gap-6'>
+			<div className='flex flex-col sm:flex-row gap-6'>
 				<div className='flex flex-col gap-2 flex-grow basis-0'>
 					<Label htmlFor={`${id}score`}>Nota</Label>
 					<RadioGroup.Root
@@ -161,7 +161,7 @@ export default function GameReviewPage() {
 								>
 									<StarIcon
 										className={cn(
-											'fill-muted stroke-muted-foreground',
+											'mx-auto fill-muted stroke-muted-foreground',
 											'hover:fill-yellow-400 hover:stroke-black',
 											'dark:hover:fill-yellow-600 dark:hover:stroke-white',
 											i < highlighted &&

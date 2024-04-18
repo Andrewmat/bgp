@@ -1,5 +1,4 @@
 import {
-	Link,
 	MetaFunction,
 	Outlet,
 	isRouteErrorResponse,
@@ -11,13 +10,7 @@ import {
 import invariant from 'tiny-invariant'
 import {Card} from '~/components/ui/card'
 import {BggBoardgame, getGameId} from '~/lib/bgg'
-import {
-	getScoreByUserGame,
-	getScoresGroup,
-} from '~/lib/db/score.server'
-import {Stats} from '~/components/Stats'
-import {RangeInfo} from '../_ml.game.$gameId._index/RangeInfo'
-import {Section} from '../_ml.game.$gameId._index/Section'
+import {getScoreByUserGame} from '~/lib/db/score.server'
 import {GameHeader} from './GameHeader'
 import {Alert} from '~/components/ui/alert'
 import {getSessionUser} from '~/lib/login/auth.server'
@@ -25,11 +18,9 @@ import {
 	LinksFunction,
 	LoaderFunctionArgs,
 } from '@remix-run/node'
-import {getFollowing} from '~/lib/db/follow.server'
-import {getOnSession} from '~/lib/login/session.server'
-import {GroupTable} from '../_ml.game.$gameId._index/GroupTable'
 import {getGameUser} from '~/lib/db/gameuser.server'
-import {SofaIcon, UserIcon} from 'lucide-react'
+import NavButton from '~/components/NavButton'
+import {Separator} from '~/components/ui/separator'
 
 export const meta: MetaFunction<typeof loader> = ({
 	data,
@@ -103,6 +94,14 @@ export default function GameDetailsPage() {
 				isBookmarked={isBookmarked ?? false}
 			/>
 
+			<nav className='flex gap-3 mx-6'>
+				<NavButton to={`/game/${game.id}/`}>Info</NavButton>
+				<NavButton to={`/game/${game.id}/review`}>
+					Review
+				</NavButton>
+			</nav>
+
+			<Separator className='my-6' />
 			<Outlet />
 		</Card>
 	)
