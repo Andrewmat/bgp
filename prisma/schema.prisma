@@ -58,3 +58,17 @@ model GameUser {
   @@id([userId, gameId])
   @@index([gameId])
 }
+
+model BggGame {
+  id         String   @id @default(uuid())
+  externalId String   @unique
+  image      String
+  thumbnail  String
+  name       String
+  minPlayers Int
+  maxPlayers Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([externalId])
+}

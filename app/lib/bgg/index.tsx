@@ -9,6 +9,7 @@ import {
 	BggSchemaBoardgameError,
 	Rank,
 } from './schema'
+import {db} from '../db/singleton.server'
 
 const xmlParser = new XMLParser({
 	ignoreAttributes: false,
@@ -83,7 +84,13 @@ export async function getGameId(
 		}
 	}
 
-	return adaptBoardGame(result.boardgames.boardgame)
+	const game = adaptBoardGame(result.boardgames.boardgame)
+	try {
+		await upsertBggGames([game])
+	} catch {
+		/* empty */
+	}
+	return game
 }
 
 export async function getGamesListId(gameIds: string[]) {
@@ -95,11 +102,50 @@ export async function getGamesListId(gameIds: string[]) {
 		}
 	}
 
-	return Array.isArray(result.boardgames.boardgame)
+	const games = Array.isArray(result.boardgames.boardgame)
 		? result.boardgames.boardgame.map((boardgame) =>
 				adaptBoardGame(boardgame),
 			)
 		: [adaptBoardGame(result.boardgames.boardgame)]
+
+	try {
+		await upsertBggGames(games)
+	} catch (error) {
+		console.error('--- UPSERT BGG GAMES ERROR ---')
+		console.error(error)
+		console.error('--- [END] UPSERT BGG GAMES ERROR ---')
+	}
+
+	return games
+}
+
+async function upsertBggGames(games: BggBoardgame[]) {
+	const insertedIds = (
+		await db.bggGame.findMany({
+			where: {externalId: {in: games.map((g) => g.id)}},
+			select: {externalId: true},
+		})
+	).map((g) => g.externalId)
+	const newGames = games.filter(
+		(g) => !insertedIds.includes(g.id),
+	)
+	// https://github.com/prisma/prisma/issues/9562
+	return Promise.all(
+		newGames.map((game) =>
+			db.bggGame.upsert({
+				where: {externalId: game.id},
+				create: {
+					externalId: game.id,
+					name: game.name,
+					image: game.image,
+					thumbnail: game.thumbnail,
+					maxPlayers: game.maxPlayers,
+					minPlayers: game.minPlayers,
+				},
+				update: {},
+			}),
+		),
+	)
 }
 
 export interface BggSearchResult {
