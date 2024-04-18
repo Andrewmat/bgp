@@ -6,12 +6,23 @@ import {
 	AvatarImage,
 } from './ui/avatar'
 import {BggBoardgame} from '~/lib/bgg'
+import {ClassValue} from 'clsx'
+import {cn} from '~/lib/utils'
 
-export function GameLink({game}: {game: BggBoardgame}) {
+export function GameLink({
+	game,
+	className,
+}: {
+	game: BggBoardgame
+	className?: ClassValue
+}) {
 	return (
 		<Link
 			to={`/game/${game.id}`}
-			className='flex gap-2 items-center hover:underline focus:underline'
+			className={cn(
+				'flex gap-2 items-center hover:underline focus:underline',
+				className,
+			)}
 		>
 			<Avatar>
 				<AvatarImage

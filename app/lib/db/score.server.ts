@@ -18,9 +18,47 @@ export async function upsertScore({
 	})
 }
 
+export async function upsertReview({
+	userId,
+	gameId,
+	value,
+	review,
+}: {
+	userId: string
+	gameId: string
+	value: number
+	review: string
+}) {
+	return db.score.upsert({
+		where: {userId_gameId: {userId, gameId}},
+		create: {userId, gameId, value, review},
+		update: {value, review},
+	})
+}
+
 export function deleteScore({id}: {id: string}) {
 	return db.score.deleteMany({
 		where: {id},
+	})
+}
+
+export function getReviewByUserGame({
+	userId,
+	gameId,
+}: {
+	userId: string
+	gameId: string
+}) {
+	return db.score.findFirst({
+		where: {userId, gameId},
+		select: {
+			id: true,
+			userId: true,
+			gameId: true,
+			value: true,
+			updatedAt: true,
+			review: true,
+		},
 	})
 }
 

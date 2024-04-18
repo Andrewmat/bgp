@@ -1,6 +1,7 @@
 import {LoaderFunctionArgs, json} from '@remix-run/node'
 import {
 	Form,
+	Link,
 	useLoaderData,
 	useSubmit,
 } from '@remix-run/react'
@@ -66,6 +67,7 @@ export async function loader({
 	const games = await getScoreGame(scores)
 
 	return json({
+		username: userFromPage.username,
 		games,
 		page,
 		pageSize,
@@ -93,7 +95,7 @@ export default function UserGamelistPage() {
 				key={hashFilter}
 			>
 				{/* @ts-expect-error InfiniteGamelist injects props */}
-				<Gamelist />
+				<Gamelist username={loaderData.username} />
 			</InfiniteGamelist>
 		</div>
 	)
@@ -133,7 +135,13 @@ function FilterPanel({applied}: {applied: Filter}) {
 	)
 }
 
-function Gamelist({games}: {games: ScoreGame[]}) {
+function Gamelist({
+	games,
+	username,
+}: {
+	username: string
+	games: ScoreGame[]
+}) {
 	return (
 		<TooltipProvider>
 			<ul className='grid grid-cols-1 gap-2 list-none sm:grid-cols-2 lg:grid-cols-3 lg:gap-3'>
@@ -144,7 +152,11 @@ function Gamelist({games}: {games: ScoreGame[]}) {
 								<GameLink game={game} />
 							</CardHeader>
 							<CardFooter>
-								<ScoreDisplay score={score!} />
+								<Link
+									to={`/user/${username}/review/${game.id}`}
+								>
+									<ScoreDisplay score={score!} />
+								</Link>
 							</CardFooter>
 						</Card>
 					</li>
