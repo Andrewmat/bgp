@@ -8,11 +8,12 @@ import {
 import invariant from 'tiny-invariant'
 import {ScoreDisplay} from '~/components/DiceScore'
 import {GameLink} from '~/components/GameLink'
+import {Quote} from '~/components/QuoteReview'
 import {Alert} from '~/components/ui/alert'
 import {Button} from '~/components/ui/button'
 import {TooltipProvider} from '~/components/ui/tooltip'
 import {type BggBoardgame, getGameId} from '~/lib/bgg'
-import {getReviewByUserGame} from '~/lib/db/score.server'
+import {getReviewByUserGame} from '~/lib/db/review.server'
 import {getUserByUsername} from '~/lib/db/user.server'
 
 export async function loader({params}: LoaderFunctionArgs) {
@@ -60,14 +61,7 @@ export default function UserGameReviewPage() {
 					</TooltipProvider>
 				</div>
 				{review && (
-					<figure>
-						<blockquote className='italic text-lg'>
-							&ldquo;{review}&rdquo;
-						</blockquote>
-						<figcaption className='text-end font-bold'>
-							{pageUser.name}
-						</figcaption>
-					</figure>
+					<Quote quote={review} author={pageUser.name} />
 				)}
 			</div>
 			<Button

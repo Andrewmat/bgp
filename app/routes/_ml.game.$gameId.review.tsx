@@ -6,6 +6,7 @@ import {
 } from '@remix-run/node'
 import {
 	Form,
+	Link,
 	useActionData,
 	useLoaderData,
 } from '@remix-run/react'
@@ -13,10 +14,6 @@ import {useEffect, useId, useState} from 'react'
 import invariant from 'tiny-invariant'
 import {StarIcon} from 'lucide-react'
 import {getGameId} from '~/lib/bgg'
-import {
-	getReviewByUserGame,
-	upsertReview,
-} from '~/lib/db/score.server'
 import {assertAuthenticated} from '~/lib/login/auth.server'
 import * as RadioGroup from '@radix-ui/react-radio-group'
 import {Textarea} from '~/components/ui/textarea'
@@ -24,6 +21,12 @@ import {Label} from '~/components/ui/label'
 import {cn} from '~/lib/utils'
 import {Button} from '~/components/ui/button'
 import {Alert} from '~/components/ui/alert'
+import {
+	getReviewByUserGame,
+	getReviewsByGame,
+	upsertReview,
+} from '~/lib/db/review.server'
+import {Quote} from '~/components/QuoteReview'
 
 export async function loader({
 	params,
@@ -36,12 +39,17 @@ export async function loader({
 		gameId: params.gameId,
 		userId: user.id,
 	})
+	const list = await getReviewsByGame({
+		gameId: game.id,
+	})
+
 	return json({
 		user,
 		game,
 		gameId: params.gameId,
 		score: score?.value,
 		review: score?.review,
+		list,
 	})
 }
 
@@ -60,9 +68,12 @@ export async function action({
 	> = {score: null, review: null}
 	if (typeof formReview !== 'string') {
 		fieldErrors.review = 'Análise inválida'
-	} else if (formReview.length > 300) {
+	} else if (
+		formReview.length <= 0 ||
+		formReview.length > 400
+	) {
 		fieldErrors.review =
-			'Tamanho da análise deve ser até 300 caracteres'
+			'Tamanho da análise deve ter entre 1 e 400 caracteres'
 	}
 	if (typeof formScore !== 'string') {
 		fieldErrors.score = 'Nota inválida'
@@ -126,80 +137,102 @@ export default function GameReviewPage() {
 
 	const id = useId()
 	return (
-		<Form
-			className='px-6 flex flex-col items-stretch gap-2'
-			method='POST'
-		>
-			<div className='flex flex-col sm:flex-row gap-6'>
-				<div className='flex flex-col gap-2 flex-grow basis-0'>
-					<Label htmlFor={`${id}score`}>Nota</Label>
-					<RadioGroup.Root
-						id={`${id}score`}
-						name='score'
-						value={String(score)}
-						onValueChange={(value) => {
-							setScore(Number(value))
-						}}
-					>
-						<div className='grid grid-cols-5 gap-y-2 gap-x-0 sm:gap-x-2'>
-							{Array.from({length: 10}).map((_, i) => (
-								<RadioGroup.Item
-									key={i}
-									value={String(i + 1)}
-									onMouseOver={() => {
-										setHover(i + 1)
-									}}
-									onFocus={() => {
-										setHover(i + 1)
-									}}
-									onMouseOut={() => {
-										setHover(undefined)
-									}}
-									onBlur={() => {
-										setHover(undefined)
-									}}
-								>
-									<StarIcon
-										className={cn(
-											'mx-auto fill-muted stroke-muted-foreground',
-											'hover:fill-yellow-400 hover:stroke-black',
-											'dark:hover:fill-yellow-600 dark:hover:stroke-white',
-											i < highlighted &&
-												'fill-yellow-200 stroke-yellow-300 dark:fill-yellow-800 dark:stroke-yellow-700',
-										)}
-									/>
-								</RadioGroup.Item>
-							))}
-						</div>
-					</RadioGroup.Root>
-					{actionData?.fieldErrors?.score && (
-						<Alert variant='destructive'>
-							{actionData?.fieldErrors?.score}
-						</Alert>
-					)}
+		<div className='flex flex-col gap-6'>
+			<Form
+				className='px-6 flex flex-col items-stretch gap-2'
+				method='POST'
+			>
+				<div className='flex flex-col sm:flex-row gap-6'>
+					<div className='flex flex-col gap-2 flex-grow basis-0'>
+						<Label htmlFor={`${id}score`}>Nota</Label>
+						<RadioGroup.Root
+							id={`${id}score`}
+							name='score'
+							value={String(score)}
+							onValueChange={(value) => {
+								setScore(Number(value))
+							}}
+						>
+							<div className='grid grid-cols-5 gap-y-2 gap-x-0 sm:gap-x-2'>
+								{Array.from({length: 10}).map((_, i) => (
+									<RadioGroup.Item
+										key={i}
+										value={String(i + 1)}
+										onMouseOver={() => {
+											setHover(i + 1)
+										}}
+										onFocus={() => {
+											setHover(i + 1)
+										}}
+										onMouseOut={() => {
+											setHover(undefined)
+										}}
+										onBlur={() => {
+											setHover(undefined)
+										}}
+									>
+										<StarIcon
+											className={cn(
+												'mx-auto fill-muted stroke-muted-foreground',
+												'hover:fill-yellow-400 hover:stroke-black',
+												'dark:hover:fill-yellow-600 dark:hover:stroke-white',
+												i < highlighted &&
+													'fill-yellow-200 stroke-yellow-300 dark:fill-yellow-800 dark:stroke-yellow-700',
+											)}
+										/>
+									</RadioGroup.Item>
+								))}
+							</div>
+						</RadioGroup.Root>
+						{actionData?.fieldErrors?.score && (
+							<Alert variant='destructive'>
+								{actionData?.fieldErrors?.score}
+							</Alert>
+						)}
+					</div>
+					<div className='flex-grow-[4] flex flex-col gap-2 basis-0'>
+						<Label htmlFor={`${id}review`}>Análise</Label>
+						<Textarea
+							id={`${id}review`}
+							name='review'
+							defaultValue={
+								actionData?.formFields.review ??
+								loaderData.review ??
+								undefined
+							}
+							maxLength={300}
+						/>
+						{actionData?.fieldErrors?.review && (
+							<Alert variant='destructive'>
+								{actionData?.fieldErrors?.review}
+							</Alert>
+						)}
+					</div>
 				</div>
-				<div className='flex-grow-[4] flex flex-col gap-2 basis-0'>
-					<Label htmlFor={`${id}review`}>Análise</Label>
-					<Textarea
-						id={`${id}review`}
-						name='review'
-						defaultValue={
-							actionData?.formFields.review ??
-							loaderData.review ??
-							undefined
-						}
-						maxLength={300}
-					/>
-					{actionData?.fieldErrors?.review && (
-						<Alert variant='destructive'>
-							{actionData?.fieldErrors?.review}
-						</Alert>
-					)}
+				<Button type='submit' className='self-end'>
+					Salvar
+				</Button>
+			</Form>
+			{loaderData.list.length > 0 && (
+				<div className='mx-auto'>
+					<ul className='mx-6 flex flex-col gap-12 max-w-[60ch]'>
+						{loaderData.list.map((score) => (
+							<li key={score.id}>
+								<Quote
+									quote={score.review!}
+									author={
+										<Link
+											to={`/user/${score.user.username}`}
+										>
+											{score.user.name}
+										</Link>
+									}
+								/>
+							</li>
+						))}
+					</ul>
 				</div>
-			</div>
-			<Button type='submit' className='self-end'>
-				Salvar
-			</Button>
-		</Form>
+			)}
+		</div>
 	)
 }
