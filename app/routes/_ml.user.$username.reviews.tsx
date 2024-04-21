@@ -1,8 +1,10 @@
 import {LoaderFunctionArgs, json} from '@remix-run/node'
 import {useLoaderData} from '@remix-run/react'
 import invariant from 'tiny-invariant'
+import {ScoreDisplay} from '~/components/DiceScore'
 import {GameLink} from '~/components/GameLink'
 import {Quote} from '~/components/QuoteReview'
+import {TooltipProvider} from '~/components/ui/tooltip'
 import {BggBoardgame} from '~/lib/bgg'
 import {getReviewsByUser} from '~/lib/db/review.server'
 import {getCompleteScoreGame} from '~/lib/db/score.server'
@@ -28,21 +30,29 @@ export default function UserReviewsPage() {
 
 	return (
 		<div className='mx-auto'>
-			<ul className='mx-6 flex flex-col gap-12 max-w-[60ch]'>
-				{reviews.map(({game, score}) => (
-					<li key={game.id}>
-						<Quote
-							quote={score.review}
-							author={
-								<GameLink
-									game={game as BggBoardgame}
-									className='inline-flex mt-2'
-								/>
-							}
-						/>
-					</li>
-				))}
-			</ul>
+			<TooltipProvider>
+				<ul className='mx-6 flex flex-col gap-12 max-w-[60ch]'>
+					{reviews.map(({game, score}) => (
+						<li key={game.id}>
+							<Quote
+								quote={score.review}
+								author={
+									<div className='flex justify-between items-baseline gap-2 mt-2'>
+										<GameLink
+											game={game as BggBoardgame}
+											className='items-baseline'
+										/>
+										<ScoreDisplay
+											score={score.value}
+											className='items-baseline'
+										/>
+									</div>
+								}
+							/>
+						</li>
+					))}
+				</ul>
+			</TooltipProvider>
 		</div>
 	)
 }

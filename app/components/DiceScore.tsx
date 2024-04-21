@@ -10,17 +10,25 @@ import {
 	TooltipTrigger,
 } from './ui/tooltip'
 import {cn} from '~/lib/utils'
+import {ClassValue} from 'clsx'
 
 export function ScoreDisplay({
 	score,
 	tooltipContent = `Nota ${score.toFixed(2)}`,
+	className,
 }: {
 	score: number
 	tooltipContent?: React.ReactNode
+	className?: ClassValue
 }) {
 	return (
 		<Tooltip>
-			<TooltipTrigger className='inline-flex gap-2 items-center'>
+			<TooltipTrigger
+				className={cn(
+					'inline-flex gap-2 items-center',
+					className,
+				)}
+			>
 				<StarIcon
 					size='1em'
 					className='fill-yellow-800 stroke-yellow-700'
