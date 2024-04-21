@@ -36,7 +36,7 @@ export default function UserReviewsPage() {
 							author={
 								<GameLink
 									game={game as BggBoardgame}
-									className='inline-flex'
+									className='inline-flex mt-2'
 								/>
 							}
 						/>
