@@ -69,7 +69,7 @@ export default function UserGameReviewPage() {
 				variant='link'
 				className='mx-auto h-auto whitespace-break-spaces text-center'
 			>
-				<Link to={`/game/${game.id}/review`}>
+				<Link to={`/game/${game.id}/reviews`}>
 					Faça sua análise de {game.name} também
 				</Link>
 			</Button>

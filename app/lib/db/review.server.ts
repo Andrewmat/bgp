@@ -30,7 +30,10 @@ export function getReviewsByUser({
 	skip?: number
 }) {
 	return db.score.findMany({
-		where: {userId},
+		where: {
+			userId,
+			AND: [{review: {not: null}}, {review: {not: ''}}],
+		},
 		take,
 		skip,
 	})

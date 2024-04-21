@@ -270,3 +270,19 @@ export async function getScoreGame<
 			.value,
 	}))
 }
+
+export async function getCompleteScoreGame<
+	TScore extends {gameId: string},
+>(scores: TScore[]) {
+	const gameIds = scores.map(selectGameId)
+	if (gameIds.length === 0) {
+		return []
+	}
+	const games = await getGamesListId(gameIds)
+	return games.map((game) => ({
+		game,
+		score: scores.find(
+			(score) => score.gameId === game.id,
+		)!,
+	}))
+}

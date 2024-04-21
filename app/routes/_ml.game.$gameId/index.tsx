@@ -95,10 +95,8 @@ export default function GameDetailsPage() {
 			/>
 
 			<nav className='flex gap-3 mx-6'>
-				<NavButton to={`/game/${game.id}/`}>Info</NavButton>
-				<NavButton to={`/game/${game.id}/review`}>
-					Review
-				</NavButton>
+				<NavButton to='.'>Info</NavButton>
+				<NavButton to='./reviews'>Reviews</NavButton>
 			</nav>
 
 			<Separator className='my-6' />
