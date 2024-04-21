@@ -27,6 +27,8 @@ import {
 	upsertReview,
 } from '~/lib/db/review.server'
 import {Quote} from '~/components/QuoteReview'
+import {ScoreDisplay} from '~/components/DiceScore'
+import {TooltipProvider} from '~/components/ui/tooltip'
 
 export async function loader({
 	params,
@@ -213,26 +215,31 @@ export default function GameReviewPage() {
 					Salvar
 				</Button>
 			</Form>
-			{loaderData.list.length > 0 && (
-				<div className='mx-auto'>
-					<ul className='mx-6 flex flex-col gap-12 max-w-[60ch]'>
-						{loaderData.list.map((score) => (
-							<li key={score.id}>
-								<Quote
-									quote={score.review!}
-									author={
-										<Link
-											to={`/user/${score.user.username}`}
-										>
-											{score.user.name}
-										</Link>
-									}
-								/>
-							</li>
-						))}
-					</ul>
-				</div>
-			)}
+			<TooltipProvider>
+				{loaderData.list.length > 0 && (
+					<div className='mx-auto'>
+						<ul className='mx-6 flex flex-col gap-12 max-w-[60ch]'>
+							{loaderData.list.map((score) => (
+								<li key={score.id}>
+									<Quote
+										quote={score.review}
+										author={
+											<div className='inline-flex gap-2'>
+												<Link
+													to={`/user/${score.user.username}`}
+												>
+													{score.user.name}
+												</Link>
+												<ScoreDisplay score={score.value} />
+											</div>
+										}
+									/>
+								</li>
+							))}
+						</ul>
+					</div>
+				)}
+			</TooltipProvider>
 		</div>
 	)
 }
