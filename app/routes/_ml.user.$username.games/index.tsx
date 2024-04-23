@@ -33,7 +33,7 @@ import {
 	CardHeader,
 } from '~/components/ui/card'
 import {GameLink} from '~/components/GameLink'
-import {ScoreDisplay} from '~/components/DiceScore'
+import {ScoreDisplay} from '~/components/ScoreDisplay'
 
 export async function loader({
 	params,

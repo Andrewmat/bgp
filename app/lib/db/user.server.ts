@@ -1,9 +1,25 @@
+import {Prisma} from '@prisma/client'
 import {db} from './singleton.server'
 import {generateSlug} from 'random-word-slugs'
 
 export async function getUser(id: string) {
 	return db.user.findUnique({where: {id}})
 }
+
+export async function searchAllUsers(searchTerm?: string) {
+	const where = searchTerm?.length
+		? ({
+				OR: [
+					{name: {contains: searchTerm}},
+					{email: searchTerm},
+					{id: searchTerm},
+				],
+			} satisfies Prisma.UserWhereInput)
+		: undefined
+
+	return db.user.findMany({where})
+}
+
 export async function getUsers(ids: string[]) {
 	return db.user.findMany({
 		where: {id: {in: ids}},

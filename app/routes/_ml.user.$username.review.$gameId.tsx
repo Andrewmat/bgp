@@ -6,7 +6,7 @@ import {
 	useRouteError,
 } from '@remix-run/react'
 import invariant from 'tiny-invariant'
-import {ScoreDisplay} from '~/components/DiceScore'
+import {ScoreDisplay} from '~/components/ScoreDisplay'
 import {GameLink} from '~/components/GameLink'
 import {Quote} from '~/components/QuoteReview'
 import {Alert} from '~/components/ui/alert'

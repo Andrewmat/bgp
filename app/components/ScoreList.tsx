@@ -11,7 +11,7 @@ import {
 	AvatarFallback,
 	AvatarImage,
 } from './ui/avatar'
-import {ScoreDisplay} from './DiceScore'
+import {ScoreDisplay} from './ScoreDisplay'
 import Pagination from './Pagination'
 import {TooltipProvider} from './ui/tooltip'
 import {Skeleton} from './ui/skeleton'

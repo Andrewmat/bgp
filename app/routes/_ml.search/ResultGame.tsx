@@ -3,7 +3,7 @@ import {ExternalLink} from 'lucide-react'
 import {BggSearchResult} from '~/lib/bgg'
 import {Card} from '~/components/ui/card'
 import {cn} from '~/lib/utils'
-import {ScoreDisplay} from '~/components/DiceScore'
+import {ScoreDisplay} from '~/components/ScoreDisplay'
 
 export function ResultGame({
 	game,
@@ -42,7 +42,9 @@ export function ResultGame({
 				to={`https://boardgamegeek.com/boardgame/${game.id}`}
 				target='_blank'
 				rel='noreferrer'
-				onClick={(e) => { e.stopPropagation(); }}
+				onClick={(e) => {
+					e.stopPropagation()
+				}}
 				className='absolute right-2 top-2'
 			>
 				<ExternalLink size='1rem' />

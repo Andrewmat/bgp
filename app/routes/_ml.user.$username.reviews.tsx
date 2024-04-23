@@ -1,7 +1,7 @@
 import {LoaderFunctionArgs, json} from '@remix-run/node'
 import {useLoaderData} from '@remix-run/react'
 import invariant from 'tiny-invariant'
-import {ScoreDisplay} from '~/components/DiceScore'
+import {ScoreDisplay} from '~/components/ScoreDisplay'
 import {GameLink} from '~/components/GameLink'
 import {Quote} from '~/components/QuoteReview'
 import {TooltipProvider} from '~/components/ui/tooltip'

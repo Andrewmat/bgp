@@ -27,7 +27,7 @@ import {
 	upsertReview,
 } from '~/lib/db/review.server'
 import {Quote} from '~/components/QuoteReview'
-import {ScoreDisplay} from '~/components/DiceScore'
+import {ScoreDisplay} from '~/components/ScoreDisplay'
 import {TooltipProvider} from '~/components/ui/tooltip'
 
 export async function loader({

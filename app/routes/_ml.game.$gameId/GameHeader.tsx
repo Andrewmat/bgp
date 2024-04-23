@@ -24,7 +24,7 @@ import {
 import {
 	ComplexityDisplay,
 	ScoreDisplay,
-} from '~/components/DiceScore'
+} from '~/components/ScoreDisplay'
 import {
 	DropdownMenu,
 	DropdownMenuContent,

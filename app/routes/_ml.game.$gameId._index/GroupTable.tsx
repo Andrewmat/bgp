@@ -7,7 +7,7 @@ import {
 	TableHeader,
 	TableRow,
 } from '~/components/ui/table'
-import {ScoreDisplay} from '~/components/DiceScore'
+import {ScoreDisplay} from '~/components/ScoreDisplay'
 import {TooltipProvider} from '~/components/ui/tooltip'
 
 interface BasicUser {
