@@ -1,16 +1,4 @@
 import type {BggBoardgame} from '~/lib/bgg'
-import {
-	Card,
-	CardFooter,
-	CardHeader,
-	CardTitle,
-} from './ui/card'
-import {Link} from '@remix-run/react'
-import {
-	Avatar,
-	AvatarFallback,
-	AvatarImage,
-} from './ui/avatar'
 import {ScoreDisplay} from './ScoreDisplay'
 import Pagination from './Pagination'
 import {TooltipProvider} from './ui/tooltip'
@@ -18,6 +6,7 @@ import {Skeleton} from './ui/skeleton'
 import {ReactElement, ReactNode, cloneElement} from 'react'
 import {Alert} from './ui/alert'
 import {ScoreGame} from '~/lib/db/score.type'
+import {GameCard} from './GameCard'
 
 export interface ScoresProps {
 	page: number
@@ -101,34 +90,5 @@ export function ScoresFallback({
 				<Skeleton className='w-[64px] h-[50px]' />
 			</div>
 		</div>
-	)
-}
-
-interface GameCardProps {
-	game: BggBoardgame
-	footer: ReactNode
-}
-
-export function GameCard({game, footer}: GameCardProps) {
-	return (
-		<Card className='border-none border-r-0'>
-			<CardHeader>
-				<Link
-					to={`/game/${game.id}`}
-					className='flex gap-2 items-center hover:underline focus:underline'
-				>
-					<Avatar>
-						<AvatarImage
-							src={game.thumbnail}
-							height='40'
-							width='40'
-						/>
-						<AvatarFallback>{game.name}</AvatarFallback>
-					</Avatar>
-					<CardTitle>{game.name}</CardTitle>
-				</Link>
-			</CardHeader>
-			<CardFooter>{footer}</CardFooter>
-		</Card>
 	)
 }

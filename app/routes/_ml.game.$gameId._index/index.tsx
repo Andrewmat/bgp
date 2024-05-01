@@ -3,10 +3,10 @@ import {
 	useLoaderData,
 	useRouteLoaderData,
 } from '@remix-run/react'
+import {SofaIcon, UserIcon} from 'lucide-react'
 import {type loader as gameDetailsLoader} from '../_ml.game.$gameId'
 import {Section} from './Section'
-import {RangeInfo} from './RangeInfo'
-import {SofaIcon, UserIcon} from 'lucide-react'
+import {RangeInfo} from '~/components/RangeInfo'
 import {Stats} from '~/components/Stats'
 import {GroupTable} from './GroupTable'
 import {LoaderFunctionArgs, json} from '@remix-run/node'
