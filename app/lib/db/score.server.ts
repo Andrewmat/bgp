@@ -256,7 +256,7 @@ function removeDuplicates<T>(arr: T[]) {
 	return Array.from(new Set(arr))
 }
 
-export async function getScoreGame<
+export async function getScoreValueGame<
 	TScore extends number | undefined,
 >(scores: {value: TScore; gameId: string}[]) {
 	const gameIds = scores.map(selectGameId)
@@ -271,7 +271,7 @@ export async function getScoreGame<
 	}))
 }
 
-export async function getCompleteScoreGame<
+export async function getScoreReviewGame<
 	TScore extends {gameId: string},
 >(scores: TScore[]) {
 	const gameIds = scores.map(selectGameId)

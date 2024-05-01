@@ -7,7 +7,7 @@ import {Quote} from '~/components/QuoteReview'
 import {TooltipProvider} from '~/components/ui/tooltip'
 import {BggBoardgame} from '~/lib/bgg'
 import {getReviewsByUser} from '~/lib/db/review.server'
-import {getCompleteScoreGame} from '~/lib/db/score.server'
+import {getScoreReviewGame} from '~/lib/db/score.server'
 import {getUserByUsername} from '~/lib/db/user.server'
 
 export async function loader({params}: LoaderFunctionArgs) {
@@ -20,7 +20,7 @@ export async function loader({params}: LoaderFunctionArgs) {
 		userId: pageUser.id,
 	})
 
-	const reviews = await getCompleteScoreGame(rs)
+	const reviews = await getScoreReviewGame(rs)
 
 	return json({reviews})
 }

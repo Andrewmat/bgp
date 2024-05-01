@@ -9,6 +9,15 @@ import {ScoreGame} from '~/lib/db/score.type'
 import {Button} from './ui/button'
 import {ShellIcon} from 'lucide-react'
 
+export interface InfiniteGamelistProps {
+	games: ScoreGame[]
+	action?: string
+	hasMore: boolean
+	page: number
+	pageSize: number
+	children: (bag: {games: ScoreGame[]}) => React.ReactNode
+}
+
 export function InfiniteGamelist({
 	games,
 	action,
@@ -16,14 +25,7 @@ export function InfiniteGamelist({
 	page,
 	pageSize,
 	children,
-}: {
-	games: ScoreGame[]
-	action?: string
-	hasMore: boolean
-	page: number
-	pageSize: number
-	children: ReactElement<{games: ScoreGame[]}>
-}) {
+}: InfiniteGamelistProps) {
 	const [allGames, setAllGames] = useState(games)
 	const moreFetcher = useFetcher<{
 		page: number
@@ -46,7 +48,7 @@ export function InfiniteGamelist({
 
 	return (
 		<>
-			{cloneElement(children, {games: allGames})}
+			{children({games: allGames})}
 			{lastHasMore && (
 				<moreFetcher.Form
 					method='GET'

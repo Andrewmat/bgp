@@ -9,7 +9,7 @@ import {
 	TooltipTrigger,
 } from '~/components/ui/tooltip'
 import {cn} from '~/lib/utils'
-import {action as evaluateAction} from '~/routes/game.$gameId.evaluate'
+import {type action as evaluateAction} from '~/routes/game.$gameId.evaluate'
 
 export function EvaluationForm({
 	gameId,
@@ -80,10 +80,18 @@ export function EvaluationForm({
 									className={cn(
 										'appearance-none focus-visible:ring focus-visible:outline-none',
 									)}
-									onMouseOver={() => { setHover(i + 1); }}
-									onFocus={() => { setHover(i + 1); }}
-									onMouseOut={() => { setHover(undefined); }}
-									onBlur={() => { setHover(undefined); }}
+									onMouseOver={() => {
+										setHover(i + 1)
+									}}
+									onFocus={() => {
+										setHover(i + 1)
+									}}
+									onMouseOut={() => {
+										setHover(undefined)
+									}}
+									onBlur={() => {
+										setHover(undefined)
+									}}
 								>
 									<StarIcon
 										className={cn(

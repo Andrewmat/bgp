@@ -1,5 +1,9 @@
 import {LoaderFunctionArgs, json} from '@remix-run/node'
-import {useFetcher, useLoaderData} from '@remix-run/react'
+import {
+	Form,
+	useFetcher,
+	useLoaderData,
+} from '@remix-run/react'
 import {
 	BookmarkMinusIcon,
 	BookmarkPlusIcon,
@@ -21,11 +25,12 @@ import {
 	TooltipTrigger,
 } from '~/components/ui/tooltip'
 import {getAllBookmarkedGames} from '~/lib/db/gameuser.server'
-import {getScoreGame} from '~/lib/db/score.server'
+import {getScoreValueGame} from '~/lib/db/score.server'
 import {ScoreGame} from '~/lib/db/score.type'
 import {assertAuthenticated} from '~/lib/login/auth.server'
 import {action} from './game.$gameId.relation'
 import {cn} from '~/lib/utils'
+import {Input} from '~/components/ui/input'
 
 export async function loader({
 	request,
@@ -43,7 +48,7 @@ export async function loader({
 		skip: (page - 1) * pageSize,
 		take: pageSize,
 	})
-	const games = await getScoreGame(
+	const games = await getScoreValueGame(
 		result.map((r) => ({gameId: r, value: undefined})),
 	)
 
@@ -66,8 +71,7 @@ export default function BookmarkedGamesPage() {
 				pageSize={pageSize}
 				games={games as ScoreGame[]}
 			>
-				{/* @ts-expect-error InfiniteGamelist injects props */}
-				<Gamelist />
+				{({games}) => <Gamelist games={games} />}
 			</InfiniteGamelist>
 		</div>
 	)

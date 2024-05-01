@@ -10,7 +10,7 @@ import {
 } from '~/components/ui/card'
 import {TooltipProvider} from '~/components/ui/tooltip'
 import {
-	getScoreGame,
+	getScoreValueGame,
 	getScoresByUser,
 } from '~/lib/db/score.server'
 import {ScoreGame} from '~/lib/db/score.type'
@@ -32,7 +32,7 @@ export async function loader({
 		skip: (page - 1) * pageSize,
 		take: pageSize,
 	})
-	const games = await getScoreGame(scores)
+	const games = await getScoreValueGame(scores)
 
 	return json({
 		games,
@@ -53,8 +53,7 @@ export default function VotedGamesPage() {
 				pageSize={pageSize}
 				games={games as ScoreGame[]}
 			>
-				{/* @ts-expect-error InfiniteGamelist injects props */}
-				<Gamelist />
+				{({games}) => <Gamelist games={games} />}
 			</InfiniteGamelist>
 		</div>
 	)

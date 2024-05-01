@@ -8,7 +8,7 @@ import {
 import {useMemo, useRef} from 'react'
 import invariant from 'tiny-invariant'
 import {
-	getScoreGame,
+	getScoreValueGame,
 	getScoresByUser,
 } from '~/lib/db/score.server'
 import {ScoreGame} from '~/lib/db/score.type'
@@ -64,7 +64,7 @@ export async function loader({
 		orderBy: filter.orderBy,
 	})
 
-	const games = await getScoreGame(scores)
+	const games = await getScoreValueGame(scores)
 
 	return json({
 		username: userFromPage.username,
@@ -94,8 +94,12 @@ export default function UserGamelistPage() {
 				games={loaderData.games as ScoreGame[]}
 				key={hashFilter}
 			>
-				{/* @ts-expect-error InfiniteGamelist injects props */}
-				<Gamelist username={loaderData.username} />
+				{({games}) => (
+					<Gamelist
+						username={loaderData.username}
+						games={games}
+					/>
+				)}
 			</InfiniteGamelist>
 		</div>
 	)

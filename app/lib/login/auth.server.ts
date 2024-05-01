@@ -29,7 +29,7 @@ function createAuthenticator() {
 	}
 	async function authenticateMock(request: Request) {
 		return authenticator.authenticate('mock', request, {
-			successRedirect: '/me',
+			successRedirect: '/config',
 			throwOnError: true,
 			failureRedirect: '/login?error',
 		})
@@ -57,7 +57,7 @@ function createAuthenticator() {
 	}
 
 	return {
-		getSessionUser: getSessionUser,
+		getSessionUser,
 		authenticateDiscord,
 		authenticateMock,
 		callbackDiscord,

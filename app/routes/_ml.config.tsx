@@ -4,10 +4,13 @@ import {
 	json,
 } from '@remix-run/node'
 import {
+	Form,
 	Link,
 	MetaFunction,
+	useActionData,
 	useFetcher,
 	useLoaderData,
+	useNavigation,
 } from '@remix-run/react'
 import {useId} from 'react'
 import {MegaphoneOffIcon, ShellIcon} from 'lucide-react'
@@ -34,6 +37,8 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from '~/components/ui/tooltip'
+import {z} from 'zod'
+import Join from '~/components/Join'
 
 export const meta: MetaFunction = () => {
 	return [{title: 'Configurações | BGP'}]
@@ -55,45 +60,48 @@ export async function loader({
 	})
 }
 
+const formDataSchema = z.object({
+	name: z.string().trim().min(1, 'Nome não pode ser vazio'),
+	username: z
+		.string()
+		.trim()
+		.toLowerCase()
+		.min(3, 'Username deve conter pelo menos 3 caracteres.')
+		.regex(
+			/^[A-z]/,
+			'Usuário deve começar com um caractere alfabético.',
+		)
+		.regex(
+			/^[A-z0-9-_.]+$/,
+			'São válidos caracteres alfanuméricos, pontos (.), hífens (-) ou underlines (_).',
+		),
+})
+
 export async function action({
 	request,
 }: ActionFunctionArgs) {
 	const sessionUser = await assertAuthenticated(request)
 
-	const formData = await request.formData()
-	const name = formData.get('name')
-	const username = formData.get('username')
-
-	if (
-		typeof name !== 'string' ||
-		typeof username !== 'string'
-	) {
-		throw json(
+	const formPayload = Object.fromEntries(
+		await request.formData(),
+	)
+	const parseResult = formDataSchema.safeParse(formPayload)
+	if (!parseResult.success) {
+		return json(
 			{
-				message: 'Unprocessable Entity',
-				name: typeof name,
-				username: typeof username,
+				success: false,
+				fieldErrors:
+					parseResult.error.formErrors.fieldErrors,
 			},
 			{status: 422},
 		)
 	}
-	if (username.length < 3) {
-		throw new Response(
-			`Username '${username}' requires at least 3 characters`,
-			{status: 422},
-		)
-	}
-	if (!username.match(/^[A-z][A-z0-9-_.]{2,}$/)) {
-		throw new Response(
-			`Username '${username}' has invalid characters. It should include only alphanumeric characters, or hyphen (-) underscore (_) dot (.)`,
-			{status: 422},
-		)
-	}
+	const {name, username} = parseResult.data
 
 	const newUser = await updateUsername({
 		id: sessionUser.id,
 		name,
-		username: username.trim().toLowerCase(),
+		username: username,
 	})
 
 	const rawSessionUser = await getOnSession(request, 'user')
@@ -115,7 +123,7 @@ export async function action({
 	)
 
 	return json(
-		{success: true},
+		{success: true, fieldErrors: null},
 		{headers: {'Set-Cookie': await commitSession()}},
 	)
 }
@@ -123,9 +131,10 @@ export async function action({
 export default function ConfigPage() {
 	const {user, ignored: ignoredList} =
 		useLoaderData<typeof loader>()
-	const id = useId()
-	const userFetcher = useFetcher<typeof action>()
+	const actionData = useActionData<typeof action>()
+	const nav = useNavigation()
 	const ignoredFetcher = useFetcher()
+	const id = useId()
 
 	return (
 		<Card>
@@ -133,7 +142,7 @@ export default function ConfigPage() {
 				<CardTitle>Configurações</CardTitle>
 			</CardHeader>
 			<CardContent>
-				<userFetcher.Form
+				<Form
 					method='POST'
 					className='flex flex-col w-full gap-2 items-start'
 				>
@@ -142,7 +151,21 @@ export default function ConfigPage() {
 						id={`name${id}`}
 						name='name'
 						defaultValue={user.name}
+						aria-describedby={
+							actionData?.fieldErrors?.name &&
+							`name-error${id}`
+						}
 					/>
+					{actionData?.fieldErrors?.name && (
+						<AlertClosable
+							key={nav.state}
+							variant='destructive'
+							role='alert'
+							id={`name-error${id}`}
+						>
+							{actionData?.fieldErrors?.name}
+						</AlertClosable>
+					)}
 					<Label htmlFor={`username${id}`}>
 						Username (@)
 					</Label>
@@ -151,25 +174,44 @@ export default function ConfigPage() {
 						name='username'
 						defaultValue={user.username}
 						maxLength={30}
+						aria-describedby={
+							actionData?.fieldErrors?.username &&
+							`username-error${id}`
+						}
 					/>
+					{actionData?.fieldErrors?.username && (
+						<AlertClosable
+							key={nav.state}
+							variant='destructive'
+							role='alert'
+							id={`username-error${id}`}
+						>
+							<Join separator={<br />}>
+								{actionData?.fieldErrors?.username}
+							</Join>
+						</AlertClosable>
+					)}
 					<div className='self-stretch mt-2 flex items-start flex-row-reverse justify-between align-start gap-2'>
 						<Button
 							variant='secondary'
 							type='submit'
-							disabled={userFetcher.state !== 'idle'}
+							disabled={nav.state !== 'idle'}
 						>
-							{userFetcher.state !== 'idle' && (
+							{nav.state !== 'idle' && (
 								<ShellIcon className='mr-2 h-4 w-4 motion-safe:animate-[spin_2s_linear_infinite_reverse]' />
 							)}
 							Salvar dados
 						</Button>
-						{userFetcher.data?.success && (
-							<AlertClosable className='self-start'>
+						{actionData?.success && (
+							<AlertClosable
+								className='self-start'
+								key={nav.start}
+							>
 								Alterações feitas com sucesso!
 							</AlertClosable>
 						)}
 					</div>
-				</userFetcher.Form>
+				</Form>
 			</CardContent>
 
 			<CardHeader>
