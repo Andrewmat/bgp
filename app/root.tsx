@@ -1,5 +1,6 @@
 import type {
 	LinksFunction,
+	LoaderFunctionArgs,
 	MetaFunction,
 } from '@remix-run/node'
 import {
@@ -8,9 +9,17 @@ import {
 	Outlet,
 	Scripts,
 	ScrollRestoration,
+	useLoaderData,
 } from '@remix-run/react'
+import {
+	PreventFlashOnWrongTheme,
+	ThemeProvider,
+	useTheme,
+} from 'remix-themes'
+import clsx from 'clsx'
 import globals from './globals.css?url'
 import {Toaster} from '~/components/ui/sonner'
+import {themeSessionResolver} from './lib/login/session.server'
 
 export const links: LinksFunction = () => [
 	{rel: 'stylesheet', href: globals},
@@ -43,9 +52,30 @@ export const meta: MetaFunction = () => {
 	]
 }
 
+export async function loader({
+	request,
+}: LoaderFunctionArgs) {
+	const {getTheme} = await themeSessionResolver(request)
+	return {theme: getTheme()}
+}
+
 export default function App() {
+	const {theme} = useLoaderData<typeof loader>()
 	return (
-		<html lang='en'>
+		<ThemeProvider
+			specifiedTheme={theme}
+			themeAction='/config/theme'
+		>
+			<RootHtml />
+		</ThemeProvider>
+	)
+}
+
+function RootHtml() {
+	const loaderData = useLoaderData<typeof loader>()
+	const [theme] = useTheme()
+	return (
+		<html lang='en' className={clsx(theme)}>
 			<head>
 				<meta charSet='utf-8' />
 				<meta
@@ -54,6 +84,9 @@ export default function App() {
 				/>
 				<Meta />
 				<Links />
+				<PreventFlashOnWrongTheme
+					ssrTheme={Boolean(loaderData.theme)}
+				/>
 			</head>
 			<body>
 				<Outlet />

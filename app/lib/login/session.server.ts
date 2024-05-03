@@ -1,5 +1,6 @@
 import {createCookieSessionStorage} from '@remix-run/node'
 import invariant from 'tiny-invariant'
+import {createThemeSessionResolver} from 'remix-themes'
 import {SessionUser} from './user.schema'
 
 invariant(
@@ -66,3 +67,6 @@ export async function unsetOnSession<
 		return sessionStorage.commitSession(session)
 	}
 }
+
+export const themeSessionResolver =
+	createThemeSessionResolver(sessionStorage)

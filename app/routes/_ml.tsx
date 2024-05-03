@@ -7,8 +7,9 @@ import {
 	useLoaderData,
 	useNavigation,
 } from '@remix-run/react'
-import {HeartIcon} from 'lucide-react'
+import {HeartIcon, MoonIcon, SunIcon} from 'lucide-react'
 import {PropsWithChildren, useEffect, useState} from 'react'
+import {Theme, useTheme} from 'remix-themes'
 import {SearchBar} from '~/components/SearchBar'
 import SLink from '~/components/ui/SLink'
 import {
@@ -29,6 +30,7 @@ import {cn} from '~/lib/utils'
 import logo from '~/assets/logo.webp'
 import poweredByBgg from '~/assets/powered-by-bgg.webp'
 import NavButton from '~/components/NavButton'
+import {ThemeToggle} from '~/components/ThemeToggle'
 
 export async function loader({
 	request,
@@ -69,6 +71,7 @@ export default function MainLayout() {
 							Entrar
 						</SLink>
 					)}
+					<ThemeToggle />
 				</div>
 				<SearchBar />
 			</header>
@@ -104,6 +107,7 @@ export default function MainLayout() {
 						Entrar
 					</SLink>
 				)}
+				<ThemeToggle />
 			</header>
 
 			<main className='main-container my-4 flex-grow flex flex-col'>
