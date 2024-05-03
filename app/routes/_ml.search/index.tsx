@@ -6,7 +6,6 @@ import {
 	useLoaderData,
 } from '@remix-run/react'
 import {AlertCircleIcon} from 'lucide-react'
-import {searchGames} from '~/lib/bgg'
 import noResultsImage from '~/assets/undraw_empty.svg'
 import emptyStateImage from '~/assets/undraw_searching.svg'
 import {AlertClosable} from '~/components/ui/alert-closable'

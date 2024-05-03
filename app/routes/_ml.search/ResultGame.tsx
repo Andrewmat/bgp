@@ -1,6 +1,6 @@
 import {Link, useFetcher} from '@remix-run/react'
 import {ExternalLink} from 'lucide-react'
-import {BggBoardgame, BggSearchResult} from '~/lib/bgg'
+import {BggBoardgame} from '~/lib/bgg'
 import {
 	Card,
 	CardFooter,
@@ -26,6 +26,7 @@ import {
 	AvatarImage,
 } from '~/components/ui/avatar'
 import {GameSearchResultEnhanced} from '~/lib/db/games.server'
+import {forwardRef} from 'react'
 
 export function ResultGame({
 	game,
@@ -44,7 +45,7 @@ export function ResultGame({
 				}
 			}}
 		>
-			<HoverCardTrigger>
+			<HoverCardTrigger asChild>
 				<GameItem game={game} score={score} />
 			</HoverCardTrigger>
 			<HoverCardContent>
@@ -60,13 +61,13 @@ export function ResultGame({
 	)
 }
 
-function GameItem({
-	game,
-	score,
-}: {
-	game: GameSearchResultEnhanced
-	score: number | undefined
-}) {
+const GameItem = forwardRef<
+	HTMLAnchorElement,
+	{
+		game: GameSearchResultEnhanced
+		score: number | undefined
+	}
+>(({game, score}, ref) => {
 	return (
 		<div className='relative'>
 			<Link
@@ -77,11 +78,14 @@ function GameItem({
 					'[&>*]:focus-visible:bg-accent',
 					'[&>*]:focus-visible:text-accent-foreground',
 				)}
+				ref={ref}
 			>
 				<Card className='p-5 h-full flex gap-3'>
 					<Avatar>
 						<AvatarImage src={game.thumbnail} />
-						<AvatarFallback>{game.name}</AvatarFallback>
+						<AvatarFallback>
+							{game.name?.slice(0, 2)}
+						</AvatarFallback>
 					</Avatar>
 					<span className='text-lg'>
 						{game.name} (
@@ -107,7 +111,8 @@ function GameItem({
 			</Link>
 		</div>
 	)
-}
+})
+GameItem.displayName = 'GameItem'
 
 function GameCard({game}: {game: BggBoardgame}) {
 	return (
@@ -123,7 +128,9 @@ function GameCard({game}: {game: BggBoardgame}) {
 							height='40'
 							width='40'
 						/>
-						<AvatarFallback>{game.name}</AvatarFallback>
+						<AvatarFallback>
+							{game.name?.slice(0, 2)}
+						</AvatarFallback>
 					</Avatar>
 					<CardTitle className='text-lg'>
 						{game.name}

@@ -1,5 +1,4 @@
 import {XMLParser} from 'fast-xml-parser'
-// import he from 'he'
 import {
 	prefixAttr,
 	type BggSchemaBoardgame,
@@ -284,7 +283,11 @@ function adaptNumPlayerPollResults(
 	results: BggSchemaPollResultNumPlayers[],
 ) {
 	return results
-		.filter((result) => Boolean(result._numplayers))
+		.filter(
+			(result) =>
+				Boolean(result._numplayers) &&
+				Boolean(result.result),
+		)
 		.map(({result: results, _numplayers: numPlayers}) => ({
 			numPlayers: numPlayers,
 			best: results.find((r) => r._value === 'Best')
