@@ -46,7 +46,9 @@ export function ResultGame({
 			}}
 		>
 			<HoverCardTrigger asChild>
-				<GameItem game={game} score={score} />
+				<div>
+					<GameItem game={game} score={score} />
+				</div>
 			</HoverCardTrigger>
 			<HoverCardContent>
 				{gameFetcher.data ? (
@@ -61,13 +63,13 @@ export function ResultGame({
 	)
 }
 
-const GameItem = forwardRef<
-	HTMLAnchorElement,
-	{
-		game: GameSearchResultEnhanced
-		score: number | undefined
-	}
->(({game, score}, ref) => {
+function GameItem({
+	game,
+	score,
+}: {
+	game: GameSearchResultEnhanced
+	score: number | undefined
+}) {
 	return (
 		<div className='relative'>
 			<Link
@@ -78,7 +80,6 @@ const GameItem = forwardRef<
 					'[&>*]:focus-visible:bg-accent',
 					'[&>*]:focus-visible:text-accent-foreground',
 				)}
-				ref={ref}
 			>
 				<Card className='p-5 h-full flex gap-3'>
 					<Avatar>
@@ -111,8 +112,7 @@ const GameItem = forwardRef<
 			</Link>
 		</div>
 	)
-})
-GameItem.displayName = 'GameItem'
+}
 
 function GameCard({game}: {game: BggBoardgame}) {
 	return (
