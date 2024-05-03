@@ -1,3 +1,4 @@
+import {Prisma} from '@prisma/client'
 import {getGamesListId} from '../bgg'
 import {db} from './singleton.server'
 
@@ -79,19 +80,30 @@ export async function getAllBookmarkedGames({
 	userId,
 	skip,
 	take,
+	numPlayers,
 }: {
 	userId: string
 	skip?: number
 	take?: number
+	numPlayers?: number
 }) {
+	const where: Prisma.GameUserWhereInput = {
+		userId,
+		game: numPlayers
+			? {
+					minPlayers: {lte: numPlayers},
+					maxPlayers: {gte: numPlayers},
+				}
+			: undefined,
+	}
 	const [relations, count] = await db.$transaction([
 		db.gameUser.findMany({
-			where: {userId, bookmarked: true},
+			where,
 			select: {gameId: true},
 			skip,
 			take,
 		}),
-		db.gameUser.count({where: {userId, bookmarked: true}}),
+		db.gameUser.count({where}),
 	])
 	const gameIds = relations.map((r) => r.gameId)
 	if (gameIds.length === 0) {

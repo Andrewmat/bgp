@@ -18,6 +18,7 @@ import {ResultGame} from './ResultGame'
 import {DrawingWrapper} from './DrawingWrapper'
 import Pagination from '~/components/Pagination'
 import {getScoresSearch} from '~/lib/db/score.server'
+import {searchExternalGames} from '~/lib/db/games.server'
 
 export const meta: MetaFunction<typeof loader> = ({
 	data,
@@ -110,7 +111,7 @@ export async function loader({
 	}
 
 	try {
-		const results = await searchGames(
+		const results = await searchExternalGames(
 			term,
 			exact === 'true',
 		)

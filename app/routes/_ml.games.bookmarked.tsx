@@ -3,6 +3,7 @@ import {
 	Form,
 	useFetcher,
 	useLoaderData,
+	useSubmit,
 } from '@remix-run/react'
 import {
 	BookmarkMinusIcon,
@@ -30,7 +31,8 @@ import {ScoreGame} from '~/lib/db/score.type'
 import {assertAuthenticated} from '~/lib/login/auth.server'
 import {action} from './game.$gameId.relation'
 import {cn} from '~/lib/utils'
-import {Input} from '~/components/ui/input'
+import NumPlayersSelect from '~/components/filters/num-players'
+import {Separator} from '~/components/ui/separator'
 
 export async function loader({
 	request,
@@ -42,11 +44,14 @@ export async function loader({
 		Number(url.searchParams.get('pageSize') ?? '12'),
 		12,
 	)
+	const numPlayers =
+		Number(url.searchParams.get('np')) || undefined
 	const skip = (page - 1) * pageSize
 	const {result, count} = await getAllBookmarkedGames({
 		userId: user.id,
 		skip: (page - 1) * pageSize,
 		take: pageSize,
+		numPlayers,
 	})
 	const games = await getScoreValueGame(
 		result.map((r) => ({gameId: r, value: undefined})),
@@ -54,6 +59,7 @@ export async function loader({
 
 	return json({
 		games,
+		filterHash: btoa(JSON.stringify({numPlayers})),
 		page,
 		pageSize,
 		hasMore: skip + games.length < count,
@@ -61,15 +67,25 @@ export async function loader({
 }
 
 export default function BookmarkedGamesPage() {
-	const {games, hasMore, page, pageSize} =
+	const {games, filterHash, hasMore, page, pageSize} =
 		useLoaderData<typeof loader>()
+	const submit = useSubmit()
 	return (
-		<div>
+		<div className='flex flex-col gap-6'>
+			<Form
+				onChange={(e) => {
+					submit(e.currentTarget)
+				}}
+			>
+				<NumPlayersSelect />
+			</Form>
+			<Separator />
 			<InfiniteGamelist
 				hasMore={hasMore}
 				page={page}
 				pageSize={pageSize}
 				games={games as ScoreGame[]}
+				key={filterHash}
 			>
 				{({games}) => <Gamelist games={games} />}
 			</InfiniteGamelist>

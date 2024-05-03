@@ -1,5 +1,9 @@
-import {Prisma} from '@prisma/client'
-import {BggBoardgame} from '../bgg'
+import {BggGame, Prisma} from '@prisma/client'
+import {
+	BggBoardgame,
+	BggSearchResult,
+	searchGames as bggSearchGames,
+} from '../bgg'
 import {db} from './singleton.server'
 
 export async function upsertBggGames(
@@ -47,4 +51,28 @@ export async function searchGames(searchTerm?: string) {
 	return db.bggGame.findMany({
 		where,
 	})
+}
+
+export interface GameSearchResultEnhanced
+	extends BggSearchResult {
+	thumbnail?: BggGame['thumbnail']
+}
+
+export async function searchExternalGames(
+	searchTerm: string,
+	exact = false,
+): Promise<GameSearchResultEnhanced[]> {
+	const result = await bggSearchGames(searchTerm, exact)
+	const gameIds = result.map((r) => r.id)
+	const internalGames = await db.bggGame.findMany({
+		where: {
+			externalId: {in: gameIds},
+		},
+	})
+	return result.map((r) => ({
+		...r,
+		thumbnail: internalGames.find(
+			(ig) => ig.externalId === r.id,
+		)?.thumbnail,
+	}))
 }

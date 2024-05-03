@@ -25,12 +25,13 @@ import {
 	AvatarFallback,
 	AvatarImage,
 } from '~/components/ui/avatar'
+import {GameSearchResultEnhanced} from '~/lib/db/games.server'
 
 export function ResultGame({
 	game,
 	score,
 }: {
-	game: BggSearchResult
+	game: GameSearchResultEnhanced
 	score: number | undefined
 }) {
 	const gameFetcher = useFetcher<typeof loader>()
@@ -63,7 +64,7 @@ function GameItem({
 	game,
 	score,
 }: {
-	game: BggSearchResult
+	game: GameSearchResultEnhanced
 	score: number | undefined
 }) {
 	return (
@@ -77,14 +78,18 @@ function GameItem({
 					'[&>*]:focus-visible:text-accent-foreground',
 				)}
 			>
-				<Card className='p-5 h-full'>
-					<div>
+				<Card className='p-5 h-full flex gap-3'>
+					<Avatar>
+						<AvatarImage src={game.thumbnail} />
+						<AvatarFallback>{game.name}</AvatarFallback>
+					</Avatar>
+					<span className='text-lg'>
 						{game.name} (
 						<em>
 							<small>{game.yearPublished}</small>
 						</em>
 						)
-					</div>
+					</span>
 					{score && (
 						<div>
 							<ScoreDisplay score={score} />

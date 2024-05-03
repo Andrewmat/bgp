@@ -1,3 +1,4 @@
+import {Prisma} from '@prisma/client'
 import {BggBoardgame, getGamesListId} from '../bgg'
 import {getFollowing} from './follow.server'
 import {db} from './singleton.server'
@@ -48,15 +49,26 @@ export async function getScoresByUser({
 	skip = 0,
 	take = 12,
 	orderBy = 'value',
+	numPlayers,
 }: {
 	userId: string
 	skip?: number
 	take?: number
 	orderBy?: 'value' | 'updatedAt'
+	numPlayers?: number
 }) {
+	const where: Prisma.ScoreWhereInput = {
+		userId,
+		game: numPlayers
+			? {
+					minPlayers: {lte: numPlayers},
+					maxPlayers: {gte: numPlayers},
+				}
+			: undefined,
+	}
 	const [result, count] = await db.$transaction([
 		db.score.findMany({
-			where: {userId},
+			where,
 			select: {
 				gameId: true,
 				value: true,
@@ -66,7 +78,7 @@ export async function getScoresByUser({
 			take,
 			orderBy: {[orderBy]: 'desc'},
 		}),
-		db.score.count({where: {userId}}),
+		db.score.count({where}),
 	])
 	return {
 		result,

@@ -1,13 +1,19 @@
 import {LoaderFunctionArgs, json} from '@remix-run/node'
-import {useLoaderData} from '@remix-run/react'
+import {
+	Form,
+	useLoaderData,
+	useSubmit,
+} from '@remix-run/react'
 import {EvaluationForm} from '~/components/EvaluationForm'
 import {GameLink} from '~/components/GameLink'
 import {InfiniteGamelist} from '~/components/InfiniteGamelist'
+import NumPlayersSelect from '~/components/filters/num-players'
 import {
 	Card,
 	CardFooter,
 	CardHeader,
 } from '~/components/ui/card'
+import {Separator} from '~/components/ui/separator'
 import {TooltipProvider} from '~/components/ui/tooltip'
 import {
 	getScoreValueGame,
@@ -26,35 +32,52 @@ export async function loader({
 		Number(url.searchParams.get('pageSize') ?? '12'),
 		12,
 	)
+	const numPlayers =
+		Number(url.searchParams.get('np')) || undefined
 	const skip = (page - 1) * pageSize
 	const {result: scores, count} = await getScoresByUser({
 		userId: user.id,
 		skip: (page - 1) * pageSize,
 		take: pageSize,
+		numPlayers,
 	})
 	const games = await getScoreValueGame(scores)
 
 	return json({
 		games,
+		filterHash: btoa(JSON.stringify({numPlayers})),
 		page,
 		pageSize,
+		numPlayers,
 		hasMore: skip + games.length < count,
 	})
 }
 
 export default function VotedGamesPage() {
-	const {games, hasMore, page, pageSize} =
+	const {games, hasMore, filterHash, page, pageSize} =
 		useLoaderData<typeof loader>()
+	const submit = useSubmit()
 	return (
 		<div className='flex flex-col gap-6'>
-			<InfiniteGamelist
-				hasMore={hasMore}
-				page={page}
-				pageSize={pageSize}
-				games={games as ScoreGame[]}
+			<Form
+				onChange={(e) => {
+					submit(e.currentTarget)
+				}}
 			>
-				{({games}) => <Gamelist games={games} />}
-			</InfiniteGamelist>
+				<NumPlayersSelect />
+			</Form>
+			<Separator />
+			<div className='flex flex-col gap-6'>
+				<InfiniteGamelist
+					hasMore={hasMore}
+					page={page}
+					pageSize={pageSize}
+					games={games as ScoreGame[]}
+					key={filterHash}
+				>
+					{({games}) => <Gamelist games={games} />}
+				</InfiniteGamelist>
+			</div>
 		</div>
 	)
 }
