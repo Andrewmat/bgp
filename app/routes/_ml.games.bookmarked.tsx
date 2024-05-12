@@ -6,6 +6,7 @@ import {
 	useSubmit,
 } from '@remix-run/react'
 import {
+	AlertTriangleIcon,
 	BookmarkMinusIcon,
 	BookmarkPlusIcon,
 } from 'lucide-react'
@@ -174,5 +175,20 @@ function GameCard({game, score}: ScoreGame) {
 				/>
 			</CardFooter>
 		</Card>
+	)
+}
+
+export function ErrorBoundary() {
+	return (
+		<div className='p-6'>
+			<h2 className='text-xl flex gap-2'>
+				<AlertTriangleIcon />
+				Ops
+			</h2>
+			<span className='text-lg'>
+				Houve um erro ao carregar a sua lista de jogos
+				salvos
+			</span>
+		</div>
 	)
 }

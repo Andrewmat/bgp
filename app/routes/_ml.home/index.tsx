@@ -4,36 +4,24 @@ import {
 	MetaFunction,
 	defer,
 } from '@remix-run/node'
-import {
-	Await,
-	useFetcher,
-	useLoaderData,
-} from '@remix-run/react'
-import {MegaphoneOffIcon} from 'lucide-react'
-import React, {Suspense} from 'react'
-import {EvaluationForm} from '~/components/EvaluationForm'
+import {Await, useLoaderData} from '@remix-run/react'
+import {PropsWithChildren, Suspense} from 'react'
 import {
 	ScoreList,
 	ScoresFallback,
 } from '~/components/ScoreList'
-import {
-	Card,
-	CardContent,
-	CardHeader,
-	CardTitle,
-} from '~/components/ui/card'
-import {
-	Tooltip,
-	TooltipContent,
-	TooltipTrigger,
-} from '~/components/ui/tooltip'
-import {BggBoardgame, getGamesListId} from '~/lib/bgg'
+import {Card, CardContent} from '~/components/ui/card'
+import {getGamesListId} from '~/lib/bgg'
 import {
 	getRecommendedToRate,
 	getScoresByUser,
 } from '~/lib/db/score.server'
 import {assertAuthenticated} from '~/lib/login/auth.server'
 import {ScoreGame} from '~/lib/db/score.type'
+import {Section} from './Section'
+import {EvaluationFormRecommendation} from './EvaluationFormRecommendation'
+import {EvaluationFormOwn} from './EvaluationFormOwn'
+import {AlertTriangleIcon} from 'lucide-react'
 
 export const meta: MetaFunction = () => {
 	return [
@@ -91,21 +79,22 @@ export default function HomePage() {
 			<CardContent>
 				<Suspense
 					fallback={
-						<Section
-							title='Recomendações'
-							subtitle='Alguns jogos para você votar'
-						>
+						<SectionRecommendation>
 							<ScoresFallback pageSize={5} />
-						</Section>
+						</SectionRecommendation>
 					}
 				>
-					<Await resolve={recommendations}>
+					<Await
+						resolve={recommendations}
+						errorElement={
+							<SectionRecommendation>
+								<SectionErrorMessage />
+							</SectionRecommendation>
+						}
+					>
 						{(recommendationsResolved) =>
 							recommendationsResolved.length > 0 && (
-								<Section
-									title='Recomendações'
-									subtitle='Alguns jogos para você votar'
-								>
+								<SectionRecommendation>
 									<ScoreList
 										page={recommendationPage}
 										pageSize={6}
@@ -121,7 +110,7 @@ export default function HomePage() {
 											<EvaluationFormRecommendation />
 										}
 									/>
-								</Section>
+								</SectionRecommendation>
 							)
 						}
 					</Await>
@@ -129,21 +118,22 @@ export default function HomePage() {
 
 				<Suspense
 					fallback={
-						<Section
-							title='Seus jogos'
-							subtitle='Os jogos que você já votou'
-						>
+						<SectionOwn>
 							<ScoresFallback pageSize={5} />
-						</Section>
+						</SectionOwn>
 					}
 				>
-					<Await resolve={own}>
+					<Await
+						resolve={own}
+						errorElement={
+							<SectionOwn>
+								<SectionErrorMessage />
+							</SectionOwn>
+						}
+					>
 						{(ownResolved) =>
 							ownResolved.length > 0 && (
-								<Section
-									title='Seus jogos'
-									subtitle='Os jogos que você já votou'
-								>
+								<SectionOwn>
 									<ScoreList
 										page={ownPage}
 										pageSize={12}
@@ -156,7 +146,7 @@ export default function HomePage() {
 											<EvaluationFormOwn />
 										}
 									/>
-								</Section>
+								</SectionOwn>
 							)
 						}
 					</Await>
@@ -166,76 +156,42 @@ export default function HomePage() {
 	)
 }
 
-function Section({
+function SectionRecommendation({
 	children,
-	title,
-	subtitle,
-}: {
-	children: React.ReactNode
-	title: React.ReactNode
-	subtitle?: React.ReactNode
-}) {
+}: PropsWithChildren) {
 	return (
-		<>
-			<CardHeader>
-				<CardTitle>{title}</CardTitle>
-				{subtitle && (
-					<span className='text-md text-muted-foreground'>
-						{subtitle}
-					</span>
-				)}
-			</CardHeader>
-			<article>{children}</article>
-		</>
+		<Section
+			title='Recomendações'
+			subtitle='Alguns jogos para você votar'
+		>
+			{children}
+		</Section>
 	)
 }
 
-function EvaluationFormRecommendation({
-	game,
-	score,
-}: {
-	game: BggBoardgame
-	score: number | undefined
-}) {
-	const fetcher = useFetcher()
+function SectionOwn({children}: PropsWithChildren) {
 	return (
-		<EvaluationForm
-			gameId={game.id}
-			score={score}
-			side={
-				<fetcher.Form
-					action={`/game/${game.id}/relation`}
-					method='POST'
-					className='flex items-center justify-center w-full h-full'
-				>
-					<input
-						type='hidden'
-						name='intent'
-						value='ignore'
-					/>
-					<input type='hidden' name='value' value='true' />
-					<Tooltip>
-						<TooltipTrigger type='submit'>
-							<MegaphoneOffIcon className='stroke-muted-foreground hover:stroke-destructive-foreground hover:fill-destructive focus-visible:stroke-destructive-foreground focus-visible:fill-destructive' />
-						</TooltipTrigger>
-						<TooltipContent>
-							Silenciar recomendação
-						</TooltipContent>
-					</Tooltip>
-				</fetcher.Form>
-			}
-		/>
+		<Section
+			title='Seus jogos'
+			subtitle='Os jogos que você já votou'
+		>
+			{children}
+		</Section>
 	)
 }
 
-function EvaluationFormOwn({
-	game,
-	score,
-}: {
-	game: BggBoardgame
-	score: number | undefined
-}) {
-	return <EvaluationForm gameId={game.id} score={score} />
+function SectionErrorMessage() {
+	return (
+		<div className='p-6'>
+			<h2 className='text-xl flex gap-2'>
+				<AlertTriangleIcon />
+				Ops
+			</h2>
+			<span className='text-lg'>
+				Não conseguimos carregar essa seção
+			</span>
+		</div>
+	)
 }
 
 async function getOwnGames(

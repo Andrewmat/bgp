@@ -4,6 +4,7 @@ import {
 	useLoaderData,
 	useSubmit,
 } from '@remix-run/react'
+import {AlertTriangleIcon} from 'lucide-react'
 import {EvaluationForm} from '~/components/EvaluationForm'
 import {GameLink} from '~/components/GameLink'
 import {InfiniteGamelist} from '~/components/InfiniteGamelist'
@@ -103,5 +104,20 @@ function Gamelist({games}: {games: ScoreGame[]}) {
 				))}
 			</ul>
 		</TooltipProvider>
+	)
+}
+
+export function ErrorBoundary() {
+	return (
+		<div className='p-6'>
+			<h2 className='text-xl flex gap-2'>
+				<AlertTriangleIcon />
+				Ops
+			</h2>
+			<span className='text-lg'>
+				Houve um erro ao carregar a sua lista de jogos
+				votados
+			</span>
+		</div>
 	)
 }

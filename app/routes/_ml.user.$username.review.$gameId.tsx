@@ -1,4 +1,8 @@
-import {LoaderFunctionArgs, json} from '@remix-run/node'
+import {
+	LoaderFunctionArgs,
+	MetaFunction,
+	json,
+} from '@remix-run/node'
 import {
 	Link,
 	isRouteErrorResponse,
@@ -15,6 +19,29 @@ import {TooltipProvider} from '~/components/ui/tooltip'
 import {type BggBoardgame, getGameId} from '~/lib/bgg'
 import {getReviewByUserGame} from '~/lib/db/review.server'
 import {getUserByUsername} from '~/lib/db/user.server'
+
+export const meta: MetaFunction<typeof loader> = ({
+	params,
+	data,
+}) => {
+	const title = `Review de ${data?.game.name} por ${data?.pageUser.name} | BGP`
+	const image = data?.game.image
+	const description =
+		data?.review && data.review.length <= 200
+			? data?.review
+			: `${data?.review?.slice(0, 197)}...`
+	const permalink = `https://boardgameplanilha.xyz/user/${params.username}/review/${params.gameId}`
+	return [
+		{title},
+		{property: 'description', content: description},
+
+		{property: 'og:title', content: title},
+		{property: 'og:description', content: description},
+		{property: 'og:type', content: 'article'},
+		{property: 'og:image', content: image},
+		{property: 'og:url', content: permalink},
+	]
+}
 
 export async function loader({params}: LoaderFunctionArgs) {
 	invariant(params.username, 'Expected username')
