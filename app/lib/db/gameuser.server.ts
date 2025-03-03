@@ -45,8 +45,54 @@ export async function getAllIgnoredGames({
 	if (gameIds.length === 0) {
 		return []
 	}
-	const games = await getGamesListId(gameIds)
+	const games = await getFastGamesListId(gameIds)
 	return games
+}
+
+export async function getFastGamesListId(
+	gameIds: string[],
+) {
+	console.log(
+		`getFastGamesListId length: ${gameIds.length}`,
+	)
+	const internalGames = await db.bggGame.findMany({
+		where: {
+			externalId: {in: gameIds},
+		},
+		select: {
+			externalId: true,
+			name: true,
+		},
+	})
+	const missingIds = (() => {
+		const tmpMissingIds = [...gameIds]
+		internalGames.forEach((g) => {
+			const ind = tmpMissingIds.indexOf(g.externalId)
+			tmpMissingIds.splice(ind, 1)
+		})
+		return tmpMissingIds
+	})()
+	console.log(
+		`missingIds(${missingIds.length}): ${missingIds.join(',')}`,
+	)
+	const bggGames = await getGamesListId(missingIds)
+
+	return gameIds.map((gameId) => {
+		const internalGame = internalGames.find(
+			(g) => gameId === g.externalId,
+		)
+		let name = internalGame?.name
+		if (!internalGame) {
+			const externalGame = bggGames.find(
+				(g) => gameId === g.id,
+			)
+			name = externalGame?.name
+		}
+		return {
+			id: gameId,
+			name: name ?? '-',
+		}
+	})
 }
 
 export function bookmark({userId, gameId}: GameUser) {
