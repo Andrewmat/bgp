@@ -215,6 +215,25 @@ export default function ConfigPage() {
 			</CardContent>
 
 			<CardHeader>
+				<CardTitle>Exportar</CardTitle>
+			</CardHeader>
+			<CardContent className='flex flex-col gap-2'>
+				<span>Baixar seus dados em</span>
+				<div className='flex gap-2'>
+					<Button asChild>
+						<a href='/export/bgp-data.csv' download>
+							CSV
+						</a>
+					</Button>
+					<Button asChild>
+						<a href='/export/bgp-data.json' download>
+							JSON
+						</a>
+					</Button>
+				</div>
+			</CardContent>
+
+			<CardHeader>
 				<CardTitle>Jogos silenciados</CardTitle>
 			</CardHeader>
 			<CardContent>
@@ -253,21 +272,6 @@ export default function ConfigPage() {
 						</ignoredFetcher.Form>
 					))}
 				</TooltipProvider>
-			</CardContent>
-
-			<CardHeader>
-				<CardTitle>Exportar</CardTitle>
-			</CardHeader>
-			<CardContent>
-				<span>Baixar seus dados em</span>
-				<div>
-					<a href='/data/bgp-data.csv' download>
-						CSV
-					</a>
-					<a href='/data/bgp-data.json' download>
-						JSON
-					</a>
-				</div>
 			</CardContent>
 		</Card>
 	)
