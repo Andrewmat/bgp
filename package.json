@@ -47,6 +47,7 @@
 		"fast-xml-parser": "^4.3.3",
 		"he": "^1.2.0",
 		"isbot": "^4.1.0",
+		"json-2-csv": "^5.5.8",
 		"lucide-react": "^0.309.0",
 		"next-themes": "^0.2.1",
 		"random-word-slugs": "^0.1.7",

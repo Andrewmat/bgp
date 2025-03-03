@@ -93,6 +93,9 @@ export async function getGameId(
 }
 
 export async function getGamesListId(gameIds: string[]) {
+	if (gameIds.length === 0) {
+		return []
+	}
 	const result = (await fetchBgg(
 		`/boardgame/${gameIds.join(',')}`,
 	)) as {

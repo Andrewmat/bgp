@@ -205,7 +205,7 @@ export default function ConfigPage() {
 						{actionData?.success && (
 							<AlertClosable
 								className='self-start'
-								key={nav.start}
+								key={nav.state}
 							>
 								Alterações feitas com sucesso!
 							</AlertClosable>
@@ -253,6 +253,21 @@ export default function ConfigPage() {
 						</ignoredFetcher.Form>
 					))}
 				</TooltipProvider>
+			</CardContent>
+
+			<CardHeader>
+				<CardTitle>Exportar</CardTitle>
+			</CardHeader>
+			<CardContent>
+				<span>Baixar seus dados em</span>
+				<div>
+					<a href='/data/bgp-data.csv' download>
+						CSV
+					</a>
+					<a href='/data/bgp-data.json' download>
+						JSON
+					</a>
+				</div>
 			</CardContent>
 		</Card>
 	)
